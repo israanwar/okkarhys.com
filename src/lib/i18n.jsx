@@ -13,7 +13,7 @@ const T = {
     // Common
     cta_whatsapp: "WhatsApp",
     action_back: "Kembali",
-    site_description: "Web, SEO, workflow AI, dan strategi konten untuk personal brand dan bisnis.",
+    site_description: "Kami membangun sistem digital yang lebih cerdas untuk memperkuat visibilitas, mengefisienkan operasional, dan mendorong pertumbuhan bisnis berkelanjutan.",
     // Landing
     section_services: "Layanan",
     section_process: "Proses",
@@ -223,7 +223,7 @@ const T = {
     nav_store: "Store", nav_blog: "Blog", nav_contact: "Contact", nav_portfolio: "Portfolio",
     cta_whatsapp: "WhatsApp",
     action_back: "Back",
-    site_description: "Web, SEO, AI workflow & content strategy for personal brands and businesses.",
+    site_description: "Building smarter digital systems for stronger visibility, efficient operations, and sustainable business growth.",
     section_services: "Services",
     section_process: "Process",
     section_journal: "Journal",

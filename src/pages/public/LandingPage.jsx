@@ -11,6 +11,8 @@ import { resolveCover } from "../../lib/blogPlaceholder";
 const DEFAULT_HERO_SUBTITLES = new Set([
   "web, seo, ai workflow & content strategy for personal brands and businesses.",
   "web, seo, workflow ai, dan strategi konten untuk personal brand dan bisnis.",
+  "building smarter digital systems for stronger visibility, efficient operations, and sustainable business growth.",
+  "kami membangun sistem digital yang lebih cerdas untuk memperkuat visibilitas, mengefisienkan operasional, dan mendorong pertumbuhan bisnis berkelanjutan.",
 ]);
 
 function isDefaultHeroSubtitle(value) {
@@ -22,7 +24,7 @@ export function LandingPage() {
   const settings = useLiveSettings();
   const rawSections = useLiveHomepage();
   const sections = localizeHomepage(rawSections, lang);
-  const posts = useLivePosts({ status: "published" }).slice(0, 3);
+  const posts = useLivePosts({ status: "published" }).slice(0, 4);
 
   const hero = sections.hero ?? {};
   const siteDescription = localizeSiteDescription(settings.description, lang, settings.description_id);
@@ -34,7 +36,7 @@ export function LandingPage() {
   const services = sections.services ?? { items: [] };
   const cases = sections.cases ?? { title: t("section_cases_title"), items: [] };
   const processItems = process.items ?? [];
-  const [selectedProcessIndex, setSelectedProcessIndex] = useState(0);
+  const [selectedProcessIndex, setSelectedProcessIndex] = useState(1);
   const activeProcessIndex = Math.min(selectedProcessIndex, Math.max(processItems.length - 1, 0));
   const activeProcess = processItems[activeProcessIndex];
 
@@ -61,20 +63,6 @@ export function LandingPage() {
               <Link className="okr__btn okr__btn--primary" to="/services">
                 {hero.cta_secondary_label || t("hero_cta_secondary")}
                 <ArrowRight size={16} />
-              </Link>
-            </div>
-            <div className="okr__hero-mobile-deck" aria-label="Core capabilities">
-              <Link to="/services" className="okr__hero-deck-chip">
-                <span>Web</span>
-                <small>Systems</small>
-              </Link>
-              <Link to="/services" className="okr__hero-deck-chip">
-                <span>SEO</span>
-                <small>Architecture</small>
-              </Link>
-              <Link to="/services" className="okr__hero-deck-chip">
-                <span>AI</span>
-                <small>Workflow</small>
               </Link>
             </div>
           </div>

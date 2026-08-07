@@ -18,6 +18,8 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-
 const DEFAULT_SITE_DESCRIPTIONS = new Set([
   "web, seo, ai workflow & content strategy for personal brands and businesses.",
   "web, seo, workflow ai, dan strategi konten untuk personal brand dan bisnis.",
+  "building smarter digital systems for stronger visibility, efficient operations, and sustainable business growth.",
+  "kami membangun sistem digital yang lebih cerdas untuk memperkuat visibilitas, mengefisienkan operasional, dan mendorong pertumbuhan bisnis berkelanjutan.",
 ]);
 
 function isUuid(value) {

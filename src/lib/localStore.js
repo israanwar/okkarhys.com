@@ -52,7 +52,7 @@ function ensureSeed() {
   const DEFAULT_SETTINGS = {
     site_name: "okkarhys",
     tagline: "Design, code & strategy at the speed of AI",
-    description: "Web, SEO, AI workflow & content strategy for personal brands and businesses.",
+    description: "Building smarter digital systems for stronger visibility, efficient operations, and sustainable business growth.",
     whatsapp_number: "082189594190",
     whatsapp_url: "https://wa.me/6282189594190",
     email: "admin@okkarhys.com",
@@ -61,7 +61,7 @@ function ensureSeed() {
     social_instagram: "",
     social_twitter: "",
     seo_default_title: "OKKARHYS",
-    seo_default_description: "Web, SEO, AI workflow & content strategy for personal brands and businesses.",
+    seo_default_description: "Building smarter digital systems for stronger visibility, efficient operations, and sustainable business growth.",
     qris_image: "",
     qris_merchant_name: "OKKA RHYS, DIGITAL & KREATIF",
     qris_nmid: "ID1025456495932",
@@ -115,7 +115,7 @@ function ensureSeed() {
       kicker: "// OKKARHYS · INDONESIA",
       title_line1: "Design, code &",
       title_line2: "strategy at the speed of AI",
-      subtitle: "Web, SEO, AI workflow & content strategy for personal brands and businesses.",
+      subtitle: "Building smarter digital systems for stronger visibility, efficient operations, and sustainable business growth.",
       cta_primary_label: "Consult",
       cta_secondary_label: "View all services",
     },
@@ -185,6 +185,38 @@ function ensureSeed() {
     cases: { title: "Real results.", items: [] },
   };
   if (!read(KEYS.homepage)) write(KEYS.homepage, HOMEPAGE_DEFAULT);
+  if (localStorage.getItem("okr:migrated:homepage:v4") !== "1") {
+    const oldDescriptions = new Set([
+      "Web, SEO, AI workflow & content strategy for personal brands and businesses.",
+      "Web, SEO, workflow AI, dan strategi konten untuk personal brand dan bisnis.",
+    ]);
+    const s = read(KEYS.settings, {}) ?? {};
+    const h = read(KEYS.homepage, {}) ?? {};
+    const nextSettings = { ...s };
+    let settingsChanged = false;
+    if (oldDescriptions.has(String(s.description ?? "").trim())) {
+      nextSettings.description = DEFAULT_SETTINGS.description;
+      settingsChanged = true;
+    }
+    if (oldDescriptions.has(String(s.seo_default_description ?? "").trim())) {
+      nextSettings.seo_default_description = DEFAULT_SETTINGS.seo_default_description;
+      settingsChanged = true;
+    }
+    if (settingsChanged) {
+      nextSettings.updated_at = now();
+      write(KEYS.settings, nextSettings);
+    }
+    if (oldDescriptions.has(String(h.hero?.subtitle ?? "").trim())) {
+      write(KEYS.homepage, {
+        ...h,
+        hero: {
+          ...(h.hero ?? {}),
+          subtitle: HOMEPAGE_DEFAULT.hero.subtitle,
+        },
+      });
+    }
+    localStorage.setItem("okr:migrated:homepage:v4", "1");
+  }
   // Force reset homepage kalau masih pakai text Indonesia dari default lama
   if (localStorage.getItem("okr:migrated:homepage:v2") !== "1") {
     const h = read(KEYS.homepage, {}) ?? {};
