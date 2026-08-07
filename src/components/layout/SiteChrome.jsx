@@ -61,51 +61,58 @@ export function SiteHeader({ settings }) {
   }, [menuOpen]);
 
   return (
-    <header className="okr__header">
-      <div className="okr__wrap okr__nav">
-        <Link className="okr__brand" to="/" onClick={() => setMenuOpen(false)}>
-          <OkkarhysLogo name={settings.site_name || "okkarhys"} />
-        </Link>
-        <nav className="okr__navlinks" aria-label="Primary">
-          {nav.map((item) => (
-            item.route ? (
-              <NavLink
-                key={item.label}
-                to={item.to}
-                end={item.to === "/"}
-                className={({ isActive }) => `okr__navlink${isActive ? " is-active" : ""}`}
-              >
-                {item.label}
-              </NavLink>
-            ) : (
-              <a key={item.label} href={item.to} className="okr__navlink">
-                {item.label}
-              </a>
-            )
-          ))}
-        </nav>
-        <div className="okr__nav-actions">
-          <LangThemeSwitcher />
-          {hasProducts && (
-            <Link to="/cart" className="okr__cart-link" aria-label={t("cart_aria")}>
-              <ShoppingBag size={18} />
-              {cartCount > 0 && (
-                <span className="okr__cart-count">{cartCount}</span>
-              )}
-            </Link>
-          )}
-          <button
-            className="okr__mobile-menu-btn"
-            type="button"
-            aria-label={menuOpen ? t("nav_close_menu") : t("nav_open_menu")}
-            aria-expanded={menuOpen}
-            aria-controls="okr-mobile-nav"
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            {menuOpen ? <X size={19} /> : <Menu size={19} />}
-          </button>
+    <>
+      <header className="okr__header">
+        <div className="okr__wrap okr__nav">
+          <Link className="okr__brand" to="/" onClick={() => setMenuOpen(false)}>
+            <OkkarhysLogo name={settings.site_name || "okkarhys"} />
+          </Link>
+          <nav className="okr__navlinks" aria-label="Primary">
+            {nav.map((item) => (
+              item.route ? (
+                <NavLink
+                  key={item.label}
+                  to={item.to}
+                  end={item.to === "/"}
+                  className={({ isActive }) => `okr__navlink${isActive ? " is-active" : ""}`}
+                >
+                  {item.label}
+                </NavLink>
+              ) : (
+                <a key={item.label} href={item.to} className="okr__navlink">
+                  {item.label}
+                </a>
+              )
+            ))}
+          </nav>
+          <div className="okr__nav-actions">
+            <LangThemeSwitcher />
+            {hasProducts && (
+              <Link to="/cart" className="okr__cart-link" aria-label={t("cart_aria")}>
+                <ShoppingBag size={18} />
+                {cartCount > 0 && (
+                  <span className="okr__cart-count">{cartCount}</span>
+                )}
+              </Link>
+            )}
+            <button
+              className="okr__mobile-menu-btn"
+              type="button"
+              aria-label={menuOpen ? t("nav_close_menu") : t("nav_open_menu")}
+              aria-expanded={menuOpen}
+              aria-controls="okr-mobile-nav"
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              {menuOpen ? <X size={19} /> : <Menu size={19} />}
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
+      {/* Mobile menu is a SIBLING of <header>, not a child. `.okr__header` has
+          `contain: layout` + `transform: translate3d(...)`, both of which turn
+          the header into a containing block for `position: fixed` descendants —
+          which would clip the menu to the 60px header box. Rendering here keeps
+          the menu positioned against the viewport. */}
       <div className={`okr__mobile-menu${menuOpen ? " is-open" : ""}`} id="okr-mobile-nav">
         <nav className="okr__mobile-menu-panel" aria-label="Mobile primary">
           {nav.map((item) => (
@@ -127,7 +134,7 @@ export function SiteHeader({ settings }) {
           ))}
         </nav>
       </div>
-    </header>
+    </>
   );
 }
 

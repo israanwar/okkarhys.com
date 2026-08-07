@@ -16,7 +16,7 @@ export function AboutPage() {
         <section className="okr__section okr__page-hero">
           <div className="okr__wrap" style={{ maxWidth: 900 }}>
             {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
-            <h1 className="okr__h2" style={{ marginTop: 20 }}>{p.hero_title}</h1>
+            <h1 className="okr__h2">{p.hero_title}</h1>
             {p.hero_subtitle && (
               <p className="okr__page-hero-lead">
                 {p.hero_subtitle}
