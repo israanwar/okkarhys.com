@@ -31,7 +31,7 @@ export function ServicesPage() {
         description={t("services_page_subtitle", { count: serviceCount })}
       />
       <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 120 }}>
+        <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             <span className="okr__eyebrow">// {t("services_eyebrow").toUpperCase()}</span>
             <h1 className="okr__h2">{t("services_page_title")}</h1>

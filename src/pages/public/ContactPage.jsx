@@ -43,7 +43,7 @@ export function ContactPage() {
     <>
       <Seo title={`${t("nav_contact")} — okkarhys`} description={p.hero_subtitle} />
       <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 120 }}>
+        <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
             <h1 className="okr__h2" style={{ marginTop: 20 }}>{p.hero_title}</h1>

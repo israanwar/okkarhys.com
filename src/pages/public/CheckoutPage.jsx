@@ -73,7 +73,7 @@ export function CheckoutPage() {
     <>
       <Seo title={`${t("checkout_title")} — okkarhys`} description={t("checkout_title")} noindex />
       <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 120 }}>
+        <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             <h1 className="okr__h2">{t("checkout_title")}</h1>
 

@@ -41,7 +41,7 @@ export function ServiceDetailPage() {
   if (loading && !rawService) {
     return (
       <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 120 }}>
+        <section className="okr__section okr__page-hero">
           <div className="okr__wrap" style={{ color: "var(--okr-muted)" }}>Loading…</div>
         </section>
       </SiteChrome>

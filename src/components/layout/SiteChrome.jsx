@@ -33,6 +33,15 @@ export function SiteHeader({ settings }) {
   ];
 
   useEffect(() => {
+    // Toggle a class on the `.okr` shell so CSS can lock scroll while the
+    // full-viewport mobile menu is open.
+    const shell = document.querySelector(".okr");
+    if (menuOpen) shell?.classList.add("is-menu-open");
+    else shell?.classList.remove("is-menu-open");
+    return () => shell?.classList.remove("is-menu-open");
+  }, [menuOpen]);
+
+  useEffect(() => {
     if (!menuOpen) return undefined;
 
     function onKeyDown(event) {

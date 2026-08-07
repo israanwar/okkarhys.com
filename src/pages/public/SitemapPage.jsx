@@ -53,7 +53,7 @@ export function SitemapPage() {
         description={`Peta lengkap halaman Okkarhys — ${totalPosts} artikel di ${activeCategories} kategori aktif, plus halaman utama dan legal.`}
       />
       <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 120, paddingBottom: 80 }}>
+        <section className="okr__section okr__page-hero" style={{ paddingBottom: 80 }}>
           <div className="okr__wrap" style={{ maxWidth: 960 }}>
             {/* Breadcrumb */}
             <nav aria-label="Breadcrumb" style={{ fontSize: 12, color: "var(--okr-muted)", marginBottom: 16, letterSpacing: "0.04em" }}>

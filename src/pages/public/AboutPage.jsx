@@ -13,12 +13,12 @@ export function AboutPage() {
     <>
       <Seo title={`${p.hero_title || t("nav_about")} — okkarhys`} description={p.hero_subtitle} />
       <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 120 }}>
+        <section className="okr__section okr__page-hero">
           <div className="okr__wrap" style={{ maxWidth: 900 }}>
             {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
             <h1 className="okr__h2" style={{ marginTop: 20 }}>{p.hero_title}</h1>
             {p.hero_subtitle && (
-              <p style={{ color: "var(--okr-muted)", fontSize: 18, lineHeight: 1.6, marginTop: 24, maxWidth: 720 }}>
+              <p className="okr__page-hero-lead">
                 {p.hero_subtitle}
               </p>
             )}

@@ -86,7 +86,7 @@ export function StorePage() {
     <>
       <Seo title="Store — okkarhys" description={t("store_subtitle")} />
       <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 120 }}>
+        <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             <span className="okr__eyebrow">{t("store_eyebrow")}</span>
             <h1 className="okr__h2">{t("store_title")}</h1>

@@ -13,7 +13,7 @@ export function PrivacyPage() {
     <>
       <Seo title={`${p.title || t("foot_privacy")} — okkarhys`} description={t("foot_privacy")} path="/privacy" />
       <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 120 }}>
+        <section className="okr__section okr__page-hero">
           <div className="okr__wrap" style={{ maxWidth: 780 }}>
             <span className="okr__eyebrow">{t("foot_legal_label")}</span>
             <h1 className="okr__h2" style={{ marginTop: 20 }}>{p.title || t("foot_privacy")}</h1>

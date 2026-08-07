@@ -16,7 +16,7 @@ export function CartPage() {
     <>
       <Seo title={`${t("cart_title")} — okkarhys`} description={t("cart_title")} noindex />
       <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 120 }}>
+        <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             <h1 className="okr__h2">{t("cart_title")}</h1>
 

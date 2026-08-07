@@ -109,7 +109,7 @@ export function BlogListPage({ initialCategorySlug = null }) {
     <>
       <Seo title={pageTitle} description={pageDesc} />
       <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 120, paddingBottom: 40 }}>
+        <section className="okr__section okr__page-hero" style={{ paddingBottom: 40 }}>
           <div className="okr__wrap">
             {/* Breadcrumb ringan */}
             <nav aria-label="Breadcrumb" style={{ fontSize: 12, color: "var(--okr-muted)", marginBottom: 16, letterSpacing: "0.04em" }}>
