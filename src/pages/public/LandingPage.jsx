@@ -63,6 +63,20 @@ export function LandingPage() {
                 <ArrowRight size={16} />
               </Link>
             </div>
+            <div className="okr__hero-mobile-deck" aria-label="Core capabilities">
+              <Link to="/services" className="okr__hero-deck-chip">
+                <span>Web</span>
+                <small>Systems</small>
+              </Link>
+              <Link to="/services" className="okr__hero-deck-chip">
+                <span>SEO</span>
+                <small>Architecture</small>
+              </Link>
+              <Link to="/services" className="okr__hero-deck-chip">
+                <span>AI</span>
+                <small>Workflow</small>
+              </Link>
+            </div>
           </div>
         </section>
 

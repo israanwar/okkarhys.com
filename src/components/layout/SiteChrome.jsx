@@ -160,7 +160,7 @@ export function SiteFooter({ settings }) {
     <footer className="okr__footer">
       <div className="okr__wrap">
         <div className="okr__footer-grid">
-          <div>
+          <div className="okr__footer-brand-col">
             <div className="okr__foot-brand">
               <OkkarhysLogo name={settings.site_name || "okkarhys"} />
             </div>
@@ -173,7 +173,7 @@ export function SiteFooter({ settings }) {
             </div>
           </div>
 
-          <div>
+          <div className="okr__footer-col okr__footer-col--menu">
             <div className="okr__foot-title">{t("foot_menu")}</div>
             <ul className="okr__foot-list">
               <li><Link to="/">{t("nav_home")}</Link></li>
@@ -186,7 +186,7 @@ export function SiteFooter({ settings }) {
             </ul>
           </div>
 
-          <div>
+          <div className="okr__footer-col okr__footer-col--legal">
             <div className="okr__foot-title">{t("foot_legal")}</div>
             <ul className="okr__foot-list">
               <li><Link to="/privacy">{t("foot_privacy")}</Link></li>
@@ -195,11 +195,19 @@ export function SiteFooter({ settings }) {
             </ul>
           </div>
 
-          <div>
+          <div className="okr__footer-col okr__footer-col--contact">
             <div className="okr__foot-title">{t("foot_contact")}</div>
             <div className="okr__foot-contact">
-              {settings.email && <div><Mail size={16} /> {settings.email}</div>}
-              {settings.whatsapp_number && <div><MessageCircle size={16} /> {settings.whatsapp_number}</div>}
+              {settings.email && (
+                <a className="okr__foot-contact-link" href={`mailto:${settings.email}`}>
+                  <Mail size={16} /> {settings.email}
+                </a>
+              )}
+              {settings.whatsapp_number && (
+                <a className="okr__foot-contact-link" href={settings.whatsapp_url || `https://wa.me/${settings.whatsapp_number}`} target="_blank" rel="noreferrer">
+                  <MessageCircle size={16} /> {settings.whatsapp_number}
+                </a>
+              )}
             </div>
           </div>
         </div>
