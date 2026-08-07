@@ -35,6 +35,7 @@ export function PostCard({ post, layout = "grid" }) {
 
   return (
     <article
+      className={`okr__blog-card${isHorizontal ? " okr__blog-card--horizontal" : ""}`}
       style={{
         display: isHorizontal ? "grid" : "flex",
         gridTemplateColumns: isHorizontal ? "minmax(220px, 320px) 1fr" : undefined,
@@ -48,6 +49,7 @@ export function PostCard({ post, layout = "grid" }) {
       }}
     >
       <Link
+        className="okr__blog-card-cover"
         to={`/blog/${post.slug}`}
         style={{
           display: "block",
@@ -59,9 +61,10 @@ export function PostCard({ post, layout = "grid" }) {
         }}
         aria-label={post.image_alt || post.title}
       />
-      <div style={{ padding: isHorizontal ? "18px 18px 18px 0" : "18px", display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
+      <div className="okr__blog-card-body" style={{ padding: isHorizontal ? "18px 18px 18px 0" : "18px", display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
         {category && (
           <Link
+            className="okr__blog-card-category"
             to={`/blog/${category.slug}`}
             style={{
               alignSelf: "flex-start",
@@ -78,13 +81,13 @@ export function PostCard({ post, layout = "grid" }) {
             {category.name}
           </Link>
         )}
-        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, lineHeight: 1.35, letterSpacing: "-0.005em" }}>
+        <h3 className="okr__blog-card-title" style={{ margin: 0, fontSize: 16, fontWeight: 600, lineHeight: 1.35, letterSpacing: "-0.005em" }}>
           <Link to={`/blog/${post.slug}`} style={{ color: "var(--okr-text)", textDecoration: "none" }}>
             {post.title}
           </Link>
         </h3>
         {post.excerpt && (
-          <p style={{
+          <p className="okr__blog-card-excerpt" style={{
             margin: 0,
             color: "var(--okr-muted)",
             fontSize: 13,
@@ -97,7 +100,7 @@ export function PostCard({ post, layout = "grid" }) {
             {post.excerpt}
           </p>
         )}
-        <div style={{
+        <div className="okr__blog-card-meta" style={{
           marginTop: "auto",
           paddingTop: 10,
           display: "flex",

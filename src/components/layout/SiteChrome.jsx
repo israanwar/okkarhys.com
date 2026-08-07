@@ -36,9 +36,24 @@ export function SiteHeader({ settings }) {
     // Toggle a class on the `.okr` shell so CSS can lock scroll while the
     // full-viewport mobile menu is open.
     const shell = document.querySelector(".okr");
-    if (menuOpen) shell?.classList.add("is-menu-open");
-    else shell?.classList.remove("is-menu-open");
-    return () => shell?.classList.remove("is-menu-open");
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+
+    if (menuOpen) {
+      shell?.classList.add("is-menu-open");
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      shell?.classList.remove("is-menu-open");
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+    }
+
+    return () => {
+      shell?.classList.remove("is-menu-open");
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+    };
   }, [menuOpen]);
 
   useEffect(() => {

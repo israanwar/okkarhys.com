@@ -66,6 +66,17 @@
   position: relative;
   isolation: isolate;
 }
+@media (max-width: 720px) {
+  .okr {
+    --okr-gutter: clamp(16px, 5vw, 20px);
+    --okr-section: clamp(42px, 10vw, 56px);
+    --okr-section-tight: clamp(32px, 8vw, 44px);
+    --okr-stack-md: clamp(18px, 5vw, 28px);
+    --okr-stack-sm: clamp(10px, 3vw, 16px);
+    --okr-card-pad: clamp(16px, 4.8vw, 20px);
+    --okr-radius: 14px;
+  }
+}
 @media (max-width: 560px) {
   .okr { --okr-header-h: 56px; }
 }
@@ -95,7 +106,7 @@
     linear-gradient(180deg, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.12) 50%, rgba(0, 0, 0, 0.86) 100%);
   opacity: 1;
 }
-.okr > :not(.okr__aurora):not(.okr__header) {
+.okr > :not(.okr__aurora):not(.okr__header):not(.okr__mobile-menu) {
   position: relative;
   z-index: 1;
 }
@@ -455,7 +466,9 @@
   /* Full-viewport overlay UNDER the sticky header (header z:80 stays on top so
      the close button remains clickable). Menu is rendered as a sibling of the
      header in SiteChrome so it's positioned against the viewport, not clipped
-     by the header's containing block. */
+     by the header's containing block. Kept solid-dark on purpose — an aurora
+     gradient inside the panel reads as dead space between the header and the
+     first nav item. */
   .okr__mobile-menu {
     position: fixed;
     top: var(--okr-header-h);
@@ -466,26 +479,22 @@
     display: flex;
     flex-direction: column;
     padding:
-      clamp(16px, 3vw, 24px)
+      12px
       max(var(--okr-gutter), env(safe-area-inset-right))
-      calc(24px + env(safe-area-inset-bottom))
+      calc(20px + env(safe-area-inset-bottom))
       max(var(--okr-gutter), env(safe-area-inset-left));
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.01)),
-      radial-gradient(circle at 16% 0%, rgba(255, 154, 221, 0.08), transparent 42%),
-      radial-gradient(circle at 84% 8%, rgba(224, 68, 168, 0.06), transparent 46%),
-      rgba(3, 0, 2, 0.96);
-    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(28px) saturate(140%);
-    -webkit-backdrop-filter: blur(28px) saturate(140%);
+    background: rgba(6, 0, 4, 0.98);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(18px) saturate(130%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
     opacity: 0;
     pointer-events: none;
     visibility: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-    transform: translateY(-6px);
-    transition: opacity .18s ease, visibility .18s ease, transform .22s ease;
+    transform: translateY(-4px);
+    transition: opacity .18s ease, visibility .18s ease, transform .2s ease;
     z-index: 79;
   }
   .okr__mobile-menu.is-open {
@@ -497,38 +506,32 @@
   .okr__mobile-menu-panel {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
   }
   .okr__mobile-navlink {
     position: relative;
     display: flex;
     align-items: center;
-    min-height: 48px;
-    padding: 0 12px;
-    border-radius: 10px;
+    min-height: 44px;
+    padding: 0 4px;
     color: rgba(238, 240, 246, 0.72);
-    border: 1px solid transparent;
+    border: 0;
     background: transparent;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 500;
     letter-spacing: -0.005em;
     -webkit-tap-highlight-color: transparent;
-    transition: color .15s ease, background-color .15s ease;
+    transition: color .15s ease;
   }
   .okr__mobile-navlink::before { content: none; }
   .okr__mobile-navlink:hover,
   .okr__mobile-navlink:focus-visible,
-  .okr__mobile-navlink:active {
-    color: var(--okr-text);
-    background: rgba(255, 255, 255, 0.04);
-    outline: none;
-  }
+  .okr__mobile-navlink:active,
   .okr__mobile-navlink.is-active {
     color: var(--okr-text);
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.08);
-    font-weight: 600;
+    outline: none;
   }
+  .okr__mobile-navlink.is-active { font-weight: 600; }
 }
 
 /* Body scroll lock when mobile menu open (class set by SiteChrome). */
@@ -565,15 +568,22 @@
   .okr__nav-actions { gap: 6px; }
 }
 
-/* Hero — transparent so global aurora shows through; keeps only the dot pattern */
+/* Hero — transparent so global aurora shows through; keeps only the dot pattern.
+   Content-driven height on mobile — no min-height. Desktop keeps its dramatic
+   viewport-tall composition via the media query below. */
 .okr__hero {
   position: relative;
-  min-height: min(calc(100svh - var(--okr-header-h)), 780px);
   display: flex;
-  align-items: center;
-  padding: clamp(48px, 8vw, 116px) 0 clamp(64px, 10vw, 138px);
+  flex-direction: column;
+  padding: clamp(28px, 5vw, 96px) 0 clamp(48px, 8vw, 128px);
   background: transparent;
   overflow: hidden;
+}
+@media (min-width: 900px) {
+  .okr__hero {
+    min-height: min(calc(100svh - var(--okr-header-h)), 780px);
+    justify-content: center;
+  }
 }
 .okr__hero::before {
   content: "";
@@ -616,18 +626,8 @@
   overflow-wrap: break-word;
 }
 .okr__hero-cta {
-  margin-top: clamp(28px, 4vw, 44px);
+  margin-top: clamp(24px, 3.5vw, 44px);
   display: flex; gap: 12px; flex-wrap: wrap;
-}
-@media (max-width: 560px) {
-  .okr__hero {
-    min-height: auto;
-    align-items: flex-start;
-  }
-  .okr__hero-title {
-    margin-top: 20px;
-    letter-spacing: -0.02em;
-  }
 }
 .okr__btn {
   position: relative;
@@ -680,23 +680,23 @@
 
 @media (max-width: 720px) {
   .okr__section {
-    padding-top: 76px !important;
-    padding-bottom: 76px !important;
+    padding-top: var(--okr-section);
+    padding-bottom: var(--okr-section);
   }
   .okr__section-topbar {
     align-items: flex-start;
     flex-direction: column;
-    gap: 18px;
-    margin-bottom: 36px;
+    gap: 14px;
+    margin-bottom: var(--okr-stack-md);
   }
   .okr__h2 {
-    font-size: clamp(32px, 10vw, 44px);
-    line-height: 1.08;
+    font-size: clamp(30px, 9.4vw, 38px);
+    line-height: 1.1;
   }
   .okr__btn {
     width: 100%;
     justify-content: center;
-    padding: 13px 18px;
+    padding: 12px 18px;
   }
   .okr__hero-cta {
     width: 100%;
@@ -705,7 +705,7 @@
 
 @media (max-width: 420px) {
   .okr__hero-title {
-    font-size: clamp(40px, 13vw, 48px);
+    font-size: clamp(36px, 11.2vw, 44px);
   }
   .okr__kicker,
   .okr__eyebrow {
@@ -2074,4 +2074,324 @@
   padding-top: 24px;
   display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
   color: var(--okr-dim); font-size: 13.5px;
+}
+
+/* Mobile proportion pass */
+@media (max-width: 720px) {
+  .okr__nav {
+    gap: 10px;
+  }
+
+  .okr__hero {
+    min-height: 0;
+    justify-content: flex-start;
+    padding-top: clamp(30px, 8vw, 44px);
+    padding-bottom: clamp(42px, 10vw, 58px);
+  }
+
+  .okr__hero-title {
+    max-width: 100%;
+    margin-top: 18px;
+    font-size: clamp(38px, 10.4vw, 50px);
+    line-height: 1.08;
+    letter-spacing: -0.018em;
+  }
+
+  .okr__hero-sub,
+  .okr__page-hero-lead {
+    max-width: 100%;
+    margin-top: 16px;
+    font-size: 15.5px;
+    line-height: 1.62;
+  }
+
+  .okr__hero-cta {
+    margin-top: 24px;
+  }
+
+  .okr__kicker,
+  .okr__eyebrow {
+    padding-top: 10px;
+  }
+
+  .okr__page-hero {
+    padding-top: clamp(38px, 10vw, 52px);
+    padding-bottom: clamp(22px, 7vw, 34px);
+  }
+
+  .okr__page-hero .okr__h2 {
+    margin-top: 16px !important;
+  }
+
+  .okr__page-hero p {
+    margin-top: 14px !important;
+    margin-bottom: 28px !important;
+    font-size: 15.5px !important;
+    line-height: 1.62 !important;
+  }
+
+  .okr__cards,
+  .okr__journal,
+  .okr__cases,
+  .okr__products,
+  .okr__portfolio-consulting-grid,
+  .okr__portfolio-groups {
+    gap: 14px;
+  }
+
+  .okr__card,
+  .okr__panel,
+  .okr__process-card,
+  .okr__post,
+  .okr__case,
+  .okr__product {
+    border-radius: var(--okr-radius);
+  }
+
+  .okr__card-title {
+    font-size: 16px;
+    line-height: 1.35;
+  }
+
+  .okr__card-body,
+  .okr__case-body p {
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+
+  .okr__process {
+    gap: 12px;
+    margin-top: 22px;
+  }
+
+  .okr__process-card {
+    padding: 18px;
+  }
+
+  .okr__step-n {
+    font-size: 12px;
+  }
+
+  .okr__step-title {
+    margin-top: 8px;
+    font-size: 18px;
+  }
+
+  .okr__step-body {
+    font-size: 13.5px;
+  }
+
+  .okr__process-detail {
+    margin-top: 14px;
+    padding: 18px;
+    gap: 18px;
+  }
+
+  .okr__process-detail h3 {
+    font-size: 24px;
+  }
+
+  .okr__process-detail p,
+  .okr__process-detail-points li {
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  .okr__post-body,
+  .okr__case-body {
+    padding: 16px;
+  }
+
+  .okr__post-tags,
+  .okr__case-tags,
+  .okr__product-cat {
+    font-size: 10.5px;
+    letter-spacing: 0.11em;
+  }
+
+  .okr__post-title {
+    font-size: 17px;
+    line-height: 1.34;
+  }
+
+  .okr__post-excerpt {
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+
+  .okr__blog-grid {
+    gap: 14px !important;
+  }
+
+  .okr__blog-card {
+    border-radius: var(--okr-radius) !important;
+    gap: 0 !important;
+  }
+
+  .okr__blog-card-cover {
+    aspect-ratio: 16 / 9 !important;
+    max-height: 196px;
+  }
+
+  .okr__blog-card-body {
+    gap: 7px !important;
+    padding: 15px !important;
+  }
+
+  .okr__blog-card-category {
+    font-size: 9.5px !important;
+    padding: 3px 8px !important;
+  }
+
+  .okr__blog-card-title {
+    font-size: 15.5px !important;
+    line-height: 1.36 !important;
+  }
+
+  .okr__blog-card-excerpt {
+    font-size: 13px !important;
+    line-height: 1.48 !important;
+    -webkit-line-clamp: 2 !important;
+  }
+
+  .okr__blog-card-meta {
+    gap: 7px !important;
+    padding-top: 8px !important;
+    font-size: 10.5px !important;
+    line-height: 1.4 !important;
+  }
+
+  .okr__product-img {
+    aspect-ratio: 16 / 10;
+    max-height: 220px;
+  }
+
+  .okr__product-body {
+    padding: 16px;
+  }
+
+  .okr__product-name {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .okr__product-price {
+    font-size: 16px;
+  }
+
+  .okr__results-bar {
+    gap: 10px;
+    margin-bottom: 18px;
+    padding: 12px;
+  }
+
+  .okr__results-count,
+  .okr__store-results-bar .okr__results-count {
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
+  .okr__store-empty {
+    padding: 34px 18px;
+  }
+
+  .okr__portfolio-page {
+    padding-top: 52px !important;
+    padding-bottom: 44px !important;
+  }
+
+  .okr__portfolio-page header {
+    margin-bottom: 34px !important;
+  }
+
+  .okr__portfolio-page .okr__hero-title {
+    margin-top: 18px !important;
+    font-size: clamp(38px, 11vw, 46px);
+    line-height: 1.08;
+  }
+
+  .okr__portfolio-page .okr__hero-sub {
+    font-size: 15.5px;
+    line-height: 1.62;
+  }
+
+  .okr__portfolio-section {
+    margin-bottom: 30px;
+  }
+
+  .okr__portfolio-heading {
+    font-size: clamp(26px, 8.8vw, 34px);
+    line-height: 1.1;
+  }
+
+  .okr__portfolio-tag-cloud,
+  .okr__portfolio-pills {
+    gap: 8px;
+  }
+
+  .okr__portfolio-chip,
+  .okr__portfolio-pill {
+    min-height: 32px;
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+
+  .okr__portfolio-consult-card {
+    min-height: 0;
+  }
+
+  .okr__contact-grid {
+    gap: 18px;
+    margin-top: 32px !important;
+  }
+
+  .okr__field {
+    margin-bottom: 12px;
+  }
+
+  .okr__field-2col {
+    gap: 12px;
+  }
+
+  .okr__label {
+    margin-bottom: 5px;
+    font-size: 12.5px;
+  }
+
+  .okr__input {
+    min-height: 42px;
+    padding: 10px 12px;
+    border-radius: 8px;
+  }
+
+  textarea.okr__input {
+    min-height: 128px;
+  }
+
+  .okr__cta {
+    margin-bottom: var(--okr-section-tight);
+  }
+}
+
+@media (max-width: 420px) {
+  .okr__hero-title,
+  .okr__portfolio-page .okr__hero-title {
+    font-size: clamp(35px, 10.7vw, 42px);
+  }
+
+  .okr__h2 {
+    font-size: clamp(29px, 9.2vw, 36px);
+  }
+
+  .okr__hero-sub,
+  .okr__page-hero-lead,
+  .okr__page-hero p {
+    font-size: 15px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .okr__field-2col {
+    gap: 0;
+  }
 }

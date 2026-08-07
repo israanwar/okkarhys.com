@@ -164,10 +164,26 @@ img, svg, video { display: block; max-width: 100%; }
 }
 
 @media (max-width: 640px) {
+  .okr__glass-input,
+  .okr__glass-select {
+    height: 42px;
+    border-radius: 10px;
+  }
+
+  .okr__glass-input {
+    padding-left: 42px;
+  }
+
+  .okr__search-icon {
+    left: 14px;
+  }
+
   .okr__control-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     width: 100%;
+    gap: 10px;
+    margin-bottom: 18px;
   }
 
   .okr__control-search {
@@ -181,6 +197,8 @@ img, svg, video { display: block; max-width: 100%; }
     grid-template-columns: minmax(0, 1fr);
     justify-content: stretch;
     justify-items: stretch;
+    gap: 7px;
+    font-size: 12px;
   }
 
   .okr__control-select-wrap {
@@ -234,6 +252,31 @@ img, svg, video { display: block; max-width: 100%; }
   scrollbar-width: thin;
   -ms-overflow-style: none;
   -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .okr__category-rail-wrap::before,
+  .okr__category-rail-wrap::after {
+    bottom: 8px;
+    width: 22px;
+  }
+
+  .okr__category-rail {
+    gap: 7px;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+
+  .okr__category-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .okr__rail-chip {
+    min-height: 34px;
+    padding: 7px 12px;
+    font-size: 12.5px;
+    letter-spacing: 0;
+  }
 }
 
 .okr__category-rail::-webkit-scrollbar {
