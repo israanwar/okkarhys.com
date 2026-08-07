@@ -6,6 +6,7 @@ import { SiteChrome } from "../../components/layout/SiteChrome";
 import { useLiveSettings, useLiveHomepage, useLivePosts } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizeHomepage, localizeSiteDescription } from "../../lib/pageI18n";
+import { resolveCover } from "../../lib/blogPlaceholder";
 
 const DEFAULT_HERO_SUBTITLES = new Set([
   "web, seo, ai workflow & content strategy for personal brands and businesses.",
@@ -87,7 +88,7 @@ export function LandingPage() {
         )}
 
         {processItems.length > 0 && (
-          <section className="okr__section" id="about">
+          <section className="okr__section okr__process-section" id="about">
             <div className="okr__wrap">
               <span className="okr__eyebrow">{t("section_process")}</span>
               <h2 className="okr__h2">{process.title}</h2>
@@ -141,21 +142,21 @@ export function LandingPage() {
         )}
 
         {posts.length > 0 && (
-          <section className="okr__section" id="journal">
+          <section className="okr__section okr__journal-section" id="journal">
             <div className="okr__wrap">
               <div className="okr__section-topbar">
                 <div className="okr__section-head">
                   <span className="okr__eyebrow">{t("section_journal")}</span>
                   <h2 className="okr__h2">{t("section_journal_title")}</h2>
                 </div>
-                <Link className="okr__link" to="/blog">
+                <Link className="okr__link okr__link--glass" to="/blog">
                   {t("section_journal_all")} <ArrowRight size={15} />
                 </Link>
               </div>
               <div className="okr__journal">
                 {posts.map((p) => (
                   <Link key={p.id} className="okr__post" to={`/blog/${p.slug}`}>
-                    {p.cover_url && <div className="okr__post-img" style={{ backgroundImage: `url("${p.cover_url}")` }} />}
+                    <div className="okr__post-img" style={{ backgroundImage: `url("${resolveCover(p)}")` }} />
                     <div className="okr__post-body">
                       <div className="okr__post-tags">{(p.tags ?? []).join(" · ").toUpperCase()}</div>
                       <h3 className="okr__post-title">{p.title}</h3>

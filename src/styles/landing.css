@@ -763,6 +763,27 @@
   display: inline-flex; align-items: center; gap: 6px;
 }
 .okr__link:hover { color: #ffe6f6; }
+.okr__link--glass {
+  position: relative;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid var(--okr-touch-glass-border);
+  border-radius: 999px;
+  background: var(--okr-touch-glass);
+  color: var(--okr-text);
+  box-shadow: var(--okr-touch-glass-shadow);
+  overflow: hidden;
+  isolation: isolate;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+.okr__link--glass:hover,
+.okr__link--glass:focus-visible,
+.okr__link--glass:active {
+  border-color: rgba(255, 255, 255, 0.22);
+  color: var(--okr-text);
+  outline: none;
+}
 
 /* Services grid */
 .okr__cards {
@@ -2159,13 +2180,40 @@
     line-height: 1.55;
   }
 
+  .okr__process-section {
+    padding-top: 34px;
+    padding-bottom: 38px;
+  }
+
+  .okr__process-section .okr__h2 {
+    max-width: 280px;
+    margin-top: 12px;
+    font-size: clamp(24px, 7.6vw, 30px);
+    line-height: 1.08;
+  }
+
   .okr__process {
-    gap: 12px;
-    margin-top: 22px;
+    display: flex;
+    grid-template-columns: none;
+    gap: 10px;
+    margin: 16px calc(var(--okr-gutter) * -1) 0;
+    padding: 0 var(--okr-gutter) 10px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .okr__process::-webkit-scrollbar {
+    display: none;
   }
 
   .okr__process-card {
-    padding: 18px;
+    flex: 0 0 clamp(132px, 38vw, 156px);
+    min-height: 104px;
+    padding: 13px;
+    scroll-snap-align: start;
   }
 
   .okr__step-n {
@@ -2174,27 +2222,41 @@
 
   .okr__step-title {
     margin-top: 8px;
-    font-size: 18px;
+    font-size: 15px;
+    line-height: 1.18;
   }
 
   .okr__step-body {
-    font-size: 13.5px;
+    font-size: 12px;
+    line-height: 1.35;
   }
 
   .okr__process-detail {
-    margin-top: 14px;
-    padding: 18px;
-    gap: 18px;
+    display: block;
+    margin-top: 8px;
+    padding: 14px;
   }
 
   .okr__process-detail h3 {
-    font-size: 24px;
+    margin: 8px 0;
+    font-size: 20px;
   }
 
   .okr__process-detail p,
   .okr__process-detail-points li {
-    font-size: 13.5px;
-    line-height: 1.6;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+
+  .okr__process-detail p {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  .okr__process-detail-points {
+    display: none;
   }
 
   .okr__post-body,
@@ -2219,8 +2281,71 @@
     line-height: 1.55;
   }
 
+  .okr__journal-section .okr__section-topbar {
+    align-items: flex-end;
+    gap: 12px;
+    text-align: right;
+  }
+
+  .okr__journal-section .okr__section-head {
+    max-width: 280px;
+    margin-left: auto;
+  }
+
+  .okr__journal-section .okr__eyebrow {
+    text-align: right;
+  }
+
+  .okr__journal-section .okr__h2 {
+    font-size: clamp(26px, 8.2vw, 34px);
+  }
+
+  .okr__journal-section .okr__link--glass {
+    align-self: flex-end;
+    min-height: 38px;
+    padding: 0 15px;
+    font-size: 12.5px;
+  }
+
+  .okr__journal {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .okr__post-img {
+    aspect-ratio: 16 / 9;
+  }
+
+  .okr__journal .okr__post-body {
+    padding: 10px;
+  }
+
+  .okr__journal .okr__post-tags {
+    margin-bottom: 6px;
+    font-size: 8.5px;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .okr__journal .okr__post-title {
+    margin-bottom: 0;
+    font-size: 12.5px;
+    line-height: 1.25;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  .okr__journal .okr__post-excerpt {
+    display: none;
+  }
+
   .okr__blog-grid {
-    gap: 14px !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
   }
 
   .okr__blog-card {
@@ -2230,53 +2355,101 @@
 
   .okr__blog-card-cover {
     aspect-ratio: 16 / 9 !important;
-    max-height: 196px;
+    max-height: 112px;
   }
 
   .okr__blog-card-body {
-    gap: 7px !important;
-    padding: 15px !important;
+    gap: 6px !important;
+    padding: 10px !important;
   }
 
   .okr__blog-card-category {
-    font-size: 9.5px !important;
-    padding: 3px 8px !important;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 8.5px !important;
+    padding: 3px 7px !important;
   }
 
   .okr__blog-card-title {
-    font-size: 15.5px !important;
-    line-height: 1.36 !important;
+    font-size: 12.5px !important;
+    line-height: 1.28 !important;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
   }
 
   .okr__blog-card-excerpt {
-    font-size: 13px !important;
-    line-height: 1.48 !important;
-    -webkit-line-clamp: 2 !important;
+    display: none !important;
   }
 
   .okr__blog-card-meta {
-    gap: 7px !important;
-    padding-top: 8px !important;
-    font-size: 10.5px !important;
-    line-height: 1.4 !important;
+    display: none !important;
+  }
+
+  .okr__products {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px;
+  }
+
+  .okr__product {
+    min-width: 0;
   }
 
   .okr__product-img {
-    aspect-ratio: 16 / 10;
-    max-height: 220px;
+    aspect-ratio: 4 / 3;
+    max-height: none;
   }
 
   .okr__product-body {
-    padding: 16px;
+    gap: 4px;
+    padding: 10px;
+  }
+
+  .okr__product-cat {
+    font-size: 8.5px;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .okr__product-name {
-    font-size: 15px;
-    line-height: 1.35;
+    margin: 2px 0;
+    font-size: 12.5px;
+    line-height: 1.28;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .okr__product-proof {
+    min-height: 0;
+    gap: 3px;
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
+  .okr__product-stars {
+    gap: 0;
+  }
+
+  .okr__product-stars svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .okr__product-sold,
+  .okr__product-proof-dot {
+    display: none;
   }
 
   .okr__product-price {
-    font-size: 16px;
+    margin-top: 4px;
+    font-size: 13px;
   }
 
   .okr__results-bar {
@@ -2387,6 +2560,14 @@
   .okr__page-hero-lead,
   .okr__page-hero p {
     font-size: 15px !important;
+  }
+}
+
+@media (min-width: 540px) and (max-width: 720px) {
+  .okr__products,
+  .okr__blog-grid,
+  .okr__journal {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
 }
 

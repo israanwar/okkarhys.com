@@ -260,7 +260,7 @@ export function BlogListPage({ initialCategorySlug = null }) {
       </SiteChrome>
 
       {/* Layout CSS via style tag — sidebar hidden di mobile, side-by-side di desktop.
-          Grid card: 3 kolom di desktop, 2 di tablet, 1 di mobile. */}
+          Grid card: 3 kolom di desktop, 2 di tablet, 2 compact kolom di mobile. */}
       <style>{`
         .okr__blog-layout {
           display: grid;
@@ -281,7 +281,7 @@ export function BlogListPage({ initialCategorySlug = null }) {
           .okr__blog-sidebar { display: none; }
         }
         @media (max-width: 640px) {
-          .okr__blog-grid { grid-template-columns: 1fr; }
+          .okr__blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
         }
       `}</style>
     </>
