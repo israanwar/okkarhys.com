@@ -1,0 +1,29 @@
+{
+  "name": "okkarhys-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "prebuild": "node scripts/generate-sitemap.mjs",
+    "build": "vite build",
+    "postbuild": "node scripts/prerender.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "sitemap": "node scripts/generate-sitemap.mjs",
+    "prerender": "node scripts/prerender.mjs"
+  },
+  "dependencies": {
+    "@fontsource/plus-jakarta-sans": "^5.2.8",
+    "@supabase/supabase-js": "^2.112.1",
+    "@tiptap/pm": "^3.29.2",
+    "@tiptap/react": "^3.29.2",
+    "@tiptap/starter-kit": "^3.29.2",
+    "@vitejs/plugin-react": "^5.0.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.18.2",
+    "typescript": "^5.7.2",
+    "vite": "^8.0.16"
+  }
+}

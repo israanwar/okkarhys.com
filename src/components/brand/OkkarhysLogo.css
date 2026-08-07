@@ -1,0 +1,255 @@
+/* Okkarhys wordmark
+   Font: Archivo Black (Google Fonts) — dipilih karena paling dekat dengan
+   Styrene A / vibe wordmark Anthropic (geometric, ultra-bold, wide-ish).
+   Semua letter dibungkus <span> supaya bisa stagger reveal per huruf.
+*/
+
+.okr-logo {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  color: currentColor;
+}
+
+.okr-logo__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.okr-logo__word {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  font-family: "Archivo Black", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: currentColor;
+  /* Reserve space for the overlay SVG (fragments + slash) */
+  padding: 2px 0;
+}
+
+.okr-logo__letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translate(var(--okr-tx, 0), var(--okr-ty, 0)) rotate(var(--okr-rot, 0deg));
+  transform-origin: center;
+  animation: okrLogoLetterResolve 700ms cubic-bezier(.16, 1, .3, 1) calc(60ms * var(--okr-i, 0) + 80ms) both;
+}
+
+.okr-logo__glyph {
+  display: inline-block;
+  color: currentColor;
+}
+
+/* Micro wiggle per letter — bikin kesan "hand-set type resolving into place",
+   subtle enough to feel intentional bukan chaotic. */
+.okr-logo__letter:nth-child(1) { --okr-tx: -1.4px; --okr-ty:  1px;  --okr-rot: -1.2deg; }
+.okr-logo__letter:nth-child(2) { --okr-tx:  0.8px; --okr-ty: -1.2px; --okr-rot:  1deg; }
+.okr-logo__letter:nth-child(3) { --okr-tx: -1.1px; --okr-ty:  0.9px; --okr-rot: -0.9deg; }
+.okr-logo__letter:nth-child(4) { --okr-tx:  1px;   --okr-ty: -1px;   --okr-rot:  1deg; }
+.okr-logo__letter:nth-child(5) { --okr-tx: -0.8px; --okr-ty:  1.1px; --okr-rot: -0.8deg; }
+.okr-logo__letter:nth-child(6) { --okr-tx:  1.1px; --okr-ty:  0.9px; --okr-rot:  0.7deg; }
+.okr-logo__letter:nth-child(7) { --okr-tx: -0.9px; --okr-ty: -0.9px; --okr-rot: -0.7deg; }
+.okr-logo__letter:nth-child(8) { --okr-tx:  0.9px; --okr-ty:  0.9px; --okr-rot:  0.8deg; }
+
+/* Overlay yang menampung fragments + slash. Absolute di atas letters
+   supaya tidak menggeser layout. Ukurannya menyesuaikan lebar word. */
+.okr-logo__overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.okr-logo__entropy {
+  pointer-events: none;
+}
+
+.okr-logo__current {
+  pointer-events: none;
+}
+
+.okr-logo__current-line {
+  opacity: 0;
+  stroke-dasharray: 7 93;
+  stroke-dashoffset: 107;
+  vector-effect: non-scaling-stroke;
+}
+
+.okr-logo__current-line--low {
+  stroke-dasharray: 4 96;
+  stroke-dashoffset: 104;
+}
+
+.okr-logo:hover .okr-logo__current-line,
+.okr-logo:focus-visible .okr-logo__current-line,
+a:is(:hover, :focus, :focus-visible, :active) .okr-logo .okr-logo__current-line,
+button:is(:hover, :focus, :focus-visible, :active) .okr-logo .okr-logo__current-line {
+  animation: okrLogoElectricFlow 1180ms linear infinite;
+}
+
+.okr-logo:hover .okr-logo__current-line--low,
+.okr-logo:focus-visible .okr-logo__current-line--low,
+a:is(:hover, :focus, :focus-visible, :active) .okr-logo .okr-logo__current-line--low,
+button:is(:hover, :focus, :focus-visible, :active) .okr-logo .okr-logo__current-line--low {
+  animation-delay: 140ms;
+}
+
+.okr-logo__fragment {
+  --okr-p-delay: 0ms;
+  --okr-fx: 0px;
+  --okr-fy: 0px;
+  --okr-hx: 0px;
+  --okr-hy: 0px;
+  --okr-hx-end: 0px;
+  --okr-hy-end: 0px;
+  fill: currentColor;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: opacity, transform;
+}
+
+.okr-logo__fragment--one      { --okr-fx: -5px; --okr-fy: -3px; --okr-hx: -3px; --okr-hy: -2px; --okr-hx-end: -5px; --okr-hy-end: -3px; --okr-p-delay: 0ms; }
+.okr-logo__fragment--two      { --okr-fx:  4px; --okr-fy: -5px; --okr-hx:  3px; --okr-hy: -3px; --okr-hx-end:  5px; --okr-hy-end: -5px; --okr-p-delay: 35ms; }
+.okr-logo__fragment--three    { --okr-fx:  5px; --okr-fy:  4px; --okr-hx:  4px; --okr-hy:  2px; --okr-hx-end:  6px; --okr-hy-end:  3px; --okr-p-delay: 70ms; }
+.okr-logo__fragment--four     { --okr-fx: -3px; --okr-fy:  5px; --okr-hx: -2px; --okr-hy:  3px; --okr-hx-end: -3px; --okr-hy-end:  5px; --okr-p-delay: 105ms; }
+.okr-logo__fragment--five     { --okr-fx: -4px; --okr-fy:  4px; --okr-hx: -5px; --okr-hy:  3px; --okr-hx-end: -2px; --okr-hy-end:  6px; --okr-p-delay: 140ms; }
+.okr-logo__fragment--six      { --okr-fx:  2px; --okr-fy: -4px; --okr-hx:  1px; --okr-hy: -5px; --okr-hx-end:  4px; --okr-hy-end: -2px; --okr-p-delay: 175ms; }
+.okr-logo__fragment--seven    { --okr-fx:  5px; --okr-fy:  2px; --okr-hx:  6px; --okr-hy:  4px; --okr-hx-end:  2px; --okr-hy-end:  5px; --okr-p-delay: 210ms; }
+.okr-logo__fragment--eight    { --okr-fx:  3px; --okr-fy: -4px; --okr-hx:  5px; --okr-hy: -4px; --okr-hx-end:  1px; --okr-hy-end: -7px; --okr-p-delay: 245ms; }
+.okr-logo__fragment--nine     { --okr-fx: -2px; --okr-fy: -5px; --okr-hx: -4px; --okr-hy: -3px; --okr-hx-end: -1px; --okr-hy-end: -7px; --okr-p-delay: 280ms; }
+.okr-logo__fragment--ten      { --okr-fx: -1px; --okr-fy:  5px; --okr-hx:  2px; --okr-hy:  5px; --okr-hx-end: -3px; --okr-hy-end:  3px; --okr-p-delay: 315ms; }
+.okr-logo__fragment--eleven   { --okr-fx:  3px; --okr-fy: -3px; --okr-hx:  5px; --okr-hy: -2px; --okr-hx-end:  2px; --okr-hy-end: -6px; --okr-p-delay: 350ms; }
+.okr-logo__fragment--twelve   { --okr-fx:  4px; --okr-fy:  3px; --okr-hx:  6px; --okr-hy:  1px; --okr-hx-end:  3px; --okr-hy-end:  5px; --okr-p-delay: 385ms; }
+.okr-logo__fragment--thirteen { --okr-fx:  2px; --okr-fy: -2px; --okr-hx:  4px; --okr-hy: -3px; --okr-hx-end:  6px; --okr-hy-end: -1px; --okr-p-delay: 420ms; }
+.okr-logo__fragment--fourteen { --okr-fx:  1px; --okr-fy:  1px; --okr-hx: -2px; --okr-hy: -2px; --okr-hx-end:  2px; --okr-hy-end:  2px; --okr-p-delay: 455ms; }
+
+.okr-logo__slash {
+  opacity: 0;
+  stroke-dasharray: 26;
+  stroke-dashoffset: 26;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation:
+    okrLogoSlashDecision 760ms cubic-bezier(.16, 1, .3, 1) 780ms 1 both,
+    okrLogoSlashIdle 5200ms cubic-bezier(.45, 0, .2, 1) 1900ms infinite both;
+}
+
+.okr-logo:hover .okr-logo__slash,
+.okr-logo:focus-visible .okr-logo__slash {
+  animation:
+    okrLogoSlashSweep 680ms cubic-bezier(.16, 1, .3, 1) 1 both,
+    okrLogoSlashIdle 2600ms cubic-bezier(.45, 0, .2, 1) 760ms infinite both;
+}
+
+.okr-logo:hover .okr-logo__fragment,
+.okr-logo:focus-visible .okr-logo__fragment,
+a:is(:hover, :focus, :focus-visible, :active) .okr-logo .okr-logo__fragment,
+button:is(:hover, :focus, :focus-visible, :active) .okr-logo .okr-logo__fragment {
+  animation: okrLogoPixelScatter 900ms cubic-bezier(.16, 1, .3, 1) var(--okr-p-delay) both;
+}
+
+@keyframes okrLogoLetterResolve {
+  0% {
+    opacity: 0;
+    transform: translate(var(--okr-tx, 0), var(--okr-ty, 0)) rotate(var(--okr-rot, 0deg));
+    filter: blur(1px);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+@keyframes okrLogoPixelScatter {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(.34);
+  }
+  22% {
+    opacity: .68;
+    transform: translate(var(--okr-hx), var(--okr-hy)) scale(.88);
+  }
+  56% {
+    opacity: .48;
+    transform: translate(var(--okr-fx), var(--okr-fy)) scale(.72);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--okr-hx-end), var(--okr-hy-end)) scale(.45);
+  }
+}
+
+@keyframes okrLogoElectricFlow {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 108;
+  }
+  10% {
+    opacity: .86;
+  }
+  72% {
+    opacity: .62;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: -8;
+  }
+}
+
+@keyframes okrLogoSlashDecision {
+  0%   { opacity: 0; stroke-dashoffset: 26; transform: translate(-1px, 1px); }
+  28%  { opacity: 1; }
+  100% { opacity: 1; stroke-dashoffset: 0; transform: translate(0, 0); }
+}
+
+@keyframes okrLogoSlashSweep {
+  0%   { opacity: 1; stroke-dashoffset: 26; }
+  72%  { opacity: 1; stroke-dashoffset: 0; }
+  100% { opacity: 1; stroke-dashoffset: 0; }
+}
+
+@keyframes okrLogoSlashIdle {
+  0%, 58% { opacity: 1; stroke-dashoffset: 0;  transform: translate(0, 0); }
+  66%     { opacity: 1; stroke-dashoffset: 26; transform: translate(-.7px, .7px); }
+  82%, 100% { opacity: 1; stroke-dashoffset: 0; transform: translate(0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .okr-logo__letter,
+  .okr-logo__glyph,
+  .okr-logo__current-line,
+  .okr-logo__fragment,
+  .okr-logo__slash {
+    opacity: 1;
+    animation: none;
+    transform: none;
+    stroke-dashoffset: 0;
+    filter: none;
+  }
+  .okr-logo__glyph {
+    color: currentColor;
+    background: none;
+  }
+  .okr-logo__current-line,
+  .okr-logo__fragment {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" preserveAspectRatio="xMidYMid meet" role="img" aria-label="okkarhys symbol">
+  <path d="M8.8 32.8A17.6 17.6 0 0 1 30 7.5" fill="none" stroke="#d8d0dd" stroke-width="6.2" stroke-linecap="butt"/>
+  <path d="M38.4 13.9A17.6 17.6 0 0 1 18 40.5" fill="none" stroke="#5f4ad6" stroke-width="6.2" stroke-linecap="butt"/>
+  <path d="M10.2 39.4 21.4 25.4 38.2 9.6 28.4 27.8Z" fill="#d8d0dd"/>
+  <path d="M24.5 23.7 38.2 9.6 29.2 26.4Z" fill="#17124a"/>
+  <path d="M21.4 25.4 10.2 39.4 22.7 27.4Z" fill="#6537d8"/>
+  <path d="M24 17.8a6.2 6.2 0 1 1 0 12.4 6.2 6.2 0 0 1 0-12.4Z" fill="#d8d0dd"/>
+  <path d="M24 20.9a3.1 3.1 0 1 1 0 6.2 3.1 3.1 0 0 1 0-6.2Z" fill="#6537d8"/>
+  <rect x="36" y="9.2" width="2.8" height="2.8" rx="0.45" fill="#6537d8"/>
+  <rect x="39.5" y="12.7" width="1.8" height="1.8" rx="0.3" fill="#d8d0dd"/>
+  <rect x="35.1" y="16.7" width="2.4" height="2.4" rx="0.4" fill="#5f4ad6"/>
+</svg>

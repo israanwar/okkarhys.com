@@ -1,0 +1,356 @@
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Upload, X, Check, Eye, Database } from "lucide-react";
+import { getSiteSettings, updateSiteSettings } from "../../services/settingsService";
+import { productsData, ordersData } from "../../lib/supabaseData";
+import { pushLocalContentToSupabase } from "../../lib/supabaseSeed";
+
+const SECTIONS = [
+  {
+    title: "Situs",
+    fields: [
+      { key: "site_name", label: "Site name" },
+      { key: "tagline", label: "Tagline" },
+      { key: "description", label: "Description (EN)", textarea: true },
+      { key: "description_id", label: "Description (ID)", textarea: true },
+    ],
+  },
+  {
+    title: "Kontak publik (footer & CTA)",
+    fields: [
+      { key: "whatsapp_number", label: "WhatsApp number" },
+      { key: "whatsapp_url", label: "WhatsApp URL" },
+      { key: "email", label: "Email" },
+      { key: "social_linkedin", label: "LinkedIn URL" },
+      { key: "social_github", label: "GitHub URL" },
+      { key: "social_instagram", label: "Instagram URL" },
+      { key: "social_twitter", label: "Twitter URL" },
+    ],
+  },
+  {
+    title: "Notifikasi admin (order baru)",
+    fields: [
+      { key: "admin_email", label: "Admin email" },
+      { key: "admin_whatsapp", label: "Admin WhatsApp number" },
+      { key: "admin_whatsapp_url", label: "Admin WhatsApp URL (wa.me/…)" },
+    ],
+  },
+  {
+    title: "SEO",
+    fields: [
+      { key: "seo_default_title", label: "Default title" },
+      { key: "seo_default_description", label: "Default description (EN)", textarea: true },
+      { key: "seo_default_description_id", label: "Default description (ID)", textarea: true },
+    ],
+  },
+  {
+    title: "Pembayaran QRIS",
+    fields: [
+      { key: "qris_merchant_name", label: "Merchant name" },
+      { key: "qris_nmid", label: "NMID" },
+    ],
+    qrisUploader: true,
+  },
+];
+
+export function AdminSettingsPage() {
+  const nav = useNavigate();
+  const [data, setData] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [syncBusy, setSyncBusy] = useState(false);
+  const [syncStatus, setSyncStatus] = useState("");
+  const [toast, setToast] = useState(null); // {type, text}
+  const fileRef = useRef(null);
+
+  useEffect(() => { getSiteSettings().then(setData); }, []);
+
+  // Auto-hide toast setelah 4 detik
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  if (!data) return <p>Loading…</p>;
+
+  function set(k, v) { setData((d) => ({ ...d, [k]: v })); }
+
+  async function onQrisFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setToast({ type: "error", text: "File harus berupa gambar (PNG/JPG/WEBP)." });
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 1024 * 1024) {
+      setToast({ type: "error", text: "Ukuran maksimal 1MB. Compress dulu di tinypng.com." });
+      e.target.value = "";
+      return;
+    }
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+      set("qris_image", dataUrl);
+      setToast({ type: "success", text: "Gambar QRIS di-preview. Klik Simpan supaya aktif." });
+    } catch (err) {
+      setToast({ type: "error", text: "Gagal membaca file: " + err.message });
+    } finally {
+      e.target.value = "";
+    }
+  }
+
+  function removeQris() {
+    set("qris_image", "");
+    setToast({ type: "info", text: "Gambar QRIS dihapus. Klik Simpan untuk konfirmasi." });
+  }
+
+  async function generateTestOrder(currentData) {
+    // Simpan dulu settings terbaru (biar QRIS current ter-apply di test order)
+    const patch = { ...currentData };
+    delete patch.updated_at;
+    updateSiteSettings(patch);
+    // Buat order dummy
+    const anyProduct = (await productsData.list({ status: "active" }))[0] ?? {
+      id: "test-item", name: "Test Item", price: 149000, image_url: "",
+    };
+    const testOrder = await ordersData.create({
+      customer_name: "Test Customer (admin preview)",
+      customer_email: "test@okkarhys.com",
+      customer_phone: currentData.admin_whatsapp ?? "",
+      shipping_address: "Preview order — bisa dihapus dari /admin/orders",
+      notes: "Order preview yang dibuat dari halaman Settings",
+      payment_method: "qris",
+      items: [{ product_id: anyProduct.id, name: anyProduct.name, price: anyProduct.price ?? 149000, qty: 1, subtotal: anyProduct.price ?? 149000 }],
+      total: anyProduct.price ?? 149000,
+    });
+    // Buka di tab baru
+    window.open(`/order/${testOrder.order_number}`, "_blank");
+  }
+
+  async function save() {
+    setBusy(true);
+    setToast(null);
+    try {
+      const patch = { ...data };
+      delete patch.updated_at;
+      await updateSiteSettings(patch);
+      // Redirect ke dashboard, toast dipassing via navigation state
+      nav("/admin", { state: { toast: { type: "success", text: "✓ Settings tersimpan." } } });
+    } catch (e) {
+      const msg = e?.name === "QuotaExceededError"
+        ? "Storage penuh. Gambar QRIS terlalu besar — coba compress di tinypng.com."
+        : (e?.message ?? "Gagal menyimpan.");
+      setToast({ type: "error", text: msg });
+      setBusy(false);
+    }
+  }
+
+  async function syncLocalContent() {
+    setSyncBusy(true);
+    setSyncStatus("starting");
+    setToast(null);
+    try {
+      const result = await pushLocalContentToSupabase({
+        onProgress: (status) => setSyncStatus(status),
+      });
+      setToast({
+        type: "success",
+        text: `Konten lokal terkirim ke Supabase: ${result.posts} posts, ${result.products} products, ${result.services} services, ${result.pages} pages.`,
+      });
+    } catch (e) {
+      setToast({ type: "error", text: e.message ?? "Gagal sync ke Supabase." });
+    } finally {
+      setSyncBusy(false);
+      setSyncStatus("");
+    }
+  }
+
+  return (
+    <>
+      {/* Toast — floating fixed di kanan atas biar selalu terlihat tanpa harus scroll */}
+      {toast && (
+        <div style={{
+          position: "fixed", top: 76, right: 24, zIndex: 100,
+          minWidth: 300, maxWidth: 420,
+          padding: "14px 18px", borderRadius: 10,
+          background: toast.type === "success" ? "rgba(34, 197, 94, 0.15)"
+            : toast.type === "error" ? "rgba(239, 68, 68, 0.15)"
+            : "rgba(224, 68, 168, 0.15)",
+          border: `1px solid ${
+            toast.type === "success" ? "rgba(34,197,94,0.5)"
+            : toast.type === "error" ? "rgba(239,68,68,0.5)"
+            : "rgba(138,107,255,0.5)"
+          }`,
+          color: toast.type === "success" ? "#86efac"
+            : toast.type === "error" ? "#fca5a5"
+            : "#ffd1ed",
+          backdropFilter: "blur(10px)",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
+          display: "flex", alignItems: "center", gap: 10,
+          fontSize: 14, fontWeight: 500,
+        }}>
+          {toast.type === "success" && <Check size={16} />}
+          <span>{toast.text}</span>
+        </div>
+      )}
+
+      <div className="wpx__page-header">
+        <h1>Settings</h1>
+        <div className="spacer" />
+        <button className="wpx__btn wpx__btn--secondary" onClick={syncLocalContent} disabled={syncBusy}>
+          <Database size={14} /> {syncBusy ? `Syncing ${syncStatus ? `· ${syncStatus}` : "…"}` : "Sync local → Supabase"}
+        </button>
+        <button className="wpx__btn wpx__btn--primary" onClick={save} disabled={busy}>
+          {busy ? "Menyimpan…" : "Simpan"}
+        </button>
+      </div>
+
+      {SECTIONS.map((section) => (
+        <div className="wpx__card" key={section.title}>
+          <div className="wpx__card-header">{section.title}</div>
+          <div className="wpx__card-body">
+            {section.qrisUploader && (
+              <div className="wpx__field">
+                <label className="wpx__label">Gambar QRIS</label>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 20, flexWrap: "wrap" }}>
+                  {/* Preview container — flex+centered, dijamin tidak overflow */}
+                  <div style={{
+                    width: 220, height: 220,
+                    background: "#ffffff", borderRadius: 12,
+                    border: "1px solid var(--border)",
+                    position: "relative",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                  }}>
+                    {data.qris_image ? (
+                      <>
+                        <img
+                          src={data.qris_image}
+                          alt="QRIS preview"
+                          style={{
+                            width: "100%", height: "100%",
+                            objectFit: "contain",
+                            display: "block",
+                            padding: 10,
+                            boxSizing: "border-box",
+                          }}
+                        />
+                        <button
+                          type="button" onClick={removeQris}
+                          title="Hapus"
+                          style={{
+                            position: "absolute", top: 6, right: 6,
+                            width: 26, height: 26, borderRadius: "50%",
+                            background: "#ef4444", color: "#fff", border: "2px solid #fff",
+                            cursor: "pointer", display: "grid", placeItems: "center",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+                          }}
+                        ><X size={14} /></button>
+                      </>
+                    ) : (
+                      <div style={{
+                        width: "100%", height: "100%",
+                        display: "grid", placeItems: "center",
+                        color: "#888", fontSize: 12, textAlign: "center",
+                      }}>
+                        Belum ada QRIS
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ flex: 1, minWidth: 220 }}>
+                    <button
+                      type="button"
+                      className="wpx__btn wpx__btn--secondary"
+                      onClick={() => fileRef.current?.click()}
+                    >
+                      <Upload size={14} /> {data.qris_image ? "Ganti gambar QRIS" : "Upload gambar QRIS"}
+                    </button>
+                    <input
+                      ref={fileRef} type="file" accept="image/*"
+                      onChange={onQrisFile} style={{ display: "none" }}
+                    />
+                    <p className="wpx__help" style={{ marginTop: 10 }}>
+                      Upload screenshot QRIS (PNG/JPG, maks 1MB). Setelah upload, klik <b>Simpan</b> di kanan atas atau bawah.
+                    </p>
+                    <p className="wpx__help" style={{ marginTop: 6 }}>
+                      💡 Tips: kalau file terlalu besar, compress dulu di <a href="https://tinypng.com" target="_blank" rel="noreferrer" style={{ color: "var(--primary)" }}>tinypng.com</a>
+                    </p>
+                    {data.qris_image && (
+                      <button
+                        type="button"
+                        className="wpx__btn wpx__btn--secondary"
+                        style={{ marginTop: 12 }}
+                        onClick={() => generateTestOrder(data)}
+                      >
+                        <Eye size={13} /> Test di halaman pembayaran customer
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Preview: how customer sees the payment page */}
+                {data.qris_image && (
+                  <div style={{ marginTop: 20 }}>
+                    <div style={{
+                      padding: "10px 14px", background: "rgba(34,197,94,0.08)",
+                      border: "1px solid rgba(34,197,94,0.3)", borderRadius: 8,
+                      fontSize: 13, color: "#86efac", marginBottom: 14,
+                      display: "flex", alignItems: "center", gap: 8,
+                    }}>
+                      <Check size={14} /> QRIS aktif — customer akan lihat gambar ini saat checkout
+                    </div>
+                    <div style={{
+                      background: "#0a0912", borderRadius: 12, padding: 24,
+                      border: "1px solid var(--border)",
+                    }}>
+                      <div style={{ fontSize: 11, color: "#ff9add", letterSpacing: 2, marginBottom: 4, textTransform: "uppercase" }}>Preview customer view</div>
+                      <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 24, alignItems: "center" }}>
+                        <div style={{
+                          background: "#fff", padding: 12, borderRadius: 10,
+                          width: 180, height: 180,
+                        }}>
+                          <img src={data.qris_image} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+                        </div>
+                        <div style={{ color: "#eef0f6", fontSize: 13 }}>
+                          <div style={{ color: "#8b8f9d", fontSize: 11, marginBottom: 4 }}>Merchant</div>
+                          <div style={{ fontWeight: 700, marginBottom: 10 }}>{data.qris_merchant_name || "—"}</div>
+                          <div style={{ color: "#8b8f9d", fontSize: 11, marginBottom: 4 }}>NMID</div>
+                          <div style={{ fontFamily: "monospace", marginBottom: 10 }}>{data.qris_nmid || "—"}</div>
+                          <div style={{ color: "#8b8f9d", fontSize: 11, marginBottom: 4 }}>Total</div>
+                          <div style={{ color: "#ff9add", fontSize: 22, fontWeight: 700 }}>Rp 149.000</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            {section.fields.map((f) => (
+              <div key={f.key} className="wpx__field">
+                <label className="wpx__label">{f.label}</label>
+                {f.textarea ? (
+                  <textarea className="wpx__textarea" value={data[f.key] ?? ""} onChange={(e) => set(f.key, e.target.value)} />
+                ) : (
+                  <input className="wpx__input" value={data[f.key] ?? ""} onChange={(e) => set(f.key, e.target.value)} />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div style={{ textAlign: "right", marginTop: 20, paddingBottom: 20 }}>
+        <button className="wpx__btn wpx__btn--primary" onClick={save} disabled={busy}
+          style={{ padding: "12px 24px", fontSize: 15 }}>
+          {busy ? "Menyimpan…" : "Simpan semua"}
+        </button>
+      </div>
+    </>
+  );
+}
