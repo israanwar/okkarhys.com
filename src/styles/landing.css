@@ -3286,6 +3286,86 @@
 }
 
 /* =========================================================================
+   Mobile perf pass — the aurora canvas + a page full of backdrop-filter is
+   the #1 scroll-jank culprit on mobile GPUs. We compensate by:
+
+   1. Killing every backdrop-filter under `.okr` at mobile width, and bumping
+      the underlying glass tokens toward a slightly more opaque solid — the
+      cards still read as "glass" over the darker aurora but no per-pixel
+      blur is running.
+   2. Deferring the render of below-fold sections via `content-visibility:
+      auto` with a reserved intrinsic size (prevents scroll-jump on skip).
+   3. Dropping the `will-change` hint on reveal targets — with 20+ nodes it
+      hogs GPU memory more than it saves.
+   4. `touch-action: manipulation` on interactive controls — kills the
+      legacy 300ms tap delay + prevents accidental double-tap zoom.
+
+   Together with SiteChrome's mobile skip of the aurora canvas, this cuts
+   the per-frame paint cost dramatically on phones.
+   ------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .okr,
+  .okr *,
+  .okr *::before,
+  .okr *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  /* Repaint the glass tokens so cards keep enough contrast without blur. */
+  .okr {
+    --okr-glass-bg:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.026)),
+      rgba(10, 3, 8, 0.78);
+    --okr-glass-bg-hover:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.038)),
+      rgba(10, 3, 8, 0.82);
+    --okr-touch-glass:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)),
+      rgba(22, 6, 17, 0.7);
+    --okr-header-bg: rgba(6, 0, 4, 0.88);
+  }
+
+  /* Content-visibility on the big below-fold sections. Reserve a plausible
+     intrinsic size so the scrollbar and progress bar stay stable — otherwise
+     skipped sections collapse to 0 and cause layout jumps as they scroll in. */
+  .okr__process-section,
+  .okr__journal-section,
+  .okr .okr__section:not(:first-of-type) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 720px;
+  }
+
+  /* Reveal transitions still work fine without the will-change layer hint. */
+  .okr__reveal { will-change: auto; }
+
+  /* Tap responsiveness — no 300ms delay, no accidental zoom on double-tap. */
+  .okr a,
+  .okr button,
+  .okr .okr__btn,
+  .okr .okr__navlink,
+  .okr .okr__mobile-navlink,
+  .okr .okr__card,
+  .okr .okr__post,
+  .okr .okr__case,
+  .okr .okr__process-card,
+  .okr .okr__link {
+    touch-action: manipulation;
+  }
+
+  /* Cheaper spotlight — kill mix-blend-mode (very expensive on mobile GPUs).
+     Simple additive alpha still reads as a glow over the dark card bg. */
+  .okr__spotlight::after {
+    mix-blend-mode: normal;
+    background: radial-gradient(
+      200px circle at var(--okr-mx) var(--okr-my),
+      rgba(255, 154, 221, 0.18),
+      rgba(255, 103, 200, 0.06) 40%,
+      transparent 68%
+    );
+  }
+}
+
+/* =========================================================================
    Touch-device content protection.
 
    Scoped to `.okr` (public site) — admin (.wpx) stays fully selectable so

@@ -150,6 +150,12 @@ function buildRouteHtml(route) {
   const schemas = [
     { name: "organization", data: structuredData.buildOrganization(settings) },
     { name: "website", data: structuredData.buildWebsite(settings) },
+    { name: "person", data: structuredData.buildPerson(settings) },
+    { name: "service", data: structuredData.buildProfessionalService(settings) },
+    {
+      name: "webpage",
+      data: structuredData.buildWebPage(route.path, pageTitle, route.description, settings),
+    },
     {
       name: "breadcrumb",
       data: structuredData.buildBreadcrumb(route.path, route.currentTitle, settings),

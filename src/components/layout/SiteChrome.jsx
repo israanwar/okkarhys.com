@@ -222,8 +222,26 @@ export function SiteFooter({ settings }) {
 
 function AuroraBackdrop() {
   const canvasRef = useRef(null);
+  // Skip the heavy canvas draw loop on mobile / touch-primary devices. The
+  // CSS pseudo-element aurora (.okr__aurora::before/::after) already provides
+  // a rich static+animated backdrop; the extra curtains, filaments, and folds
+  // aren't worth the scroll jank on mobile GPUs. Kept desktop untouched.
+  const [renderCanvas, setRenderCanvas] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const mq = window.matchMedia("(max-width: 900px), (hover: none) and (pointer: coarse)");
+    return !mq.matches;
+  });
 
   useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const mq = window.matchMedia("(max-width: 900px), (hover: none) and (pointer: coarse)");
+    const onChange = (event) => setRenderCanvas(!event.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
+    if (!renderCanvas) return undefined;
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d", { alpha: false });
     if (!canvas || !ctx) return undefined;
@@ -576,11 +594,11 @@ function AuroraBackdrop() {
       document.removeEventListener("visibilitychange", onVisibility);
       motionQuery.removeEventListener("change", onMotionChange);
     };
-  }, []);
+  }, [renderCanvas]);
 
   return (
     <div className="okr__aurora" aria-hidden="true">
-      <canvas className="okr__aurora-canvas" ref={canvasRef} />
+      {renderCanvas && <canvas className="okr__aurora-canvas" ref={canvasRef} />}
       <span className="okr__aurora-grain" />
     </div>
   );

@@ -10,6 +10,9 @@ import {
   buildBreadcrumb,
   buildArticle,
   buildFaqPage,
+  buildWebPage,
+  buildPerson,
+  buildProfessionalService,
 } from "../../lib/structuredData";
 
 function upsertMeta(selector, attributes) {
@@ -123,13 +126,23 @@ export function Seo({ title, description, path, noindex = false, article = null 
       upsertJsonLd("breadcrumb", null);
       upsertJsonLd("article", null);
       upsertJsonLd("faq", null);
+      upsertJsonLd("webpage", null);
+      upsertJsonLd("person", null);
+      upsertJsonLd("service", null);
       return;
     }
 
-    // Global: Organization + WebSite (di-inject di semua halaman
-    // supaya AI systems tahu ini brand yang sama di setiap page).
+    // Global entities — di-inject di semua halaman supaya AI systems dan
+    // Google Knowledge Graph tahu ini brand + person + service yang sama
+    // di setiap page. WebPage adds per-page Speakable spec for AEO.
     upsertJsonLd("organization", buildOrganization(settings));
     upsertJsonLd("website", buildWebsite(settings));
+    upsertJsonLd("person", buildPerson(settings));
+    upsertJsonLd("service", buildProfessionalService(settings));
+    upsertJsonLd(
+      "webpage",
+      buildWebPage(path || location.pathname, pageTitle, metaDescription, settings),
+    );
 
     // Per-page: BreadcrumbList (auto dari pathname).
     // Untuk blog detail, currentTitle = post title supaya breadcrumb

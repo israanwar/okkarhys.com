@@ -202,7 +202,114 @@ export function buildArticle(post, category, settings) {
     article.wordCount = wordCount;
   }
 
+  // Speakable — bagian mana dari artikel yang layak dibacakan voice
+  // assistant. Kita target title + excerpt paragraph + heading level 2.
+  article.speakable = {
+    "@type": "SpeakableSpecification",
+    cssSelector: [".okr__post-title", ".okr__post-excerpt", ".okr__h2"],
+  };
+
   return article;
+}
+
+// ==================================================================
+// WebPage + Speakable — inject per-page. Speakable memberitahu voice
+// assistants (Google Assistant, Siri lewat schema pickup, dsb) bagian
+// halaman mana yang layak dibacakan. Kita target elemen dengan
+// class `.okr__h2` dan `.okr__hero-title` — heading + subtitle utama.
+//
+// AEO angle: halaman dengan Speakable schema lebih mudah muncul di
+// hasil "read aloud" / voice answer.
+// ==================================================================
+export function buildWebPage(pathname, pageTitle, description, settings) {
+  const url = siteUrl(settings);
+  const canonical = pathname === "/" ? `${url}/` : `${url}${pathname}`;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${canonical}#webpage`,
+    url: canonical,
+    name: pageTitle,
+    description,
+    inLanguage: "id-ID",
+    isPartOf: { "@id": `${url}/#website` },
+    about: { "@id": `${url}/#organization` },
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      url: `${url}/assets/brand/favicon.svg`,
+    },
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: [".okr__hero-title", ".okr__hero-sub", ".okr__h2"],
+    },
+  };
+}
+
+// ==================================================================
+// Person — founder / owner schema. Dipakai di /about + di publisher
+// context artikel. Bikin author trust naik di AI answer engine — GPT,
+// Claude, Perplexity semua ambil sinyal "who wrote this" dari Person.
+// ==================================================================
+export function buildPerson(settings) {
+  const url = siteUrl(settings);
+  const founderName = settings?.founder_name || "Okka Rhys";
+
+  const sameAs = [
+    settings?.social_linkedin,
+    settings?.social_github,
+    settings?.social_instagram,
+    settings?.social_twitter,
+  ].filter(Boolean);
+
+  const person = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": `${url}/#founder`,
+    name: founderName,
+    url: `${url}/about`,
+    jobTitle: "Digital Consultant",
+    worksFor: { "@id": `${url}/#organization` },
+    image: `${url}/assets/brand/favicon.svg`,
+  };
+
+  if (sameAs.length > 0) person.sameAs = sameAs;
+
+  return person;
+}
+
+// ==================================================================
+// ProfessionalService — spesifikasi bisnis lo. Lebih spesifik dari
+// Organization saja; Google & AI engine pakai ini buat memahami
+// service catalog + service area.
+// ==================================================================
+export function buildProfessionalService(settings) {
+  const url = siteUrl(settings);
+  const name = settings?.site_name || SITE.name;
+  const description = settings?.description || SITE.description;
+
+  const service = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "@id": `${url}/#service`,
+    name,
+    url,
+    description,
+    provider: { "@id": `${url}/#organization` },
+    serviceType: [
+      "Web Development",
+      "Search Engine Optimization",
+      "AI Workflow Consulting",
+      "Content Strategy",
+    ],
+    areaServed: {
+      "@type": "Country",
+      name: "Indonesia",
+    },
+  };
+
+  if (settings?.email) service.email = settings.email;
+  return service;
 }
 
 // ==================================================================
