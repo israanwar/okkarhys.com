@@ -919,18 +919,25 @@
   font: inherit;
   text-align: left;
   width: 100%;
-  transition: border-color .2s ease, transform .2s ease, background .2s ease, box-shadow .2s ease;
+  /* easeOutExpo — the "premium" curve. Softer arrival, no bounce, no
+     abrupt stop. 380ms is long enough to feel intentional, short enough
+     to still feel snappy. */
+  transition:
+    border-color 380ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 480ms cubic-bezier(0.16, 1, 0.3, 1),
+    background 380ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 480ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .okr__process-card:hover,
 .okr__process-card:focus-visible,
 .okr__process-card.is-active {
-  border-color: rgba(255,154,221,0.28);
-  transform: translateY(-2px);
+  border-color: rgba(255,154,221,0.32);
+  transform: translate3d(0, -3px, 0);
   background: var(--okr-glass-bg-hover);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -1px 0 rgba(0, 0, 0, 0.34),
-    0 22px 52px rgba(0, 0, 0, 0.24);
+    0 24px 58px rgba(0, 0, 0, 0.26);
 }
 .okr__process-card:focus-visible {
   outline: 2px solid rgba(255, 154, 221, 0.58);
@@ -965,7 +972,7 @@
     0 26px 62px rgba(0, 0, 0, 0.24);
   backdrop-filter: blur(22px) saturate(145%);
   -webkit-backdrop-filter: blur(22px) saturate(145%);
-  animation: okrProcessDetailIn .24s ease both;
+  animation: okrProcessDetailIn 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .okr__process-detail-kicker,
 .okr__process-detail-points > span {
@@ -3003,21 +3010,51 @@
    respects `prefers-reduced-motion: reduce` at the bottom of this section.
    ------------------------------------------------------------------------- */
 
-/* --- Scroll-triggered reveal --------------------------------------------
-   `.okr__reveal` starts hidden and offset; JS adds `.is-in` when the node
-   enters the viewport. Per-node stagger comes from an inline `--reveal-delay`.
-   Kept transform-only so we don't repaint the aurora canvas underneath. */
+/* --- Scroll-driven reveal (native, zero-JS) -----------------------------
+   Modern browsers get a butter-smooth reveal tied directly to scroll
+   position via `animation-timeline: view()`. No IntersectionObserver, no
+   classList mutation, no React re-render conflicts — the animation is
+   scroll-position-driven, so React can freely re-render the target's
+   className (e.g. toggling `is-active` on process cards) without ever
+   knocking the reveal out of state.
+
+   Firefox and older browsers hit the fallback and simply see elements
+   fully visible — no jank, no hidden content, just no reveal motion.
+
+   `entry 0% cover 25%` = element starts revealing the moment it peeks
+   into the viewport, and is fully settled by the time it's a quarter
+   into fully-covered position. Feels premium because the reveal tracks
+   the user's actual scroll speed instead of a canned 600ms fade. */
 .okr__reveal {
-  opacity: 0;
-  transform: translate3d(0, 18px, 0);
-  transition:
-    opacity 620ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0ms),
-    transform 720ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
-}
-.okr__reveal.is-in {
+  /* Fallback for browsers without scroll-timeline support. */
   opacity: 1;
   transform: none;
+}
+@supports (animation-timeline: view()) {
+  .okr__reveal {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+    animation: okrRevealPremium linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 25%;
+  }
+  /* Cascade a subtle stagger by shifting the range-start for direct
+     siblings inside a grid. Cards later in a row reveal a hair after
+     their neighbors — natural without needing per-node delays. */
+  .okr__cards > .okr__reveal:nth-child(2n)    { animation-range: entry 5%  cover 28%; }
+  .okr__cards > .okr__reveal:nth-child(3n)    { animation-range: entry 8%  cover 30%; }
+  .okr__journal > .okr__reveal:nth-child(2n)  { animation-range: entry 5%  cover 28%; }
+  .okr__journal > .okr__reveal:nth-child(3n)  { animation-range: entry 8%  cover 30%; }
+  .okr__cases > .okr__reveal:nth-child(2n)    { animation-range: entry 6%  cover 30%; }
+  .okr__process > .okr__reveal:nth-child(2n)  { animation-range: entry 4%  cover 26%; }
+  .okr__process > .okr__reveal:nth-child(3n)  { animation-range: entry 8%  cover 28%; }
+  .okr__process > .okr__reveal:nth-child(4n)  { animation-range: entry 10% cover 30%; }
+  .okr__process > .okr__reveal:nth-child(5n)  { animation-range: entry 12% cover 32%; }
+}
+@keyframes okrRevealPremium {
+  0%   { opacity: 0; transform: translate3d(0, 22px, 0); }
+  70%  { opacity: 0.96; }
+  100% { opacity: 1; transform: none; }
 }
 
 /* --- Hero stagger ------------------------------------------------------
@@ -3031,10 +3068,14 @@
 .okr__hero-title--stagger .okr__word {
   display: inline-block;
   opacity: 0;
-  filter: blur(10px);
-  transform: translate3d(0, 0.28em, 0);
-  animation: okrWordIn 900ms cubic-bezier(0.16, 0.8, 0.2, 1) forwards;
-  animation-delay: calc(80ms + var(--i, 0) * 55ms);
+  filter: blur(12px);
+  transform: translate3d(0, 0.32em, 0);
+  /* cubic-bezier(0.16, 1, 0.3, 1) is easeOutExpo — the softest, most
+     "settled" outward curve. Used by Linear, Vercel, Apple for premium
+     text reveals. 1050ms is on the slower side deliberately: longer =
+     luxurious, shorter = jumpy. */
+  animation: okrWordIn 1050ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(60ms + var(--i, 0) * 58ms);
   will-change: opacity, transform, filter;
 }
 /* Each word inside the gradient wrapper needs its own clipped background —
@@ -3048,20 +3089,20 @@
   color: transparent;
 }
 @keyframes okrWordIn {
-  0%   { opacity: 0; filter: blur(10px); transform: translate3d(0, 0.28em, 0); }
-  60%  { opacity: 1; filter: blur(0); }
+  0%   { opacity: 0; filter: blur(12px); transform: translate3d(0, 0.32em, 0); }
+  55%  { opacity: 1; filter: blur(0.4px); }
   100% { opacity: 1; filter: blur(0); transform: none; }
 }
 .okr__hero-kicker,
 .okr__hero-sub--reveal,
 .okr__hero-cta--reveal {
   opacity: 0;
-  transform: translate3d(0, 12px, 0);
-  animation: okrHeroFadeIn 700ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  transform: translate3d(0, 14px, 0);
+  animation: okrHeroFadeIn 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-.okr__hero-kicker      { animation-delay: 60ms; }
-.okr__hero-sub--reveal { animation-delay: 520ms; }
-.okr__hero-cta--reveal { animation-delay: 640ms; }
+.okr__hero-kicker      { animation-delay: 40ms; }
+.okr__hero-sub--reveal { animation-delay: 540ms; }
+.okr__hero-cta--reveal { animation-delay: 680ms; }
 @keyframes okrHeroFadeIn {
   to { opacity: 1; transform: none; }
 }
@@ -3257,12 +3298,13 @@
 
 /* --- Reduced motion — hard reset ---------------------------------------
    Anyone opting out of motion sees the final state instantly, no fades,
-   no snap, no spring. IntersectionObserver hook already skips adding the
-   `.is-in` class, so `.okr__reveal` here matches its resting look. */
+   no snap, no spring. Also cancels the scroll-driven reveal animation so
+   nothing stays stuck at opacity 0. */
 @media (prefers-reduced-motion: reduce) {
   .okr__reveal {
     opacity: 1;
     transform: none;
+    animation: none;
     transition: none;
   }
   .okr__hero-title--stagger .okr__word,

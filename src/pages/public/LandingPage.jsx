@@ -7,7 +7,6 @@ import { useLiveSettings, useLiveHomepage, useLivePosts } from "../../hooks/useP
 import { useI18n } from "../../lib/i18n";
 import { localizeHomepage, localizeSiteDescription } from "../../lib/pageI18n";
 import { resolveCover } from "../../lib/blogPlaceholder";
-import { useScrollReveal } from "../../hooks/useScrollReveal";
 import { useLandingEffects, useSnapActiveIndex } from "../../hooks/useLandingEffects";
 
 const DEFAULT_HERO_SUBTITLES = new Set([
@@ -77,8 +76,11 @@ export function LandingPage() {
     [hero.title_line1],
   );
 
+  // Section reveals now run entirely through CSS `animation-timeline: view()`
+  // (see `.okr__reveal` in landing.css) — no IntersectionObserver, no
+  // classList mutation, no React re-render conflicts. Contains only what we
+  // still need JS for: pointer spotlight, scroll progress, mobile snap sync.
   const contentRef = useRef(null);
-  useScrollReveal(contentRef);
   useLandingEffects(null);
 
   // Keep the active process card in sync with whichever card is snap-centered
@@ -192,6 +194,11 @@ export function LandingPage() {
                 </div>
                 {activeProcess && (
                   <div
+                    // `key` swaps every time the active stage changes, forcing
+                    // React to remount the panel — that re-runs the CSS mount
+                    // animation so the copy fades/slides in on each hover
+                    // rather than snapping to new text.
+                    key={activeProcessIndex}
                     className="okr__process-detail"
                     id="okr-process-detail"
                     role="region"
