@@ -2,7 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Locked viewport — pinch-zoom & double-tap zoom disabled on mobile to
+         keep the composed layout intact. `viewport-fit=cover` keeps safe-area
+         insets working for notched devices. Note: iOS 10+ Safari may honor
+         user-scalable=no only partially for accessibility reasons. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta
       name="description"
       content="okkarhys is a digital consulting studio for web development, SEO, AI workflow, and content strategy."

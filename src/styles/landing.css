@@ -3285,3 +3285,52 @@
   }
 }
 
+/* =========================================================================
+   Touch-device content protection.
+
+   Scoped to `.okr` (public site) — admin (.wpx) stays fully selectable so
+   editors can still copy IDs, slugs, etc. Whitelists form controls and any
+   contenteditable so contact form, search, and rich-text editors keep
+   accepting input.
+
+   Media query targets touch-primary devices only. Desktop stays copyable.
+   Combined with the locked viewport meta in index.html this gives:
+     - no text highlight / copy
+     - no long-press "copy" or "save image" callout on iOS
+     - no pinch-zoom or double-tap zoom
+   Every one of these is best-effort — a determined user with devtools can
+   defeat any of them. The point is deterring casual copy, not DRM.
+   ------------------------------------------------------------------------- */
+@media (hover: none) and (pointer: coarse) {
+  .okr,
+  .okr * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Inputs, textareas, selects, and contenteditable regions must stay
+     selectable — otherwise the contact form, checkout, admin login, and
+     search box become unusable on mobile. */
+  .okr input,
+  .okr textarea,
+  .okr select,
+  .okr [contenteditable="true"],
+  .okr [contenteditable=""] {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+  }
+  /* Kill the native image drag/save affordances on touch. */
+  .okr img {
+    -webkit-user-drag: none;
+    user-drag: none;
+    pointer-events: auto;
+  }
+}
+
+
