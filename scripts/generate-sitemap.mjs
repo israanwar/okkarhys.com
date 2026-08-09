@@ -23,7 +23,7 @@ const { BLOG_CATEGORIES } = await import(
 );
 
 // Konfigurasi domain — sesuaikan kalau pindah host.
-const SITE_URL = "https://okkarhys.com";
+const SITE_URL = "https://www.okkarhys.com";
 
 // XML-escape untuk URL & content string.
 function xmlEsc(s) {

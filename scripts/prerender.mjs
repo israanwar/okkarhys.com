@@ -30,7 +30,7 @@ const structuredData = await import(
   `file://${projectRoot}/src/lib/structuredData.js`
 );
 
-const SITE_URL = "https://okkarhys.com";
+const SITE_URL = "https://www.okkarhys.com";
 const SITE_NAME = "OKKARHYS";
 const DEFAULT_DESCRIPTION =
   "Web, SEO, AI workflow & content strategy for personal brands and businesses.";
