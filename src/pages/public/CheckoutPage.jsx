@@ -6,6 +6,7 @@ import { cartRepo } from "../../lib/localStore";
 import { ordersData } from "../../lib/supabaseData";
 import { useLiveCart, useLiveSettings } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
+import { getCheckoutPaymentMethod, isGopayMerchantAutoEnabled } from "../../lib/gopayMerchantGateway";
 import { localizeProduct } from "../../lib/storeI18n";
 import { resolveProductCover } from "../../lib/storePlaceholder";
 
@@ -54,7 +55,7 @@ export function CheckoutPage() {
     setSubmitted(true); // gate: prevent redirect to /cart after cartRepo.clear()
     const order = await ordersData.create({
       ...form,
-      payment_method: "qris",
+      payment_method: getCheckoutPaymentMethod(settings),
       subtotal: detail.total,
       items: detail.rows.map(({ product, qty, subtotal }) => {
         const displayProduct = localizeProduct(product, lang);
@@ -137,9 +138,13 @@ export function CheckoutPage() {
                   padding: "14px 16px", borderRadius: 10, background: "rgba(224,68,168,0.08)",
                   border: "1px solid rgba(224,68,168,0.25)", fontSize: 14,
                 }}>
-                  <div style={{ fontWeight: 600, marginBottom: 4 }}>{t("checkout_payment_title")}</div>
+                  <div style={{ fontWeight: 600, marginBottom: 4 }}>
+                    {isGopayMerchantAutoEnabled(settings) ? "Metode pembayaran: GoPay / QRIS otomatis" : t("checkout_payment_title")}
+                  </div>
                   <div style={{ color: "var(--okr-muted)", fontSize: 13 }}>
-                    {t("checkout_payment_note")}
+                    {isGopayMerchantAutoEnabled(settings)
+                      ? "Setelah order dibuat, QRIS dinamis akan dibuat otomatis. Status order berubah paid setelah pembayaran terdeteksi."
+                      : t("checkout_payment_note")}
                   </div>
                 </div>
               </div>

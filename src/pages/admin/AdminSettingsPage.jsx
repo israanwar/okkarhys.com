@@ -49,6 +49,8 @@ const SECTIONS = [
       { key: "qris_merchant_name", label: "Merchant name" },
       { key: "qris_nmid", label: "NMID" },
       { key: "qris_terminal_label", label: "Terminal label" },
+      { key: "gopay_auto_label", label: "Auto payment label" },
+      { key: "gopay_auto_enabled", label: "Aktifkan GoPay Merchant QRIS otomatis", checkbox: true },
     ],
     qrisUploader: true,
   },
@@ -337,7 +339,20 @@ export function AdminSettingsPage() {
             {section.fields.map((f) => (
               <div key={f.key} className="wpx__field">
                 <label className="wpx__label">{f.label}</label>
-                {f.textarea ? (
+                {f.checkbox ? (
+                  <label style={{
+                    display: "inline-flex", alignItems: "center", gap: 10,
+                    color: "var(--text)", fontSize: 14, fontWeight: 600,
+                  }}>
+                    <input
+                      type="checkbox"
+                      checked={data[f.key] === true || data[f.key] === "true"}
+                      onChange={(e) => set(f.key, e.target.checked)}
+                      style={{ width: 18, height: 18, accentColor: "var(--primary)" }}
+                    />
+                    {data[f.key] === true || data[f.key] === "true" ? "Aktif" : "Nonaktif"}
+                  </label>
+                ) : f.textarea ? (
                   <textarea className="wpx__textarea" value={data[f.key] ?? ""} onChange={(e) => set(f.key, e.target.value)} />
                 ) : (
                   <input className="wpx__input" value={data[f.key] ?? ""} onChange={(e) => set(f.key, e.target.value)} />

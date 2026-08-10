@@ -152,6 +152,7 @@ function FilterTab({ label, count, active, onClick }) {
 }
 
 function OrderDetailModal({ order, onClose, onApprove, onReject }) {
+  const gateway = order.payment_gateway ?? order.data?.payment_gateway;
   return (
     <div onClick={onClose} style={{
       position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)",
@@ -179,6 +180,14 @@ function OrderDetailModal({ order, onClose, onApprove, onReject }) {
             <div><strong>Address:</strong> {order.shipping_address}</div>
             {order.notes && <div><strong>Notes:</strong> {order.notes}</div>}
             <div><strong>Total:</strong> Rp {order.total.toLocaleString("id-ID")}</div>
+            {gateway && (
+              <>
+                <div><strong>Payment gateway:</strong> {gateway.provider ?? "gopay_merchant"} {gateway.adapter ? `(${gateway.adapter})` : ""}</div>
+                {gateway.trx_id && <div><strong>Gateway TRX:</strong> <span style={{ fontFamily: "monospace" }}>{gateway.trx_id}</span></div>}
+                {gateway.status && <div><strong>Gateway status:</strong> {gateway.status}</div>}
+                {gateway.amount_to_pay && <div><strong>Paid amount target:</strong> Rp {Number(gateway.amount_to_pay).toLocaleString("id-ID")}</div>}
+              </>
+            )}
             <div><strong>Created:</strong> {new Date(order.created_at).toLocaleString("id-ID")}</div>
             {order.payment_proof_uploaded_at && (
               <div><strong>Proof uploaded:</strong> {new Date(order.payment_proof_uploaded_at).toLocaleString("id-ID")}</div>

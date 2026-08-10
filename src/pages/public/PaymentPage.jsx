@@ -1,13 +1,21 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import {
-  Check, Copy, Upload, Clock, X, Download, ShoppingBag, FileImage, ChevronRight,
+  Check, Copy, Upload, Clock, X, Download, ShoppingBag, FileImage, ChevronRight, RefreshCw,
 } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
 import { ORDER_STATUS } from "../../lib/localStore";
 import { ordersData, productsData } from "../../lib/supabaseData";
 import { useLiveSettings } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
+import {
+  createGopayMerchantPayment,
+  getOrderGatewayPayment,
+  isGatewayPaymentActive,
+  isGatewayPaymentPaid,
+  isGopayMerchantOrder,
+  refreshGopayMerchantPayment,
+} from "../../lib/gopayMerchantGateway";
 
 const ACCEPT_TYPES = ["image/png", "image/jpeg", "image/jpg"];
 const MAX_SIZE = 2 * 1024 * 1024;
@@ -104,17 +112,27 @@ function PaymentBody({ order, settings, onChanged }) {
  * PENDING: QRIS + upload proof + submit
  * ============================================================ */
 function PendingView({ order, settings, L, onChanged }) {
+  const storedGatewayPayment = getOrderGatewayPayment(order);
+  const useGopayAuto = isGopayMerchantOrder(order, settings);
   const [copied, setCopied] = useState(false);
   const [imgBroken, setImgBroken] = useState(false);
   const [proofFile, setProofFile] = useState(null); // { dataUrl, name, size }
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [gatewayPayment, setGatewayPayment] = useState(storedGatewayPayment);
+  const [gatewayLoading, setGatewayLoading] = useState(false);
+  const [gatewayChecking, setGatewayChecking] = useState(false);
+  const [gatewayError, setGatewayError] = useState(null);
   const fileRef = useRef(null);
 
-  const amount = order.total.toLocaleString("id-ID");
-  const hasQris = Boolean(settings.qris_image)
-    && settings.qris_image !== "/assets/qris/okkarhys-qris.png"
+  const qrisImage = useGopayAuto && !gatewayError ? gatewayPayment?.qrisImageUrl : settings.qris_image;
+  const amountToPay = gatewayPayment?.amountToPay || order.total;
+  const amount = amountToPay.toLocaleString("id-ID");
+  const hasQris = Boolean(qrisImage)
+    && qrisImage !== "/assets/qris/okkarhys-qris.png"
     && !imgBroken;
+  const showManualProof = !useGopayAuto || Boolean(gatewayError);
+  const autoStatusActive = useGopayAuto && !gatewayError && (gatewayLoading || gatewayPayment?.trxId);
 
   // Countdown
   const [remaining, setRemaining] = useState(() => msRemaining(order));
@@ -123,10 +141,69 @@ function PendingView({ order, settings, L, onChanged }) {
     return () => clearInterval(iv);
   }, [order.payment_deadline]);
 
+  useEffect(() => {
+    setImgBroken(false);
+  }, [qrisImage]);
+
+  useEffect(() => {
+    setGatewayPayment(storedGatewayPayment);
+  }, [
+    order.order_number,
+    storedGatewayPayment?.trxId,
+    storedGatewayPayment?.status,
+    storedGatewayPayment?.amountToPay,
+    storedGatewayPayment?.qrisImageUrl,
+  ]);
+
+  useEffect(() => {
+    if (!useGopayAuto || (gatewayPayment?.trxId && isGatewayPaymentActive(gatewayPayment)) || gatewayError) return;
+    let alive = true;
+    setGatewayLoading(true);
+    createGopayMerchantPayment(order.order_number)
+      .then((payment) => {
+        if (!alive) return;
+        setGatewayPayment(payment);
+        setGatewayError(null);
+        onChanged();
+      })
+      .catch((e) => {
+        if (!alive) return;
+        setGatewayError(e.message ?? L.auto_gateway_error);
+      })
+      .finally(() => {
+        if (alive) setGatewayLoading(false);
+      });
+    return () => { alive = false; };
+  }, [useGopayAuto, order.order_number, gatewayPayment?.trxId, gatewayPayment?.status, gatewayError]);
+
+  useEffect(() => {
+    if (!useGopayAuto || !gatewayPayment?.trxId || gatewayError || !isGatewayPaymentActive(gatewayPayment)) return;
+    const iv = setInterval(() => {
+      checkGatewayStatus({ quiet: true });
+    }, 20000);
+    return () => clearInterval(iv);
+  }, [useGopayAuto, gatewayPayment?.trxId, gatewayPayment?.status, gatewayError]);
+
   async function copyAmount() {
-    await navigator.clipboard.writeText(String(order.total));
+    await navigator.clipboard.writeText(String(amountToPay));
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
+  }
+
+  async function checkGatewayStatus({ quiet = false } = {}) {
+    if (!useGopayAuto || gatewayChecking) return;
+    if (!quiet) setError(null);
+    setGatewayChecking(true);
+    try {
+      const payment = await refreshGopayMerchantPayment(order.order_number);
+      setGatewayPayment(payment);
+      setGatewayError(null);
+      if (isGatewayPaymentPaid(payment)) onChanged();
+    } catch (e) {
+      if (!quiet) setGatewayError(e.message ?? L.auto_status_error);
+    } finally {
+      setGatewayChecking(false);
+    }
   }
 
   async function onFile(e) {
@@ -172,7 +249,7 @@ function PendingView({ order, settings, L, onChanged }) {
       {/* Awaiting banner */}
       <div className="okr__pay-alert okr__pay-alert--pending">
         <Clock size={16} />
-        <span>{L.pending_body}</span>
+        <span>{useGopayAuto && !gatewayError ? L.auto_pending_body : L.pending_body}</span>
         {remaining > 0 && (
           <span style={{ marginLeft: "auto", fontWeight: 700, color: remaining < 5 * 60 * 1000 ? "#fbbf24" : "inherit" }}>
             {formatMs(remaining)}
@@ -185,7 +262,7 @@ function PendingView({ order, settings, L, onChanged }) {
         <div className="okr__pay-qris-frame">
           {hasQris ? (
             <img
-              src={settings.qris_image}
+              src={qrisImage}
               alt="QRIS"
               onError={() => setImgBroken(true)}
               className="okr__pay-qris-img"
@@ -199,63 +276,110 @@ function PendingView({ order, settings, L, onChanged }) {
         </div>
 
         <div className="okr__pay-total">
-          <div className="okr__pay-total-label">{L.total_pay}</div>
+          <div className="okr__pay-total-label">{useGopayAuto && !gatewayError ? L.total_pay_exact : L.total_pay}</div>
           <div className="okr__pay-total-amount">Rp {amount}</div>
           <button onClick={copyAmount} className="okr__pay-copy-btn">
             {copied ? <><Check size={14} /> {L.copied}</> : <><Copy size={14} /> {L.copy}</>}
           </button>
+          {useGopayAuto && gatewayPayment?.uniqueCode > 0 && !gatewayError && (
+            <div style={{ marginTop: 10, fontSize: 12, color: "var(--okr-muted)", lineHeight: 1.5 }}>
+              {L.unique_amount_note.replace("{base}", order.total.toLocaleString("id-ID"))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Upload proof card */}
-      <div className="okr__panel" style={{ marginBottom: 16 }}>
-        <h3 className="okr__pay-section-title">{L.upload_title}</h3>
-        <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/jpg" onChange={onFile} style={{ display: "none" }} />
-
-        {!proofFile ? (
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="okr__pay-upload-dropzone"
-            type="button"
-          >
-            <Upload size={22} />
-            <div>
-              <div style={{ fontWeight: 600, fontSize: 14 }}>{L.upload_click}</div>
-              <div style={{ fontSize: 12, color: "var(--okr-dim)", marginTop: 4 }}>{L.upload_hint}</div>
+      {useGopayAuto && (
+        <div className="okr__panel" style={{ marginBottom: 16 }}>
+          <h3 className="okr__pay-section-title">{gatewayError ? L.auto_fallback_title : L.auto_title}</h3>
+          {gatewayError ? (
+            <div style={{ fontSize: 13, color: "#fca5a5", lineHeight: 1.6 }}>
+              {gatewayError}. {L.auto_fallback_body}
             </div>
-          </button>
-        ) : (
-          <div className="okr__pay-proof-preview">
-            <img src={proofFile.dataUrl} alt="Preview" />
-            <div className="okr__pay-proof-meta">
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <FileImage size={14} style={{ color: "var(--okr-primary-2)" }} />
-                <span style={{ fontWeight: 600, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{proofFile.name}</span>
+          ) : (
+            <>
+              <div style={{ fontSize: 13, color: "var(--okr-muted)", lineHeight: 1.6, marginBottom: 14 }}>
+                {gatewayLoading ? L.auto_starting : L.auto_waiting}
               </div>
-              <div style={{ fontSize: 12, color: "var(--okr-muted)" }}>{formatSize(proofFile.size)}</div>
-              <button onClick={removeProof} className="okr__pay-proof-remove" type="button">
-                <X size={12} /> {L.remove}
+              {gatewayPayment?.trxId && (
+                <div style={{ display: "grid", gap: 6, fontSize: 12, marginBottom: 14 }}>
+                  <div><strong>TRX:</strong> <span style={{ fontFamily: "ui-monospace, monospace" }}>{gatewayPayment.trxId}</span></div>
+                  {gatewayPayment.expiresAt && <div><strong>{L.expire_at}:</strong> {new Date(gatewayPayment.expiresAt).toLocaleString("id-ID")}</div>}
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => checkGatewayStatus()}
+                disabled={gatewayLoading || gatewayChecking || !gatewayPayment?.trxId}
+                className="okr__btn okr__btn--secondary"
+                style={{ width: "100%", justifyContent: "center", padding: "13px", opacity: gatewayPayment?.trxId ? 1 : 0.55 }}
+              >
+                <RefreshCw size={15} /> {gatewayChecking ? L.checking_status : L.check_status}
               </button>
-            </div>
-          </div>
-        )}
+            </>
+          )}
+        </div>
+      )}
 
-        {error && (
-          <div style={{ color: "#fca5a5", fontSize: 13, marginTop: 10, display: "flex", alignItems: "center", gap: 6 }}>
-            <X size={14} /> {error}
-          </div>
-        )}
-      </div>
+      {showManualProof && (
+        <>
+          {/* Upload proof card */}
+          <div className="okr__panel" style={{ marginBottom: 16 }}>
+            <h3 className="okr__pay-section-title">{L.upload_title}</h3>
+            <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/jpg" onChange={onFile} style={{ display: "none" }} />
 
-      {/* Submit */}
-      <button
-        onClick={submit}
-        disabled={!proofFile || submitting}
-        className="okr__btn okr__btn--primary"
-        style={{ width: "100%", justifyContent: "center", padding: "16px", fontSize: 15, marginBottom: 20, opacity: proofFile ? 1 : 0.5 }}
-      >
-        <Check size={17} /> {submitting ? L.submitting : L.submit}
-      </button>
+            {!proofFile ? (
+              <button
+                onClick={() => fileRef.current?.click()}
+                className="okr__pay-upload-dropzone"
+                type="button"
+              >
+                <Upload size={22} />
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>{L.upload_click}</div>
+                  <div style={{ fontSize: 12, color: "var(--okr-dim)", marginTop: 4 }}>{L.upload_hint}</div>
+                </div>
+              </button>
+            ) : (
+              <div className="okr__pay-proof-preview">
+                <img src={proofFile.dataUrl} alt="Preview" />
+                <div className="okr__pay-proof-meta">
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                    <FileImage size={14} style={{ color: "var(--okr-primary-2)" }} />
+                    <span style={{ fontWeight: 600, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{proofFile.name}</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: "var(--okr-muted)" }}>{formatSize(proofFile.size)}</div>
+                  <button onClick={removeProof} className="okr__pay-proof-remove" type="button">
+                    <X size={12} /> {L.remove}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <div style={{ color: "#fca5a5", fontSize: 13, marginTop: 10, display: "flex", alignItems: "center", gap: 6 }}>
+                <X size={14} /> {error}
+              </div>
+            )}
+          </div>
+
+          {/* Submit */}
+          <button
+            onClick={submit}
+            disabled={!proofFile || submitting}
+            className="okr__btn okr__btn--primary"
+            style={{ width: "100%", justifyContent: "center", padding: "16px", fontSize: 15, marginBottom: 20, opacity: proofFile ? 1 : 0.5 }}
+          >
+            <Check size={17} /> {submitting ? L.submitting : L.submit}
+          </button>
+        </>
+      )}
+
+      {autoStatusActive && (
+        <div style={{ textAlign: "center", color: "var(--okr-dim)", fontSize: 12, lineHeight: 1.5, marginBottom: 20 }}>
+          {L.auto_no_proof}
+        </div>
+      )}
     </>
   );
 }
@@ -492,9 +616,23 @@ const LANG_EN = {
   step_verified: "Verification",
   step_download: "Download Ready",
   pending_body: "Please scan the QRIS below and complete payment.",
+  auto_pending_body: "Please pay the exact GoPay/QRIS amount below. Payment will be checked automatically.",
   total_pay: "Total to pay",
+  total_pay_exact: "Exact amount to pay",
   copy: "Copy amount", copied: "Copied",
   qris_missing: "QRIS not available yet. Contact admin.",
+  unique_amount_note: "Base total is Rp {base}. This exact amount may include a small unique code for automatic matching.",
+  auto_title: "Automatic payment check",
+  auto_starting: "Creating a dynamic QRIS payment for this order.",
+  auto_waiting: "After paying, keep this page open. The order will switch to paid when the gateway detects the transaction.",
+  auto_no_proof: "No payment proof upload is needed for automatic GoPay/QRIS payments.",
+  auto_gateway_error: "Automatic GoPay gateway is not ready",
+  auto_status_error: "Unable to check payment status",
+  auto_fallback_title: "Manual fallback active",
+  auto_fallback_body: "Please use the QRIS above and upload payment proof below.",
+  check_status: "Check payment status",
+  checking_status: "Checking status…",
+  expire_at: "Expires",
   upload_title: "Upload payment proof",
   upload_click: "Click to upload",
   upload_hint: "PNG · JPG · JPEG · max 2 MB",
@@ -527,9 +665,23 @@ const LANG_ID = {
   step_verified: "Verifikasi",
   step_download: "Siap Diunduh",
   pending_body: "Silakan scan QRIS di bawah dan selesaikan pembayaran.",
+  auto_pending_body: "Silakan bayar nominal GoPay/QRIS persis di bawah. Status pembayaran akan dicek otomatis.",
   total_pay: "Total pembayaran",
+  total_pay_exact: "Nominal persis yang dibayar",
   copy: "Copy nominal", copied: "Tersalin",
   qris_missing: "QRIS belum tersedia. Hubungi admin.",
+  unique_amount_note: "Total dasar Rp {base}. Nominal persis ini bisa memuat kode unik kecil agar pembayaran terbaca otomatis.",
+  auto_title: "Cek pembayaran otomatis",
+  auto_starting: "Membuat QRIS dinamis untuk order ini.",
+  auto_waiting: "Setelah membayar, biarkan halaman ini terbuka. Order akan berubah paid saat gateway mendeteksi transaksi.",
+  auto_no_proof: "Tidak perlu upload bukti pembayaran untuk GoPay/QRIS otomatis.",
+  auto_gateway_error: "Gateway GoPay otomatis belum siap",
+  auto_status_error: "Gagal cek status pembayaran",
+  auto_fallback_title: "Fallback manual aktif",
+  auto_fallback_body: "Silakan gunakan QRIS di atas dan upload bukti pembayaran di bawah.",
+  check_status: "Cek status pembayaran",
+  checking_status: "Mengecek status…",
+  expire_at: "Kedaluwarsa",
   upload_title: "Upload bukti pembayaran",
   upload_click: "Klik untuk upload",
   upload_hint: "PNG · JPG · JPEG · maks 2 MB",
