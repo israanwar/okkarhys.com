@@ -241,25 +241,14 @@
 .okr-logo {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
   color: var(--okr-logo-ink);
   position: relative;
   flex-shrink: 0;
 }
-.okr-logo__mark {
+.okr-logo__svg {
   display: block;
-  width: 32px;
-  height: 32px;
-  flex: 0 0 auto;
-  object-fit: contain;
-}
-.okr-logo__wordmark {
-  display: block;
-  width: 124px;
+  width: 100%;
   height: auto;
-  flex: 0 0 auto;
-  object-fit: contain;
-  object-position: left center;
   overflow: visible;
 }
 .okr__brand-mark {
@@ -622,10 +611,8 @@
 
 @media (max-width: 560px) {
   .okr__brand { min-width: 0; }
-  .okr-logo { gap: 7px; }
-  .okr-logo__mark,
+  .okr-mark,
   .okr__brand-mark { width: 28px; height: 28px; }
-  .okr-logo__wordmark { width: 108px; height: auto; }
   .okr__nav-actions { gap: 8px; flex-shrink: 0; }
   .okr__cart-link {
     width: 40px; height: 40px;
@@ -646,7 +633,7 @@
   }
 }
 @media (max-width: 380px) {
-  .okr-logo__wordmark { width: 96px; }
+  .okr-logo { width: 132px; }
   .okr__nav-actions { gap: 6px; }
 }
 
@@ -3885,8 +3872,8 @@
   margin-bottom: clamp(18px, 3vw, 30px);
 }
 
-.okr__foot-brand .okr-logo__word {
-  font-size: clamp(32px, 4.8vw, 64px);
+.okr__foot-brand .okr-logo {
+  width: clamp(220px, 26vw, 340px);
 }
 
 .okr__foot-desc {

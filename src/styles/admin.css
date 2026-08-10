@@ -77,21 +77,15 @@
 .wpx .okr-logo {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
   color: var(--logo-ink);
+  width: 132px;
 }
-.wpx .okr-logo__mark {
+.wpx .okr-mark {
   display: block;
   width: 28px;
   height: 28px;
   flex: 0 0 auto;
   object-fit: contain;
-}
-.wpx .okr-logo__wordmark {
-  width: 88px;
-  height: auto;
-  object-fit: contain;
-  object-position: left center;
 }
 .wpx__brand-mark {
   display: block;
@@ -280,10 +274,7 @@
 .wpx-login__brand-logo {
   color: var(--logo-ink);
   margin-bottom: 2px;
-}
-.wpx-login__brand-logo .okr-logo__wordmark {
-  width: 154px;
-  height: auto;
+  width: 190px;
 }
 .wpx-login__brand-title { font-weight: 700; font-size: 20px; color: #ececf1; margin: 0; }
 .wpx-login__brand-sub { font-size: 13px; color: #a1a1aa; margin: 0; }
@@ -415,8 +406,8 @@
   .wpx__brand {
     padding: 14px 16px 12px;
   }
-  .wpx .okr-logo__wordmark {
-    width: 98px;
+  .wpx .okr-logo {
+    width: 138px;
   }
   .wpx__nav {
     display: flex;

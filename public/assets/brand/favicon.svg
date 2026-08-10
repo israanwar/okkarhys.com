@@ -1,27 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Okkarhys">
-  <!--
-    Favicon Okkarhys — monogram "OR" glyph Archivo Black asli (di-extract
-    via fontkit). Pure vector, zero font dependency. Fill full width viewBox
-    supaya maksimal readable di browser tab 16x16. Tanpa slash / fragments
-    supaya bersih di ukuran kecil (elemen animasi itu untuk wordmark website).
-
-    Scale factor: 100 / 1611 (font units advance OR) = 0.06207
-    Cap height rendered: 700 * 0.06207 = 43.45
-    Baseline y: centered = 50 + 43.45/2 = 71.73
-    Transform: translate(0 71.73) scale(0.06207) scale(1 -1)
-    (flip Y karena font pakai Y-up, SVG Y-down)
-  -->
-  <style>
-    .glyph {
-      fill: #1f0012;
-      shape-rendering: geometricPrecision;
-    }
-    @media (prefers-color-scheme: dark) {
-      .glyph { fill: #d8d0dd; }
-    }
-  </style>
-  <g class="glyph" transform="translate(0 71.73) scale(0.06207) scale(1 -1)">
-    <path d="M416 700Q594 700 691 609Q788 518 788 344Q788 170 691 79Q594 -12 416 -12Q238 -12 141.5 78.5Q45 169 45 344Q45 519 141.5 609.5Q238 700 416 700ZM416 535Q345 535 308 492Q271 449 271 376L271 312Q271 239 308 196Q345 153 416 153Q487 153 524.5 196Q562 239 562 312L562 376Q562 449 524.5 492Q487 535 416 535Z"/>
-    <path transform="translate(833 0)" d="M727 477Q727 414 693 363Q659 312 594 288L747 0L499 0L377 251L295 251L295 0L74 0L74 688L495 688Q569 688 621.5 659.5Q674 631 700.5 582.5Q727 534 727 477ZM502 468Q502 495 484 513Q466 531 440 531L295 531L295 404L440 404Q466 404 484 422.5Q502 441 502 468Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Okkarhys">
+  <rect width="128" height="128" rx="24" fill="#030405"/>
+  <g transform="translate(20 21) scale(1.26)">
+    <g fill="#f7f7f8">
+      <path d="M10 26V17C10 9.82 15.82 4 23 4h10v8H23c-2.76 0-5 2.24-5 5v9h-8Z"/>
+      <path d="M37 4h10c7.18 0 13 5.82 13 13v10h-8V17c0-2.76-2.24-5-5-5H37V4Z"/>
+      <path d="M10 30h8v10c0 2.76 2.24 5 5 5h10v8H23c-7.18 0-13-5.82-13-13V30Z"/>
+      <path d="M52 30h8v10c0 3.55-1.43 6.76-3.75 9.1l-6.03-5.24A4.97 4.97 0 0 0 52 40V30Z"/>
+      <path d="m34 34 5.45-5.45L63 49.2V60L34 34Z"/>
+    </g>
+    <path fill="#ff2d95" d="m52.35 49.52 5.34-4.67L68 54.05V60h-6.76l-8.89-10.48Z"/>
   </g>
 </svg>
