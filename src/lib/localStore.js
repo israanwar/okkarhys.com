@@ -4,6 +4,7 @@
 
 import { OKKARHYS_BLOG_POSTS_SEED } from "../data/blogSeedOkkaVoice";
 import { OKKARHYS_SERVICES_SEED } from "../data/serviceCatalog";
+import { applyProductPriceDiscount } from "./productPricing";
 import { generateStoreCover } from "./storePlaceholder";
 
 const KEYS = {
@@ -1930,7 +1931,8 @@ export const cartRepo = {
     const rows = items.map((it) => {
       const p = products.find((x) => x.id === it.product_id);
       if (!p) return null;
-      return { ...it, product: p, subtotal: (p.price ?? 0) * it.qty };
+      const product = applyProductPriceDiscount(p);
+      return { ...it, product, subtotal: (product.price ?? 0) * it.qty };
     }).filter(Boolean);
     const total = rows.reduce((s, r) => s + r.subtotal, 0);
     return { rows, total };

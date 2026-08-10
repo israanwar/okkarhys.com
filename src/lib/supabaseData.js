@@ -12,6 +12,7 @@ import {
   ordersRepo,
   ORDER_STATUS,
 } from "./localStore";
+import { applyProductPriceDiscount, applyProductPriceDiscounts } from "./productPricing";
 
 const MEDIA_BUCKET = "okkarhys-media";
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -65,6 +66,10 @@ function rowToItem(row) {
   };
 }
 
+function productRowToItem(row) {
+  return applyProductPriceDiscount(rowToItem(row));
+}
+
 function orderRowToItem(row) {
   const data = clone(row?.data) ?? {};
   return {
@@ -114,7 +119,7 @@ function postPayload(post) {
 }
 
 function productPayload(product) {
-  const data = clone(product) ?? {};
+  const data = applyProductPriceDiscount(clone(product) ?? {});
   const payload = {
     slug: data.slug,
     name: data.name ?? "",
@@ -393,8 +398,8 @@ export const productsData = {
       if (filter?.status) query = query.eq("status", filter.status);
       const { data, error } = await query;
       if (error) throw error;
-      return localFirstList((data ?? []).map(rowToItem), productsRepo.list(filter));
-    }, () => productsRepo.list(filter));
+      return localFirstList((data ?? []).map(productRowToItem), applyProductPriceDiscounts(productsRepo.list(filter)));
+    }, () => applyProductPriceDiscounts(productsRepo.list(filter)));
   },
   async get(id) {
     return tryRemote(async () => {
@@ -403,15 +408,15 @@ export const productsData = {
         : supabase.from("products").select("*").eq("slug", id);
       const { data, error } = await query.maybeSingle();
       if (error) throw error;
-      return data ? rowToItem(data) : productsRepo.get(id);
-    }, () => productsRepo.get(id));
+      return data ? productRowToItem(data) : applyProductPriceDiscount(productsRepo.get(id));
+    }, () => applyProductPriceDiscount(productsRepo.get(id)));
   },
   async getBySlug(slug) {
     return tryRemote(async () => {
       const { data, error } = await supabase.from("products").select("*").eq("slug", slug).maybeSingle();
       if (error) throw error;
-      return data ? rowToItem(data) : productsRepo.getBySlug(slug);
-    }, () => productsRepo.getBySlug(slug));
+      return data ? productRowToItem(data) : applyProductPriceDiscount(productsRepo.getBySlug(slug));
+    }, () => applyProductPriceDiscount(productsRepo.getBySlug(slug)));
   },
   async create(payload) {
     return tryRemote(async () => {
@@ -423,8 +428,8 @@ export const productsData = {
       if (error) throw error;
       cacheRecord(productsRepo, data.id, rowToItem(data));
       emitRemoteChange("products");
-      return rowToItem(data);
-    }, () => productsRepo.create(payload));
+      return productRowToItem(data);
+    }, () => applyProductPriceDiscount(productsRepo.create(payload)));
   },
   async update(id, patch) {
     return tryRemote(async () => {
@@ -437,8 +442,8 @@ export const productsData = {
       if (error) throw error;
       cacheRecord(productsRepo, id, rowToItem(data));
       emitRemoteChange("products");
-      return rowToItem(data);
-    }, () => productsRepo.update(id, patch));
+      return productRowToItem(data);
+    }, () => applyProductPriceDiscount(productsRepo.update(id, patch)));
   },
   async delete(id) {
     return tryRemote(async () => {

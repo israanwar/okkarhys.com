@@ -8,6 +8,7 @@ import {
   servicesData, postsData,
 } from "../lib/supabaseData";
 import { ensureRemoteChangeBridge } from "../lib/supabaseClient";
+import { applyProductPriceDiscount, applyProductPriceDiscounts } from "../lib/productPricing";
 
 // Universal auto-refresh hook — updates on local writes, storage changes from
 // other tabs, visibility return, or window focus. Avoid polling: rerendering a
@@ -74,16 +75,16 @@ export function useLiveProducts(filter) {
   const status = filter?.status;
   const rows = useLive(
     () => productsData.list(status ? { status } : undefined),
-    () => productsRepo.list(status ? { status } : undefined),
+    () => applyProductPriceDiscounts(productsRepo.list(status ? { status } : undefined)),
     [status]
   );
   return Array.isArray(rows) ? rows : [];
 }
 export function useLiveProduct(slug) {
-  return useLive(() => productsData.getBySlug(slug), () => productsRepo.getBySlug(slug), [slug]);
+  return useLive(() => productsData.getBySlug(slug), () => applyProductPriceDiscount(productsRepo.getBySlug(slug)), [slug]);
 }
 export function useLiveProductState(slug) {
-  return useLiveState(() => productsData.getBySlug(slug), () => productsRepo.getBySlug(slug), [slug]);
+  return useLiveState(() => productsData.getBySlug(slug), () => applyProductPriceDiscount(productsRepo.getBySlug(slug)), [slug]);
 }
 
 // Services
