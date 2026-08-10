@@ -220,13 +220,15 @@ export function LandingPage() {
                       style={{ "--reveal-delay": `${Math.min(i, 5) * 60}ms` }}
                       to={`/blog/${p.slug}`}
                     >
+                      {/* Signal already carries the primary tag + index —
+                          the body-level `.okr__post-tags` was duplicate info
+                          and cluttered the compact editorial layout. */}
                       <div className="okr__blog-card-signal" aria-hidden="true">
                         <span>{String(i + 1).padStart(2, "0")}</span>
                         <span>{((p.tags ?? [])[0] ?? t("section_journal")).toUpperCase()}</span>
                       </div>
                       <div className="okr__post-img" style={{ backgroundImage: `url("${resolveCover(p)}")` }} />
                       <div className="okr__post-body">
-                        <div className="okr__post-tags">{(p.tags ?? []).join(" · ").toUpperCase()}</div>
                         <h3 className="okr__post-title">{p.title}</h3>
                         <p className="okr__post-excerpt">{p.excerpt}</p>
                       </div>

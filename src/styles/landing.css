@@ -5008,22 +5008,27 @@
 .okr .okr__blog-grid--editorial .okr__blog-card {
   display: flex !important;
   flex-direction: column;
-  min-height: clamp(380px, 34vw, 520px);
+  /* 380-520 → 320-440. Editorial cards were bigger than needed for the
+     amount of content they hold, especially on mid-desktop widths. */
+  min-height: clamp(320px, 28vw, 440px);
   text-decoration: none;
 }
 
 .okr .okr__blog-card-signal {
-  padding: clamp(18px, 2vw, 28px) clamp(18px, 2vw, 28px) 0;
+  /* Was 18-28 all around → 12-16 top/side. Tighter, less "airy header". */
+  padding: clamp(12px, 1.4vw, 16px) clamp(16px, 2vw, 24px) 0;
   position: relative;
   z-index: 2;
 }
 
 .okr .okr__blog-card-signal::after {
   background: linear-gradient(90deg, var(--okr-system-cyan), transparent);
-  bottom: -16px;
+  /* Signal padding tightened → move the accent line closer too so it
+     still visually anchors to the signal row. */
+  bottom: -10px;
   content: "";
   height: 1px;
-  left: clamp(18px, 2vw, 28px);
+  left: clamp(16px, 2vw, 24px);
   position: absolute;
   transform-origin: left;
   transition: width 620ms var(--okr-system-ease);
@@ -5057,11 +5062,20 @@
 .okr .okr__editorial-card .okr__post-img,
 .okr .okr__editorial-card .okr__blog-card-cover {
   aspect-ratio: 16 / 10 !important;
-  background-color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  /* Was #ffffff — jarring bright rectangle in the middle of the dark
+     card whenever a cover had any transparency or hadn't loaded yet.
+     Neutral near-black keeps the editorial "framed photo" feel without
+     the flash-of-white failure mode. */
+  background-color: #0b0b0e;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 0 !important;
   box-shadow: none !important;
-  margin: clamp(34px, 4vw, 48px) clamp(18px, 2vw, 28px) 0;
+  /* Tightened top margin from 34-48 → 14-22. Combined with the signal's
+     padding above, that used to add up to 76px of empty space at the
+     top of every card. Now ~40px. */
+  margin: clamp(14px, 1.8vw, 22px) clamp(18px, 2vw, 28px) 0;
   max-height: none;
   overflow: hidden;
   position: relative;
@@ -5082,8 +5096,10 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 12px;
-  padding: clamp(20px, 2.3vw, 30px) !important;
+  gap: 10px;
+  /* Was 20-30 → 16-22. Compact body brings title closer to the image
+     so the eye tracks image → title → excerpt in one scan. */
+  padding: clamp(16px, 1.8vw, 22px) clamp(16px, 2vw, 24px) clamp(18px, 2vw, 24px) !important;
   position: relative;
   z-index: 2;
 }
@@ -5341,15 +5357,20 @@
 
   .okr .okr__editorial-card .okr__post-img,
   .okr .okr__editorial-card .okr__blog-card-cover {
-    aspect-ratio: 1 / 0.76 !important;
-    margin: 24px 10px 0;
+    /* Mobile: 4:3 (was ~1.32:1) — a hair taller so the image dominates
+       the card visually on small screens. Edge-to-edge (no side margin)
+       so the photo touches the card border and reads as full-bleed. */
+    aspect-ratio: 4 / 3 !important;
+    margin: 10px 0 0;
+    border-left: 0 !important;
+    border-right: 0 !important;
   }
 
   .okr .okr__editorial-card .okr__post-body,
   .okr .okr__editorial-card .okr__blog-card-body,
   .okr .okr__artifact-card .okr__product-body {
-    gap: 7px;
-    padding: 12px !important;
+    gap: 6px;
+    padding: 10px 12px 14px !important;
   }
 
   .okr .okr__editorial-card .okr__post-title,
