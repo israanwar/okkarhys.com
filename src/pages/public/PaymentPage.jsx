@@ -16,6 +16,7 @@ import {
   isGopayMerchantOrder,
   refreshGopayMerchantPayment,
 } from "../../lib/gopayMerchantGateway";
+import { createDynamicQrisDataUrl } from "../../lib/qrisDynamic";
 
 const ACCEPT_TYPES = ["image/png", "image/jpeg", "image/jpg"];
 const MAX_SIZE = 2 * 1024 * 1024;
@@ -123,15 +124,20 @@ function PendingView({ order, settings, L, onChanged }) {
   const [gatewayLoading, setGatewayLoading] = useState(false);
   const [gatewayChecking, setGatewayChecking] = useState(false);
   const [gatewayError, setGatewayError] = useState(null);
+  const [dynamicQrisImage, setDynamicQrisImage] = useState(null);
+  const [dynamicQrisLoading, setDynamicQrisLoading] = useState(false);
+  const [dynamicQrisError, setDynamicQrisError] = useState(null);
   const fileRef = useRef(null);
 
-  const qrisImage = useGopayAuto && !gatewayError ? gatewayPayment?.qrisImageUrl : settings.qris_image;
-  const amountToPay = gatewayPayment?.amountToPay || order.total;
+  const showManualProof = !useGopayAuto || Boolean(gatewayError);
+  const amountToPay = useGopayAuto && !gatewayError
+    ? (gatewayPayment?.amountToPay || order.total)
+    : order.total;
+  const qrisImage = useGopayAuto && !gatewayError ? gatewayPayment?.qrisImageUrl : dynamicQrisImage;
   const amount = amountToPay.toLocaleString("id-ID");
   const hasQris = Boolean(qrisImage)
     && qrisImage !== "/assets/qris/okkarhys-qris.png"
     && !imgBroken;
-  const showManualProof = !useGopayAuto || Boolean(gatewayError);
   const autoStatusActive = useGopayAuto && !gatewayError && (gatewayLoading || gatewayPayment?.trxId);
 
   // Countdown
@@ -144,6 +150,33 @@ function PendingView({ order, settings, L, onChanged }) {
   useEffect(() => {
     setImgBroken(false);
   }, [qrisImage]);
+
+  useEffect(() => {
+    if (!showManualProof) {
+      setDynamicQrisImage(null);
+      setDynamicQrisError(null);
+      setDynamicQrisLoading(false);
+      return undefined;
+    }
+
+    let alive = true;
+    setDynamicQrisImage(null);
+    setDynamicQrisError(null);
+    setDynamicQrisLoading(true);
+    createDynamicQrisDataUrl(settings.qris_payload, amountToPay)
+      .then(({ dataUrl }) => {
+        if (!alive) return;
+        setDynamicQrisImage(dataUrl);
+      })
+      .catch((e) => {
+        if (!alive) return;
+        setDynamicQrisError(e.message ?? L.dynamic_qris_error);
+      })
+      .finally(() => {
+        if (alive) setDynamicQrisLoading(false);
+      });
+    return () => { alive = false; };
+  }, [showManualProof, settings.qris_payload, amountToPay, order.order_number]);
 
   useEffect(() => {
     setGatewayPayment(storedGatewayPayment);
@@ -270,7 +303,7 @@ function PendingView({ order, settings, L, onChanged }) {
           ) : (
             <div className="okr__pay-qris-empty">
               <FileImage size={28} style={{ opacity: 0.5 }} />
-              <p>{L.qris_missing}</p>
+              <p>{dynamicQrisLoading ? L.qris_generating : (dynamicQrisError || L.qris_missing)}</p>
             </div>
           )}
         </div>
@@ -284,6 +317,11 @@ function PendingView({ order, settings, L, onChanged }) {
           {useGopayAuto && gatewayPayment?.uniqueCode > 0 && !gatewayError && (
             <div style={{ marginTop: 10, fontSize: 12, color: "var(--okr-muted)", lineHeight: 1.5 }}>
               {L.unique_amount_note.replace("{base}", order.total.toLocaleString("id-ID"))}
+            </div>
+          )}
+          {showManualProof && dynamicQrisImage && !dynamicQrisError && (
+            <div style={{ marginTop: 10, fontSize: 12, color: "var(--okr-muted)", lineHeight: 1.5 }}>
+              {L.manual_dynamic_note}
             </div>
           )}
         </div>
@@ -621,6 +659,9 @@ const LANG_EN = {
   total_pay_exact: "Exact amount to pay",
   copy: "Copy amount", copied: "Copied",
   qris_missing: "QRIS not available yet. Contact admin.",
+  qris_generating: "Creating QRIS with the exact order amount.",
+  dynamic_qris_error: "Unable to create QRIS with automatic amount.",
+  manual_dynamic_note: "This QRIS already contains the exact order amount, so the wallet amount field should be filled automatically.",
   unique_amount_note: "Base total is Rp {base}. This exact amount may include a small unique code for automatic matching.",
   auto_title: "Automatic payment check",
   auto_starting: "Creating a dynamic QRIS payment for this order.",
@@ -670,6 +711,9 @@ const LANG_ID = {
   total_pay_exact: "Nominal persis yang dibayar",
   copy: "Copy nominal", copied: "Tersalin",
   qris_missing: "QRIS belum tersedia. Hubungi admin.",
+  qris_generating: "Membuat QRIS dengan nominal order persis.",
+  dynamic_qris_error: "Gagal membuat QRIS dengan nominal otomatis.",
+  manual_dynamic_note: "QRIS ini sudah berisi nominal order persis, jadi kolom Amount di wallet seharusnya otomatis terisi.",
   unique_amount_note: "Total dasar Rp {base}. Nominal persis ini bisa memuat kode unik kecil agar pembayaran terbaca otomatis.",
   auto_title: "Cek pembayaran otomatis",
   auto_starting: "Membuat QRIS dinamis untuk order ini.",

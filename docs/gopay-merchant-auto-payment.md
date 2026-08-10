@@ -17,6 +17,16 @@ payload from:
 If `QRIS_STRING` or `QRIS_STATIC` belongs to another merchant, the money goes to
 that merchant instead.
 
+## QRIS amount prefill
+
+The public payment page can also convert the saved static QRIS payload into a
+per-order QRIS with the transaction amount embedded. This fixes wallet screens
+that previously showed an empty `Amount` field after scanning the static QR.
+
+This prefilled QRIS improves payment accuracy, but it does not confirm the order
+automatically by itself. Automatic order status updates still require the GoPay
+Merchant gateway, status endpoint, or webhook described below.
+
 ## Supported gateway adapters
 
 `cv3inx` adapter, recommended for this repo:

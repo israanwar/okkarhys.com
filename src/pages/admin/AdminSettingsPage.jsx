@@ -49,6 +49,7 @@ const SECTIONS = [
       { key: "qris_merchant_name", label: "Merchant name" },
       { key: "qris_nmid", label: "NMID" },
       { key: "qris_terminal_label", label: "Terminal label" },
+      { key: "qris_payload", label: "Payload QRIS statis (untuk nominal otomatis)", textarea: true },
       { key: "gopay_auto_label", label: "Auto payment label" },
       { key: "gopay_auto_enabled", label: "Aktifkan GoPay Merchant QRIS otomatis", checkbox: true },
     ],
