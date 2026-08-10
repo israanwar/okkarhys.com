@@ -4769,3 +4769,28 @@
     pointer-events: auto;
   }
 }
+
+/* Match sub-page hero headlines to the homepage hero treatment:
+   large white lead words, then the exact pink text-gradient used on
+   "Design, code & strategy at the speed of AI". Kept at the end of the file
+   so card/menu typography overrides cannot wash the gradient back to white. */
+.okr .okr__page-hero .okr__headline {
+  font-size: clamp(36px, 7.2vw, 128px);
+  font-weight: 820;
+  line-height: 1.05;
+  max-width: min(1120px, 100%);
+  text-wrap: balance;
+}
+
+.okr .okr__headline--stagger .okr__word {
+  color: #f4f3fb;
+  -webkit-text-fill-color: #f4f3fb;
+}
+
+.okr .okr__headline--stagger .okr__word.is-grad {
+  background-image: linear-gradient(90deg, #ffe6f6 0%, #ffb1e3 40%, #ff67c8 100%) !important;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+}
