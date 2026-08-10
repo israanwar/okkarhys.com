@@ -896,16 +896,23 @@
 }
 
 /* Process */
+.okr__process-section {
+  padding-top: clamp(44px, 6vw, 86px);
+  padding-bottom: clamp(44px, 6vw, 86px);
+}
+.okr__process-section .okr__h2 {
+  font-size: clamp(28px, 4.6vw, 56px);
+}
 .okr__process {
   display: grid; gap: clamp(14px, 2vw, 28px);
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  margin-top: clamp(28px, 4vw, 48px);
+  margin-top: clamp(20px, 3vw, 36px);
 }
 @media (max-width: 1100px) { .okr__process { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 820px)  { .okr__process { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 480px)  { .okr__process { grid-template-columns: 1fr; } }
 .okr__process-card {
-  padding: var(--okr-card-pad);
+  padding: clamp(16px, 2vw, 24px);
   border: 1px solid var(--okr-glass-border);
   border-radius: var(--okr-radius);
   background: var(--okr-glass-bg);
@@ -956,9 +963,9 @@
 .okr__process-detail {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
-  gap: 30px;
-  margin-top: 24px;
-  padding: 30px 32px;
+  gap: 24px;
+  margin-top: 18px;
+  padding: 24px 26px;
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: var(--okr-radius);
   background:
@@ -983,15 +990,15 @@
   text-transform: uppercase;
 }
 .okr__process-detail h3 {
-  margin: 10px 0 12px;
-  font-size: clamp(24px, 3vw, 40px);
+  margin: 8px 0 10px;
+  font-size: clamp(22px, 2.4vw, 34px);
   line-height: 1.05;
 }
 .okr__process-detail p {
   margin: 0;
   color: rgba(238, 240, 246, 0.78);
-  font-size: 16px;
-  line-height: 1.75;
+  font-size: 15px;
+  line-height: 1.65;
 }
 .okr__process-detail-points {
   align-self: stretch;
@@ -1000,9 +1007,9 @@
 }
 .okr__process-detail-points ul {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   list-style: none;
-  margin: 16px 0 0;
+  margin: 14px 0 0;
   padding: 0;
 }
 .okr__process-detail-points li {
@@ -2388,14 +2395,14 @@
   }
 
   .okr__process-section {
-    padding-top: 36px;
-    padding-bottom: 36px;
+    padding-top: 28px;
+    padding-bottom: 28px;
   }
 
   .okr__process-section .okr__h2 {
-    max-width: 270px;
-    margin-top: 10px;
-    font-size: clamp(22px, 6.4vw, 26px);
+    max-width: 250px;
+    margin-top: 8px;
+    font-size: clamp(21px, 6vw, 25px);
     line-height: 1.12;
   }
 
@@ -2442,9 +2449,7 @@
   }
 
   .okr__process-detail {
-    display: block;
-    margin-top: 12px;
-    padding: 14px;
+    display: none;
   }
 
   .okr__process-detail h3 {
@@ -3213,13 +3218,13 @@
     display: flex;
     grid-template-columns: none;
     flex-wrap: nowrap;
-    gap: 14px;
+    gap: 10px;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scroll-padding-inline: max(var(--okr-gutter), 16px);
     padding-inline: max(var(--okr-gutter), 16px);
-    padding-block: 6px 14px;
+    padding-block: 4px 10px;
     /* Bleed the scroller to the viewport edges so peek cards can breathe. */
     margin-inline: calc(-1 * max(var(--okr-gutter), 16px));
     scrollbar-width: none;
@@ -3228,9 +3233,9 @@
   }
   .okr__process--snap::-webkit-scrollbar { display: none; }
   .okr__process--snap .okr__process-card {
-    flex: 0 0 82%;
+    flex: 0 0 72%;
     width: auto;
-    min-height: 172px;
+    min-height: 96px;
     scroll-snap-align: center;
     scroll-snap-stop: always;
     /* Cards feel more distinct when the inactive ones dim slightly. */
@@ -3251,8 +3256,8 @@
   .okr__process-dots {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin: 14px 0 4px;
+    gap: 7px;
+    margin: 8px 0 0;
   }
   .okr__process-dot {
     width: 6px;

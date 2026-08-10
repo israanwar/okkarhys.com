@@ -52,7 +52,7 @@ export function LandingPage() {
   const settings = useLiveSettings();
   const rawSections = useLiveHomepage();
   const sections = localizeHomepage(rawSections, lang);
-  const posts = useLivePosts({ status: "published" }).slice(0, 4);
+  const posts = useLivePosts({ status: "published" }).slice(0, 6);
 
   const hero = sections.hero ?? {};
   const siteDescription = localizeSiteDescription(settings.description, lang, settings.description_id);
