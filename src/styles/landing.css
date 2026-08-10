@@ -4110,6 +4110,599 @@
   box-shadow: none !important;
 }
 
+/* --- Sitewide menu-inspired typography, motion, and cards -----------------
+   Uses the mobile index menu as the visual source: confident rounded type,
+   pink italic active states, and quick softened motion. Cards stay matte and
+   opaque, with no glass/backdrop treatment. */
+.okr {
+  --okr-font-display: "Plus Jakarta Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+  --okr-motion-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --okr-motion-snap: cubic-bezier(0.2, 0.92, 0.18, 1);
+  --okr-card-surface: #101012;
+  --okr-card-surface-hover: #151216;
+  --okr-card-ink: #f4f1f6;
+  --okr-card-muted: rgba(238, 240, 246, 0.62);
+  --okr-card-dim: rgba(238, 240, 246, 0.42);
+  --okr-card-accent: #ff67c8;
+  --okr-card-radius: clamp(22px, 2.8vw, 34px);
+  font-family: var(--okr-font-display);
+  font-weight: 520;
+  letter-spacing: 0;
+}
+
+.okr :is(
+  .okr__hero-title,
+  .okr__h2,
+  .okr__page-hero h1,
+  .okr__page-hero .okr__h2,
+  .okr__card-title,
+  .okr__post-title,
+  .okr__case-title,
+  .okr__blog-card-title,
+  .okr__product-name,
+  .okr__cta h3
+) {
+  font-family: var(--okr-font-display);
+  font-weight: 820;
+  letter-spacing: 0;
+}
+
+.okr :is(
+  .okr__eyebrow,
+  .okr__kicker,
+  .okr__post-tags,
+  .okr__case-tags,
+  .okr__product-cat,
+  .okr__blog-card-category,
+  .okr__foot-title,
+  .okr__card-link,
+  .okr__service-parent
+) {
+  color: var(--okr-card-accent);
+  font-family: var(--okr-font-display);
+  font-weight: 760;
+  letter-spacing: 0.16em;
+}
+
+@supports (animation-timeline: view()) {
+  .okr__reveal {
+    animation-name: okrRevealIndexLike;
+    filter: blur(10px);
+    transform: translate3d(0, 30px, 0) scale(0.985);
+  }
+}
+
+@keyframes okrRevealIndexLike {
+  0% {
+    opacity: 0;
+    filter: blur(12px);
+    transform: translate3d(0, 34px, 0) scale(0.982);
+  }
+  68% {
+    opacity: 0.96;
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.okr :is(
+  .okr__card,
+  .okr__post,
+  .okr__blog-card,
+  .okr__product
+) {
+  background: var(--okr-card-surface) !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: var(--okr-card-radius) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.075),
+    0 18px 54px rgba(0, 0, 0, 0.34) !important;
+  color: inherit;
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+  transform: translate3d(0, 0, 0);
+  transition:
+    background 380ms var(--okr-motion-soft),
+    box-shadow 420ms var(--okr-motion-soft),
+    color 260ms ease,
+    transform 420ms var(--okr-motion-snap);
+}
+
+.okr :is(
+  .okr__card,
+  .okr__post,
+  .okr__blog-card,
+  .okr__product
+)::before {
+  background: var(--okr-card-accent);
+  border-radius: 999px;
+  content: "";
+  height: 4px;
+  left: clamp(18px, 2.4vw, 28px);
+  opacity: 0;
+  position: absolute;
+  right: clamp(18px, 2.4vw, 28px);
+  top: 0;
+  transform: scaleX(0.22);
+  transform-origin: left center;
+  transition:
+    opacity 280ms ease,
+    transform 440ms var(--okr-motion-soft);
+  z-index: 3;
+}
+
+.okr :is(
+  .okr__card,
+  .okr__post,
+  .okr__blog-card,
+  .okr__product
+):is(:hover, :focus-visible, :focus-within, :active) {
+  background: var(--okr-card-surface-hover) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 103, 200, 0.42),
+    0 24px 70px rgba(255, 103, 200, 0.12),
+    0 18px 54px rgba(0, 0, 0, 0.4) !important;
+  outline: none;
+  transform: translate3d(0, -7px, 0) scale(1.012);
+}
+
+.okr :is(
+  .okr__card,
+  .okr__post,
+  .okr__blog-card,
+  .okr__product
+):is(:hover, :focus-visible, :focus-within, :active)::before {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.okr :is(
+  .okr__card,
+  .okr__post,
+  .okr__blog-card,
+  .okr__product
+):is(:hover, :focus-visible, :focus-within, :active)
+:is(
+  .okr__card-title,
+  .okr__post-title,
+  .okr__case-title,
+  .okr__blog-card-title-link,
+  .okr__product-name
+) {
+  color: var(--okr-card-accent);
+  font-style: italic;
+}
+
+.okr :is(.okr__cards, .okr__journal, .okr__blog-grid, .okr__products) {
+  gap: clamp(18px, 3vw, 34px) !important;
+}
+
+.okr__cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+
+.okr__card {
+  display: flex;
+  flex-direction: column;
+  min-height: clamp(230px, 24vw, 320px);
+  padding: clamp(22px, 3vw, 34px) !important;
+}
+
+.okr__card-icon {
+  align-items: center;
+  background: var(--okr-card-accent) !important;
+  border: 0 !important;
+  border-radius: 18px !important;
+  color: #050505;
+  display: inline-flex;
+  height: 54px;
+  justify-content: center;
+  margin-bottom: clamp(24px, 4vw, 42px);
+  transform: translate3d(0, 0, 0);
+  transition: transform 420ms var(--okr-motion-snap), border-radius 420ms var(--okr-motion-soft);
+  width: 54px;
+}
+
+.okr__card:is(:hover, :focus-visible, :focus-within) .okr__card-icon {
+  border-radius: 50% !important;
+  transform: rotate(-8deg) scale(1.08);
+}
+
+.okr__card-title {
+  color: var(--okr-card-ink);
+  font-size: clamp(22px, 2.5vw, 34px);
+  line-height: 1.06;
+  margin: 0 0 14px;
+  transition: color 260ms ease, font-style 260ms ease;
+}
+
+.okr__card-body {
+  color: var(--okr-card-muted);
+  font-size: clamp(14.5px, 1.35vw, 17px);
+  line-height: 1.68;
+  margin: 0;
+}
+
+.okr__service-count {
+  align-self: flex-start;
+  background: rgba(255, 103, 200, 0.14) !important;
+  border: 0 !important;
+  border-radius: 999px;
+  color: #ff9add;
+  margin: 2px 0 18px;
+}
+
+.okr__card-link {
+  align-items: center;
+  color: var(--okr-card-accent);
+  display: inline-flex;
+  gap: 8px;
+  margin-top: auto;
+  transition: color 220ms ease, font-style 220ms ease, transform 280ms var(--okr-motion-soft);
+}
+
+.okr__card:is(:hover, :focus-visible, :focus-within) .okr__card-link {
+  color: #ffffff;
+  font-style: italic;
+  transform: translate3d(6px, 0, 0);
+}
+
+.okr__post-img,
+.okr__blog-card-cover,
+.okr__product-img,
+.okr__case-img {
+  border: 0 !important;
+  border-radius: calc(var(--okr-card-radius) - 8px) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  margin: 10px 10px 0;
+  overflow: hidden;
+  transform: translate3d(0, 0, 0) scale(1);
+  transition:
+    box-shadow 360ms var(--okr-motion-soft),
+    filter 420ms var(--okr-motion-soft),
+    transform 520ms var(--okr-motion-soft);
+}
+
+.okr__post-img,
+.okr__blog-card-cover {
+  aspect-ratio: 16 / 10;
+}
+
+.okr__post:is(:hover, :focus-visible, :focus-within) .okr__post-img,
+.okr__blog-card:is(:hover, :focus-visible, :focus-within) .okr__blog-card-cover,
+.okr__product:is(:hover, :focus-visible, :focus-within) .okr__product-img,
+.okr__case:is(:hover, :focus-within) .okr__case-img {
+  box-shadow: inset 0 0 0 1px rgba(255, 103, 200, 0.52);
+  filter: saturate(1.12) contrast(1.04);
+  transform: translate3d(0, -2px, 0) scale(1.018);
+}
+
+.okr__post-body,
+.okr__case-body {
+  padding: clamp(18px, 2.6vw, 28px) !important;
+}
+
+.okr__post-tags,
+.okr__case-tags,
+.okr__product-cat,
+.okr__blog-card-category {
+  color: var(--okr-card-accent) !important;
+  line-height: 1.35;
+}
+
+.okr__post-title,
+.okr__case-title {
+  color: var(--okr-card-ink);
+  font-size: clamp(20px, 2.2vw, 30px);
+  line-height: 1.12;
+  margin: 0 0 10px;
+  transition: color 260ms ease, font-style 260ms ease;
+}
+
+.okr__post-excerpt,
+.okr__case-body p {
+  color: var(--okr-card-muted);
+  font-size: clamp(13.5px, 1.25vw, 15.5px);
+  line-height: 1.62;
+}
+
+.okr__blog-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.okr__blog-card--horizontal {
+  display: grid;
+  gap: 0;
+  grid-template-columns: minmax(220px, 0.82fr) minmax(0, 1fr);
+}
+
+.okr__blog-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: clamp(18px, 2.4vw, 28px);
+}
+
+.okr__blog-card--horizontal .okr__blog-card-body {
+  padding-left: clamp(14px, 2vw, 24px);
+}
+
+.okr__blog-card-title {
+  color: var(--okr-card-ink);
+  font-size: clamp(20px, 2vw, 28px);
+  line-height: 1.12;
+  margin: 0;
+}
+
+.okr__blog-card-title-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 260ms ease, font-style 260ms ease;
+}
+
+.okr__blog-card-excerpt {
+  color: var(--okr-card-muted);
+  display: -webkit-box;
+  font-size: 14.5px;
+  line-height: 1.58;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.okr__blog-card-meta {
+  align-items: center;
+  color: var(--okr-card-dim);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  gap: 9px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.okr__product {
+  min-height: 100%;
+}
+
+.okr__product-img {
+  background: #0a0a0b !important;
+  display: grid;
+  place-items: center;
+}
+
+.okr__product-img img {
+  object-fit: cover;
+  transform: scale(1);
+  transition: transform 520ms var(--okr-motion-soft);
+}
+
+.okr__product:is(:hover, :focus-visible, :focus-within) .okr__product-img img {
+  transform: scale(1.045);
+}
+
+.okr__product-body {
+  gap: 9px;
+  padding: clamp(18px, 2.5vw, 28px) !important;
+}
+
+.okr__product-name {
+  color: var(--okr-card-ink);
+  font-size: clamp(20px, 2.1vw, 28px);
+  line-height: 1.08;
+  margin: 0;
+  transition: color 260ms ease, font-style 260ms ease;
+}
+
+.okr__product-price {
+  color: var(--okr-card-accent);
+  font-size: clamp(18px, 1.9vw, 24px);
+  font-weight: 840;
+  margin-top: auto;
+}
+
+.okr__product-proof {
+  color: var(--okr-card-muted);
+}
+
+.okr__product-rating {
+  color: var(--okr-card-ink);
+}
+
+.okr__home .okr__process,
+.okr__home .okr__process-card,
+.okr__home .okr__process-detail,
+.okr__footer,
+.okr__footer-grid,
+.okr__foot-bottom {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.okr__home .okr__process {
+  gap: clamp(8px, 1.8vw, 18px);
+}
+
+.okr__home .okr__process-card {
+  background: transparent !important;
+  background-image: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.okr__home .okr__process-card:is(:hover, :focus-visible, .is-active) {
+  background: transparent !important;
+  transform: translate3d(0, -2px, 0) !important;
+}
+
+.okr__home .okr__process-card::before,
+.okr__footer::before {
+  display: none !important;
+}
+
+.okr__home .okr__process-card.is-active .okr__step-title,
+.okr__home .okr__process-card.is-active .okr__step-n,
+.okr__home .okr__process-card:is(:hover, :focus-visible) .okr__step-title {
+  color: var(--okr-card-accent);
+  font-style: italic;
+}
+
+.okr__footer {
+  padding-top: clamp(58px, 9vw, 112px) !important;
+}
+
+.okr__foot-list a,
+.okr__foot-contact-link,
+.okr__navlink,
+.okr__link,
+.okr__btn {
+  transition:
+    color 220ms ease,
+    font-style 220ms ease,
+    transform 300ms var(--okr-motion-soft);
+}
+
+.okr__foot-list a:hover,
+.okr__foot-list a:focus-visible,
+.okr__foot-contact-link:hover,
+.okr__foot-contact-link:focus-visible,
+.okr__navlink:hover,
+.okr__navlink:focus-visible,
+.okr__link:hover,
+.okr__link:focus-visible {
+  color: var(--okr-card-accent);
+  font-style: italic;
+}
+
+.okr :is(.okr__eyebrow, .okr__kicker, .okr__foot-title) {
+  border-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.okr__home :is(
+  .okr__section,
+  .okr__section-topbar,
+  .okr__cards,
+  .okr__process,
+  .okr__process-detail,
+  .okr__cta
+),
+.okr__home > .okr__wrap,
+.okr__footer,
+.okr__footer-grid,
+.okr__foot-bottom {
+  border: 0 !important;
+}
+
+@media (max-width: 760px) {
+  .okr {
+    --okr-card-radius: 24px;
+  }
+
+  .okr :is(.okr__cards, .okr__journal, .okr__blog-grid, .okr__products) {
+    gap: 14px !important;
+  }
+
+  .okr__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .okr__card {
+    min-height: 210px;
+    padding: 22px !important;
+  }
+
+  .okr__card-icon {
+    height: 46px;
+    margin-bottom: 24px;
+    width: 46px;
+  }
+
+  .okr__post-body,
+  .okr__case-body,
+  .okr__blog-card-body,
+  .okr__product-body {
+    padding: 14px !important;
+  }
+
+  .okr__blog-card--horizontal {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .okr__blog-card-title,
+  .okr__post-title,
+  .okr__product-name {
+    font-size: clamp(16px, 5vw, 20px);
+  }
+
+  .okr__blog-card-excerpt,
+  .okr__post-excerpt {
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+
+  .okr__journal,
+  .okr__blog-grid,
+  .okr__products {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .okr__home .okr__process {
+    border: 0 !important;
+    gap: 8px;
+  }
+
+  .okr__home .okr__process--snap .okr__process-card,
+  .okr__home .okr__process-card {
+    border: 0 !important;
+    min-height: 58px;
+    padding: 8px 0;
+  }
+
+  .okr__footer-grid {
+    border: 0 !important;
+    gap: 28px;
+  }
+}
+
+@media (max-width: 380px) {
+  .okr__journal,
+  .okr__blog-grid,
+  .okr__products {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.okr .okr__cards > .okr__card,
+.okr .okr__products > .okr__product,
+.okr .okr__home .okr__cards > .okr__card {
+  background: #101012 !important;
+  background-image: none !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.075),
+    0 18px 54px rgba(0, 0, 0, 0.34) !important;
+}
+
+.okr .okr__cards > .okr__card:is(:hover, :focus-visible, :focus-within, :active),
+.okr .okr__products > .okr__product:is(:hover, :focus-visible, :focus-within, :active),
+.okr .okr__home .okr__cards > .okr__card:is(:hover, :focus-visible, :focus-within, :active) {
+  background: #151216 !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 103, 200, 0.42),
+    0 24px 70px rgba(255, 103, 200, 0.12),
+    0 18px 54px rgba(0, 0, 0, 0.4) !important;
+}
+
 /* =========================================================================
    Touch-device content protection.
 
