@@ -4,6 +4,9 @@ import { Upload, X, Check, Eye, Database } from "lucide-react";
 import { getSiteSettings, updateSiteSettings } from "../../services/settingsService";
 import { productsData, ordersData } from "../../lib/supabaseData";
 import { pushLocalContentToSupabase } from "../../lib/supabaseSeed";
+import { createDynamicQrisDataUrl } from "../../lib/qrisDynamic";
+
+const QRIS_PREVIEW_AMOUNT = 149000;
 
 const SECTIONS = [
   {
@@ -64,9 +67,31 @@ export function AdminSettingsPage() {
   const [syncBusy, setSyncBusy] = useState(false);
   const [syncStatus, setSyncStatus] = useState("");
   const [toast, setToast] = useState(null); // {type, text}
+  const [dynamicQrisPreview, setDynamicQrisPreview] = useState(null);
+  const [dynamicQrisPreviewError, setDynamicQrisPreviewError] = useState(null);
   const fileRef = useRef(null);
 
   useEffect(() => { getSiteSettings().then(setData); }, []);
+
+  useEffect(() => {
+    if (!data?.qris_payload) {
+      setDynamicQrisPreview(null);
+      setDynamicQrisPreviewError(null);
+      return undefined;
+    }
+
+    let alive = true;
+    setDynamicQrisPreview(null);
+    setDynamicQrisPreviewError(null);
+    createDynamicQrisDataUrl(data.qris_payload, QRIS_PREVIEW_AMOUNT, { width: 420 })
+      .then((preview) => {
+        if (alive) setDynamicQrisPreview(preview);
+      })
+      .catch((error) => {
+        if (alive) setDynamicQrisPreviewError(error.message ?? "Gagal membuat preview QRIS dinamis.");
+      });
+    return () => { alive = false; };
+  }, [data?.qris_payload]);
 
   // Auto-hide toast setelah 4 detik
   useEffect(() => {
@@ -100,7 +125,7 @@ export function AdminSettingsPage() {
         r.readAsDataURL(file);
       });
       set("qris_image", dataUrl);
-      setToast({ type: "success", text: "Gambar QRIS di-preview. Klik Simpan supaya aktif." });
+      setToast({ type: "success", text: "Gambar QRIS statis di-preview. Nominal otomatis tetap memakai payload QRIS di bawah." });
     } catch (err) {
       setToast({ type: "error", text: "Gagal membaca file: " + err.message });
     } finally {
@@ -280,7 +305,7 @@ export function AdminSettingsPage() {
                       onChange={onQrisFile} style={{ display: "none" }}
                     />
                     <p className="wpx__help" style={{ marginTop: 10 }}>
-                      Upload screenshot QRIS (PNG/JPG, maks 1MB). Setelah upload, klik <b>Simpan</b> di kanan atas atau bawah.
+                      Upload screenshot QRIS (PNG/JPG, maks 1MB) hanya sebagai arsip/fallback visual. Nominal otomatis dibuat dari field <b>Payload QRIS statis</b>.
                     </p>
                     <p className="wpx__help" style={{ marginTop: 6 }}>
                       💡 Tips: kalau file terlalu besar, compress dulu di <a href="https://tinypng.com" target="_blank" rel="noreferrer" style={{ color: "var(--primary)" }}>tinypng.com</a>
@@ -299,7 +324,7 @@ export function AdminSettingsPage() {
                 </div>
 
                 {/* Preview: how customer sees the payment page */}
-                {data.qris_image && (
+                {(data.qris_image || dynamicQrisPreview || dynamicQrisPreviewError) && (
                   <div style={{ marginTop: 20 }}>
                     <div style={{
                       padding: "10px 14px", background: "rgba(34,197,94,0.08)",
@@ -307,19 +332,28 @@ export function AdminSettingsPage() {
                       fontSize: 13, color: "#86efac", marginBottom: 14,
                       display: "flex", alignItems: "center", gap: 8,
                     }}>
-                      <Check size={14} /> QRIS aktif — customer akan lihat gambar ini saat checkout
+                      <Check size={14} /> QRIS tersimpan — payment page membuat QR baru sesuai total order
                     </div>
                     <div style={{
                       background: "#0a0912", borderRadius: 12, padding: 24,
                       border: "1px solid var(--border)",
                     }}>
-                      <div style={{ fontSize: 11, color: "#ff9add", letterSpacing: 2, marginBottom: 4, textTransform: "uppercase" }}>Preview customer view</div>
+                      <div style={{ fontSize: 11, color: "#ff9add", letterSpacing: 2, marginBottom: 4, textTransform: "uppercase" }}>Preview QRIS nominal otomatis</div>
+                      <div style={{ fontSize: 12, color: "#a8adba", marginBottom: 18, lineHeight: 1.5 }}>
+                        Scan preview ini untuk mengetes nominal Rp 149.000. Jangan scan gambar QRIS statis di kiri karena nominalnya memang kosong.
+                      </div>
                       <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 24, alignItems: "center" }}>
                         <div style={{
                           background: "#fff", padding: 12, borderRadius: 10,
                           width: 180, height: 180,
                         }}>
-                          <img src={data.qris_image} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+                          {dynamicQrisPreview ? (
+                            <img src={dynamicQrisPreview.dataUrl} alt="Preview QRIS dinamis" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+                          ) : (
+                            <div style={{ width: "100%", height: "100%", display: "grid", placeItems: "center", color: "#111", textAlign: "center", fontSize: 12 }}>
+                              {dynamicQrisPreviewError || "Membuat preview..."}
+                            </div>
+                          )}
                         </div>
                         <div style={{ color: "#eef0f6", fontSize: 13 }}>
                           <div style={{ color: "#8b8f9d", fontSize: 11, marginBottom: 4 }}>Merchant</div>
@@ -329,7 +363,12 @@ export function AdminSettingsPage() {
                           <div style={{ color: "#8b8f9d", fontSize: 11, marginBottom: 4 }}>Terminal</div>
                           <div style={{ fontFamily: "monospace", marginBottom: 10 }}>{data.qris_terminal_label || "—"}</div>
                           <div style={{ color: "#8b8f9d", fontSize: 11, marginBottom: 4 }}>Total</div>
-                          <div style={{ color: "#ff9add", fontSize: 22, fontWeight: 700 }}>Rp 149.000</div>
+                          <div style={{ color: "#ff9add", fontSize: 22, fontWeight: 700 }}>Rp {QRIS_PREVIEW_AMOUNT.toLocaleString("id-ID")}</div>
+                          {dynamicQrisPreview && (
+                            <div style={{ color: "#8b8f9d", fontSize: 11, marginTop: 10, lineHeight: 1.5 }}>
+                              Mode QRIS: dinamis / amount embedded
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

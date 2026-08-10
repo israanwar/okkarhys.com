@@ -125,6 +125,7 @@ function PendingView({ order, settings, L, onChanged }) {
   const [gatewayChecking, setGatewayChecking] = useState(false);
   const [gatewayError, setGatewayError] = useState(null);
   const [dynamicQrisImage, setDynamicQrisImage] = useState(null);
+  const [dynamicQrisPayload, setDynamicQrisPayload] = useState(null);
   const [dynamicQrisLoading, setDynamicQrisLoading] = useState(false);
   const [dynamicQrisError, setDynamicQrisError] = useState(null);
   const fileRef = useRef(null);
@@ -154,6 +155,7 @@ function PendingView({ order, settings, L, onChanged }) {
   useEffect(() => {
     if (!showManualProof) {
       setDynamicQrisImage(null);
+      setDynamicQrisPayload(null);
       setDynamicQrisError(null);
       setDynamicQrisLoading(false);
       return undefined;
@@ -161,12 +163,14 @@ function PendingView({ order, settings, L, onChanged }) {
 
     let alive = true;
     setDynamicQrisImage(null);
+    setDynamicQrisPayload(null);
     setDynamicQrisError(null);
     setDynamicQrisLoading(true);
     createDynamicQrisDataUrl(settings.qris_payload, amountToPay)
-      .then(({ dataUrl }) => {
+      .then(({ dataUrl, payload }) => {
         if (!alive) return;
         setDynamicQrisImage(dataUrl);
+        setDynamicQrisPayload(payload);
       })
       .catch((e) => {
         if (!alive) return;
@@ -319,9 +323,11 @@ function PendingView({ order, settings, L, onChanged }) {
               {L.unique_amount_note.replace("{base}", order.total.toLocaleString("id-ID"))}
             </div>
           )}
-          {showManualProof && dynamicQrisImage && !dynamicQrisError && (
+          {showManualProof && dynamicQrisImage && dynamicQrisPayload && !dynamicQrisError && (
             <div style={{ marginTop: 10, fontSize: 12, color: "var(--okr-muted)", lineHeight: 1.5 }}>
-              {L.manual_dynamic_note}
+              <strong style={{ color: "var(--okr-primary-2)" }}>{L.dynamic_qris_active}</strong>
+              <br />
+              {L.manual_dynamic_note.replace("{amount}", amount)}
             </div>
           )}
         </div>
@@ -661,7 +667,8 @@ const LANG_EN = {
   qris_missing: "QRIS not available yet. Contact admin.",
   qris_generating: "Creating QRIS with the exact order amount.",
   dynamic_qris_error: "Unable to create QRIS with automatic amount.",
-  manual_dynamic_note: "This QRIS already contains the exact order amount, so the wallet amount field should be filled automatically.",
+  dynamic_qris_active: "Dynamic amount QRIS is active.",
+  manual_dynamic_note: "This QRIS was generated for this order with Rp {amount} embedded. If your wallet still asks for an amount, enter exactly Rp {amount}.",
   unique_amount_note: "Base total is Rp {base}. This exact amount may include a small unique code for automatic matching.",
   auto_title: "Automatic payment check",
   auto_starting: "Creating a dynamic QRIS payment for this order.",
@@ -713,7 +720,8 @@ const LANG_ID = {
   qris_missing: "QRIS belum tersedia. Hubungi admin.",
   qris_generating: "Membuat QRIS dengan nominal order persis.",
   dynamic_qris_error: "Gagal membuat QRIS dengan nominal otomatis.",
-  manual_dynamic_note: "QRIS ini sudah berisi nominal order persis, jadi kolom Amount di wallet seharusnya otomatis terisi.",
+  dynamic_qris_active: "QRIS nominal otomatis aktif.",
+  manual_dynamic_note: "QRIS ini dibuat khusus untuk order ini dengan nominal Rp {amount} tertanam. Jika aplikasi tetap meminta nominal, isi persis Rp {amount}.",
   unique_amount_note: "Total dasar Rp {base}. Nominal persis ini bisa memuat kode unik kecil agar pembayaran terbaca otomatis.",
   auto_title: "Cek pembayaran otomatis",
   auto_starting: "Membuat QRIS dinamis untuk order ini.",
