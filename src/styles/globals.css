@@ -4,6 +4,7 @@
 html, body {
   margin: 0;
   min-height: 100vh;
+  background: #000;
   /* Use `clip` instead of `hidden` so we don't create a scroll container,
      which would otherwise break `position: sticky` for descendants (sidebar,
      topbar, edit-page aside). Clip has the same horizontal-clipping effect. */
@@ -13,7 +14,10 @@ html, body {
   text-rendering: optimizeLegibility;
 }
 
-body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+body {
+  background: #000;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
 
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }

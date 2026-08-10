@@ -648,7 +648,6 @@ export function SiteChrome({ children, settings: providedSettings }) {
 
   return (
     <div className="okr" ref={shellRef}>
-      <AuroraBackdrop />
       <SiteHeader settings={settings} />
       {children}
       <SiteFooter settings={settings} />
