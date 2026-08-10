@@ -33,7 +33,7 @@ export function ServicesPage() {
               <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             <span className="okr__eyebrow">// {t("services_eyebrow").toUpperCase()}</span>
-            <AnimatedHeadline text={t("services_page_title")} className="okr__h2" />
+            <AnimatedHeadline text={t("services_page_title")} className="okr__h2" highlightFrom={2} />
             <p style={{ color: "var(--okr-muted)", maxWidth: 640, marginTop: 20, marginBottom: 56 }}>
               {t("services_page_subtitle", { count: serviceCount })}
             </p>

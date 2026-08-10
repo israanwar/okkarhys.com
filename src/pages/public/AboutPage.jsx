@@ -15,7 +15,7 @@ export function AboutPage() {
               <section className="okr__section okr__page-hero">
             <div className="okr__wrap" style={{ maxWidth: 900 }}>
             {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
-            <AnimatedHeadline text={p.hero_title} className="okr__h2" />
+            <AnimatedHeadline text={p.hero_title} className="okr__h2" highlightFrom={3} />
             {p.hero_subtitle && (
               <p className="okr__page-hero-lead">
                 {p.hero_subtitle}
