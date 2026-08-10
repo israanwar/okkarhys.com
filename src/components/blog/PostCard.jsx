@@ -22,7 +22,7 @@ function fmtDate(iso, lang) {
 // resolve author display dari brand. Bisa di-extend ke usersRepo nanti.
 const AUTHOR_DISPLAY = "Okka Rhys";
 
-export function PostCard({ post, layout = "grid" }) {
+export function PostCard({ post, layout = "grid", index = null }) {
   const { lang, t } = useI18n();
   const rawCategory = CATEGORY_BY_SLUG[post.category] ?? CATEGORY_BY_SLUG[DEFAULT_CATEGORY_SLUG];
   const category = localizeBlogCategory(rawCategory, lang);
@@ -32,11 +32,17 @@ export function PostCard({ post, layout = "grid" }) {
   const readCount = getPostReadCount(post);
 
   const isHorizontal = layout === "horizontal";
+  const cardIndex = index == null ? null : String(index + 1).padStart(2, "0");
 
   return (
     <article
-      className={`okr__blog-card${isHorizontal ? " okr__blog-card--horizontal" : ""}`}
+      className={`okr__blog-card okr__editorial-card${isHorizontal ? " okr__blog-card--horizontal" : ""}`}
+      data-card-index={cardIndex ?? undefined}
     >
+      <div className="okr__blog-card-signal" aria-hidden="true">
+        {cardIndex && <span>{cardIndex}</span>}
+        {category && <span>{category.name}</span>}
+      </div>
       <Link
         className="okr__blog-card-cover"
         to={`/blog/${post.slug}`}

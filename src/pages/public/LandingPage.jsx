@@ -105,13 +105,18 @@ export function LandingPage() {
                     <h2 className="okr__h2">{t("section_services_head")}<br />{t("section_services_head_2")}</h2>
                   </div>
                 </div>
-                <div className="okr__cards">
+                <div className="okr__cards okr__cards--services">
                   {services.items.map((s, i) => (
                     <article
                       key={i}
-                      className="okr__card okr__spotlight okr__reveal"
+                      className="okr__card okr__service-card okr__spotlight okr__reveal"
+                      data-card-index={String(i + 1).padStart(2, "0")}
                       style={{ "--reveal-delay": `${Math.min(i, 5) * 60}ms` }}
                     >
+                      <div className="okr__service-card-meta" aria-hidden="true">
+                        <span>{String(i + 1).padStart(2, "0")}</span>
+                        <span>{t("section_services")}</span>
+                      </div>
                       <h3 className="okr__card-title">{s.title}</h3>
                       <p className="okr__card-body">{s.body}</p>
                     </article>
@@ -206,14 +211,19 @@ export function LandingPage() {
                     {t("section_journal_all")} <ArrowRight size={15} />
                   </Link>
                 </div>
-                <div className="okr__journal">
+                <div className="okr__journal okr__journal--editorial">
                   {posts.map((p, i) => (
                     <Link
                       key={p.id}
-                      className="okr__post okr__spotlight okr__reveal"
+                      className="okr__post okr__editorial-card okr__spotlight okr__reveal"
+                      data-card-index={String(i + 1).padStart(2, "0")}
                       style={{ "--reveal-delay": `${Math.min(i, 5) * 60}ms` }}
                       to={`/blog/${p.slug}`}
                     >
+                      <div className="okr__blog-card-signal" aria-hidden="true">
+                        <span>{String(i + 1).padStart(2, "0")}</span>
+                        <span>{((p.tags ?? [])[0] ?? t("section_journal")).toUpperCase()}</span>
+                      </div>
                       <div className="okr__post-img" style={{ backgroundImage: `url("${resolveCover(p)}")` }} />
                       <div className="okr__post-body">
                         <div className="okr__post-tags">{(p.tags ?? []).join(" · ").toUpperCase()}</div>

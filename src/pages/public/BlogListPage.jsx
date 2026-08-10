@@ -237,8 +237,8 @@ export function BlogListPage({ initialCategorySlug = null }) {
                     )}
                   </div>
                 ) : (
-                  <div className="okr__blog-grid">
-                    {pageItems.map((p) => <PostCard key={p.id} post={p} />)}
+                  <div className="okr__blog-grid okr__blog-grid--editorial">
+                    {pageItems.map((p, i) => <PostCard key={p.id} post={p} index={pageStart + i} />)}
                   </div>
                 )}
 

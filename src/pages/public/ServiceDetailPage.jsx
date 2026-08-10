@@ -98,11 +98,22 @@ export function ServiceDetailPage() {
                     <h2 className="okr__service-section-title">{t("services_focused_count", { count: childServices.length })}</h2>
                   </div>
                 </div>
-                <div className="okr__cards okr__service-child-grid">
-                  {childServices.map((child) => {
+                <div className="okr__cards okr__cards--services okr__service-child-grid">
+                  {childServices.map((child, i) => {
                     const ChildIcon = ICON_MAP[child.icon] || Sparkles;
+                    const childIndex = String(i + 1).padStart(2, "0");
                     return (
-                      <Link key={child.id} to={`/services/${child.slug}`} className="okr__card" style={{ textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column" }}>
+                      <Link
+                        key={child.id}
+                        to={`/services/${child.slug}`}
+                        className="okr__card okr__service-card okr__service-card--catalog"
+                        data-card-index={childIndex}
+                        style={{ textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column" }}
+                      >
+                        <div className="okr__service-card-meta" aria-hidden="true">
+                          <span>{childIndex}</span>
+                          <span>{t("services_menu")}</span>
+                        </div>
                         <div className="okr__card-icon"><ChildIcon size={20} strokeWidth={2} /></div>
                         <h3 className="okr__card-title">{child.name}</h3>
                         <p className="okr__card-body" style={{ flex: 1 }}>{child.body}</p>

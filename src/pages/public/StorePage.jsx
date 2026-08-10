@@ -187,15 +187,25 @@ export function StorePage() {
                   </div>
                 ) : (
                   <>
-                    <div className="okr__products">
-                      {pageItems.map((p) => {
+                    <div className="okr__products okr__products--artifact">
+                      {pageItems.map((p, index) => {
                         const coverUrl = resolveProductCover(p);
+                        const productIndex = String(pageStart + index + 1).padStart(2, "0");
                         return (
-                          <Link key={p.id} className="okr__product" to={`/store/${p.slug}`}>
+                          <Link
+                            key={p.id}
+                            className="okr__product okr__artifact-card"
+                            to={`/store/${p.slug}`}
+                            data-card-index={productIndex}
+                          >
                             <div className="okr__product-img">
                               <img src={coverUrl} alt={p.name} loading="lazy" decoding="async" />
                             </div>
                             <div className="okr__product-body">
+                              <div className="okr__artifact-card-edition" aria-hidden="true">
+                                <span>{productIndex}</span>
+                                <span>OKKARHYS / ARTIFACT</span>
+                              </div>
                               {p.category && <div className="okr__product-cat">{p.category}</div>}
                               <div className="okr__product-name">{p.name}</div>
                               <ProductSocialProof product={p} />
