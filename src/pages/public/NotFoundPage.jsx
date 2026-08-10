@@ -1,5 +1,4 @@
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { useI18n } from "../../lib/i18n";
 
 export function NotFoundPage() {
@@ -7,8 +6,7 @@ export function NotFoundPage() {
   return (
     <>
       <Seo title="404 — okkarhys" description={t("nf_body")} noindex />
-      <SiteChrome>
-        <section className="okr__section" style={{ textAlign: "center" }}>
+              <section className="okr__section" style={{ textAlign: "center" }}>
           <div className="okr__wrap">
             <span className="okr__eyebrow">404</span>
             <h1 className="okr__h2">{t("nf_title")}</h1>
@@ -18,7 +16,6 @@ export function NotFoundPage() {
             <a className="okr__btn okr__btn--primary" href="/">{t("nf_action")}</a>
           </div>
         </section>
-      </SiteChrome>
     </>
   );
 }

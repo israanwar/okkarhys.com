@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { useLivePosts } from "../../hooks/usePageData";
 import { BLOG_CATEGORIES } from "../../data/blogCategories";
 
@@ -52,8 +51,7 @@ export function SitemapPage() {
         title="Sitemap"
         description={`Peta lengkap halaman Okkarhys — ${totalPosts} artikel di ${activeCategories} kategori aktif, plus halaman utama dan legal.`}
       />
-      <SiteChrome>
-        <section className="okr__section okr__page-hero" style={{ paddingBottom: 80 }}>
+              <section className="okr__section okr__page-hero" style={{ paddingBottom: 80 }}>
           <div className="okr__wrap" style={{ maxWidth: 960 }}>
             {/* Breadcrumb */}
             <nav aria-label="Breadcrumb" style={{ fontSize: 12, color: "var(--okr-muted)", marginBottom: 16, letterSpacing: "0.04em" }}>
@@ -160,7 +158,6 @@ export function SitemapPage() {
             </section>
           </div>
         </section>
-      </SiteChrome>
     </>
   );
 }

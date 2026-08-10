@@ -4,7 +4,6 @@ import {
   Check, Copy, Upload, Clock, X, Download, ShoppingBag, FileImage, ChevronRight,
 } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { ORDER_STATUS } from "../../lib/localStore";
 import { ordersData, productsData } from "../../lib/supabaseData";
 import { useLiveSettings } from "../../hooks/usePageData";
@@ -54,13 +53,11 @@ export function PaymentPage() {
   return (
     <>
       <Seo title={`Payment · ${order.order_number}`} description="Payment" noindex />
-      <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 100, paddingBottom: 80 }}>
+              <section className="okr__section" style={{ paddingTop: 100, paddingBottom: 80 }}>
           <div className="okr__wrap" style={{ maxWidth: 640 }}>
             <PaymentBody order={order} settings={settings} onChanged={forceRender} />
           </div>
         </section>
-      </SiteChrome>
     </>
   );
 }

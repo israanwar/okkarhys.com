@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Trash2, ShoppingBag } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { cartRepo } from "../../lib/localStore";
 import { useLiveCart } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
@@ -15,8 +14,7 @@ export function CartPage() {
   return (
     <>
       <Seo title={`${t("cart_title")} — okkarhys`} description={t("cart_title")} noindex />
-      <SiteChrome>
-        <section className="okr__section okr__page-hero">
+              <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             <h1 className="okr__h2">{t("cart_title")}</h1>
 
@@ -82,7 +80,6 @@ export function CartPage() {
             )}
           </div>
         </section>
-      </SiteChrome>
     </>
   );
 }

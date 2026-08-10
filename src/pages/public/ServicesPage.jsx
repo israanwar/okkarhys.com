@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Code2, Search, Sparkles, FileText, Settings, BarChart3, Zap, Wrench, ArrowRight } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { useLiveServices } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizeServiceCardItems } from "../../lib/serviceI18n";
@@ -30,8 +29,7 @@ export function ServicesPage() {
         title={`${t("services_eyebrow")} — okkarhys`}
         description={t("services_page_subtitle", { count: serviceCount })}
       />
-      <SiteChrome>
-        <section className="okr__section okr__page-hero">
+              <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             <span className="okr__eyebrow">// {t("services_eyebrow").toUpperCase()}</span>
             <h1 className="okr__h2">{t("services_page_title")}</h1>
@@ -59,7 +57,6 @@ export function ServicesPage() {
             )}
           </div>
         </section>
-      </SiteChrome>
     </>
   );
 }

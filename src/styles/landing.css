@@ -3155,34 +3155,50 @@
   }
 }
 
-/* --- Scroll progress bar (mobile only) ---------------------------------
-   Hidden until width narrows, then paints a thin vertical bar hugging the
-   right edge. Height is driven by the `--okr-scroll-progress` custom prop
-   the effects hook writes on the shell. */
+/* --- Scroll progress bar (mobile only, native scroll-driven) -----------
+   Old implementation used JS rAF writes + CSS `height` transition. That
+   combined with `100vh` (which changes as the mobile address bar
+   auto-hides) and a chase-with-lag transition produced the "shaky" scroll
+   feel — the bar was constantly playing catch-up while the viewport
+   height itself was flickering.
+
+   New impl: a fixed viewport layer scaled via `transform: scaleY()`, with
+   the scale tied directly to root scroll position via
+   `animation-timeline: scroll(root)`. Zero JS, transform-only (no layout),
+   no delayed chase transition. */
 .okr__scroll-progress {
   display: none;
 }
 @media (max-width: 720px) {
-  .okr__scroll-progress {
-    display: block;
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 2px;
-    height: calc(var(--okr-scroll-progress, 0) * 100vh);
-    background: linear-gradient(
-      180deg,
-      rgba(255, 214, 242, 0.85) 0%,
-      rgba(255, 103, 200, 0.75) 60%,
-      rgba(224, 68, 168, 0.6) 100%
-    );
-    box-shadow: 0 0 12px rgba(255, 103, 200, 0.45);
-    z-index: 78;
-    pointer-events: none;
-    transition: height 120ms linear;
-    /* iOS safe area — nudge in from the notch/rounded corner. */
-    margin-right: env(safe-area-inset-right);
+  @supports (animation-timeline: scroll()) {
+    .okr__scroll-progress {
+      display: block;
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 2px;
+      height: 100dvh;
+      transform-origin: top;
+      transform: scaleY(0);
+      animation: okrScrollProgressGrow linear;
+      animation-timeline: scroll(root);
+      background: linear-gradient(
+        180deg,
+        rgba(255, 214, 242, 0.85) 0%,
+        rgba(255, 103, 200, 0.75) 60%,
+        rgba(224, 68, 168, 0.6) 100%
+      );
+      box-shadow: 0 0 12px rgba(255, 103, 200, 0.45);
+      z-index: 78;
+      pointer-events: none;
+      margin-right: env(safe-area-inset-right);
+      will-change: transform;
+    }
   }
+}
+@keyframes okrScrollProgressGrow {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
 }
 
 /* --- Process section: horizontal snap-scroll on mobile ------------------
@@ -3335,11 +3351,9 @@
       the underlying glass tokens toward a slightly more opaque solid — the
       cards still read as "glass" over the darker aurora but no per-pixel
       blur is running.
-   2. Deferring the render of below-fold sections via `content-visibility:
-      auto` with a reserved intrinsic size (prevents scroll-jump on skip).
-   3. Dropping the `will-change` hint on reveal targets — with 20+ nodes it
+   2. Dropping the `will-change` hint on reveal targets — with 20+ nodes it
       hogs GPU memory more than it saves.
-   4. `touch-action: manipulation` on interactive controls — kills the
+   3. `touch-action: manipulation` on interactive controls — kills the
       legacy 300ms tap delay + prevents accidental double-tap zoom.
 
    Together with SiteChrome's mobile skip of the aurora canvas, this cuts
@@ -3365,16 +3379,6 @@
       linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)),
       rgba(22, 6, 17, 0.7);
     --okr-header-bg: rgba(6, 0, 4, 0.88);
-  }
-
-  /* Content-visibility on the big below-fold sections. Reserve a plausible
-     intrinsic size so the scrollbar and progress bar stay stable — otherwise
-     skipped sections collapse to 0 and cause layout jumps as they scroll in. */
-  .okr__process-section,
-  .okr__journal-section,
-  .okr .okr__section:not(:first-of-type) {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 720px;
   }
 
   /* Reveal transitions still work fine without the will-change layer hint. */
@@ -3454,5 +3458,3 @@
     pointer-events: auto;
   }
 }
-
-

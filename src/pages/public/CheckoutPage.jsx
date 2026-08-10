@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { cartRepo } from "../../lib/localStore";
 import { ordersData } from "../../lib/supabaseData";
 import { useLiveCart, useLiveSettings } from "../../hooks/usePageData";
@@ -72,8 +71,7 @@ export function CheckoutPage() {
   return (
     <>
       <Seo title={`${t("checkout_title")} — okkarhys`} description={t("checkout_title")} noindex />
-      <SiteChrome>
-        <section className="okr__section okr__page-hero">
+              <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             <h1 className="okr__h2">{t("checkout_title")}</h1>
 
@@ -174,7 +172,6 @@ export function CheckoutPage() {
             </form>
           </div>
         </section>
-      </SiteChrome>
     </>
   );
 }

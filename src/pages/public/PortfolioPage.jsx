@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Blocks, BriefcaseBusiness, CircuitBoard, Megaphone, Orbit, Radar } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { useLivePage } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizePage } from "../../lib/pageI18n";
@@ -22,8 +21,7 @@ export function PortfolioPage() {
     return (
       <>
         <Seo title="Portfolio - okkarhys" description="Portfolio okkarhys." />
-        <SiteChrome>
-          <section className="okr__section" style={{ paddingTop: 140, paddingBottom: 100 }}>
+                  <section className="okr__section" style={{ paddingTop: 140, paddingBottom: 100 }}>
             <div className="okr__wrap" style={{ maxWidth: 640, textAlign: "center" }}>
               {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
               <h1 className="okr__h2" style={{ marginTop: 20 }}>{t("portfolio_empty_title")}</h1>
@@ -32,7 +30,6 @@ export function PortfolioPage() {
               </p>
             </div>
           </section>
-        </SiteChrome>
       </>
     );
   }
@@ -43,8 +40,7 @@ export function PortfolioPage() {
         title={`${p.hero_title || t("nav_portfolio")} - okkarhys`}
         description={p.hero_subtitle || t("portfolio_empty_body")}
       />
-      <SiteChrome>
-        <section className="okr__section okr__portfolio-page" style={{ paddingTop: 110, paddingBottom: 70 }}>
+              <section className="okr__section okr__portfolio-page" style={{ paddingTop: 110, paddingBottom: 70 }}>
           <div className="okr__wrap">
             <header style={{ maxWidth: 860, marginBottom: 54 }}>
               {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
@@ -77,7 +73,6 @@ export function PortfolioPage() {
             )}
           </div>
         </section>
-      </SiteChrome>
     </>
   );
 }

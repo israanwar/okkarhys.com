@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, Search } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { useLiveProducts } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizeProduct, storeCategoryLabel } from "../../lib/storeI18n";
@@ -85,8 +84,7 @@ export function StorePage() {
   return (
     <>
       <Seo title="Store — okkarhys" description={t("store_subtitle")} />
-      <SiteChrome>
-        <section className="okr__section okr__page-hero">
+              <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             <span className="okr__eyebrow">{t("store_eyebrow")}</span>
             <h1 className="okr__h2">{t("store_title")}</h1>
@@ -221,7 +219,6 @@ export function StorePage() {
             )}
           </div>
         </section>
-      </SiteChrome>
     </>
   );
 }

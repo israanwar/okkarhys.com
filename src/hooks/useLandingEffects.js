@@ -2,19 +2,20 @@ import { useEffect } from "react";
 
 /**
  * Landing-page micro-interactions. Kept as a single hook so we set up (and
- * tear down) one scroll listener and one delegated pointer listener regardless
- * of how many cards live on the page.
+ * tear down) one delegated pointer listener regardless of how many cards live
+ * on the page.
  *
  * Effects:
- *  1. Scroll progress — writes `--okr-scroll-progress` (0..1) on the shell.
- *     CSS turns that into the thin bar at the right edge on mobile.
- *  2. Touch/pointer spotlight — a delegated pointer listener paints
+ *  1. Touch/pointer spotlight — a delegated pointer listener paints
  *     `--okr-mx / --okr-my` on any `.okr__spotlight` ancestor of the pointer,
  *     so the CSS glow can chase the finger. One handler covers cards, posts,
  *     and process cards without per-node listeners.
  *
- * Bails out entirely when `prefers-reduced-motion: reduce` — no scroll writes,
- * no pointer chasing. The shell still renders; it just doesn't animate.
+ * Scroll progress is native CSS now (`animation-timeline: scroll(root)`), so
+ * this hook intentionally does not write layout-affecting scroll styles.
+ *
+ * Bails out entirely when `prefers-reduced-motion: reduce` — no pointer
+ * chasing. The shell still renders; it just doesn't animate.
  */
 export function useLandingEffects(shellRef) {
   useEffect(() => {
@@ -25,23 +26,6 @@ export function useLandingEffects(shellRef) {
 
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
     if (reduce) return undefined;
-
-    // --- Scroll progress -----------------------------------------------------
-    let rafId = 0;
-    const updateProgress = () => {
-      rafId = 0;
-      const doc = document.documentElement;
-      const max = Math.max(1, doc.scrollHeight - window.innerHeight);
-      const progress = Math.min(1, Math.max(0, window.scrollY / max));
-      shell.style.setProperty("--okr-scroll-progress", progress.toFixed(4));
-    };
-    const onScroll = () => {
-      if (rafId) return;
-      rafId = window.requestAnimationFrame(updateProgress);
-    };
-    updateProgress();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
 
     // --- Pointer spotlight ---------------------------------------------------
     // We track the nearest `.okr__spotlight` ancestor and paint local coords
@@ -80,9 +64,6 @@ export function useLandingEffects(shellRef) {
     shell.addEventListener("pointerleave", clearTarget, { passive: true });
 
     return () => {
-      if (rafId) window.cancelAnimationFrame(rafId);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
       shell.removeEventListener("pointermove", onPointerMove);
       shell.removeEventListener("pointerdown", onPointerMove);
       shell.removeEventListener("pointerup", onPointerEnd);

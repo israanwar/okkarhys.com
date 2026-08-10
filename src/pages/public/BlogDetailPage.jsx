@@ -1,6 +1,5 @@
 import { useParams, Link, Navigate } from "react-router-dom";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { useLivePostState, useLivePosts } from "../../hooks/usePageData";
 import { RenderTiptap } from "../../components/blog/RenderTiptap";
 import { ArrowLeft } from "lucide-react";
@@ -17,11 +16,9 @@ export function BlogDetailPage() {
 
   if (loading && !post) {
     return (
-      <SiteChrome>
-        <section className="okr__section okr__page-hero">
+              <section className="okr__section okr__page-hero">
           <div className="okr__wrap" style={{ color: "var(--okr-muted)" }}>Loading…</div>
         </section>
-      </SiteChrome>
     );
   }
 
@@ -49,8 +46,7 @@ export function BlogDetailPage() {
         path={canonicalPath}
         article={{ post, category: rawCategory }}
       />
-      <SiteChrome>
-        <article className="okr__section" style={{ paddingTop: 100 }}>
+              <article className="okr__section" style={{ paddingTop: 100 }}>
           <div className="okr__wrap" style={{ maxWidth: 780 }}>
             <Link to="/blog" className="okr__link" style={{ marginBottom: 24, display: "inline-flex" }}>
               <ArrowLeft size={14} /> {t("blog_back")}
@@ -163,7 +159,6 @@ export function BlogDetailPage() {
             )}
           </div>
         </article>
-      </SiteChrome>
     </>
   );
 }

@@ -2,7 +2,6 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { useLiveSettings, useLiveHomepage, useLivePosts } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizeHomepage, localizeSiteDescription } from "../../lib/pageI18n";
@@ -78,9 +77,8 @@ export function LandingPage() {
 
   // Section reveals now run entirely through CSS `animation-timeline: view()`
   // (see `.okr__reveal` in landing.css) — no IntersectionObserver, no
-  // classList mutation, no React re-render conflicts. Contains only what we
-  // still need JS for: pointer spotlight, scroll progress, mobile snap sync.
-  const contentRef = useRef(null);
+  // classList mutation, no React re-render conflicts. This hook only keeps the
+  // pointer spotlight alive; scroll progress is native CSS.
   useLandingEffects(null);
 
   // Keep the active process card in sync with whichever card is snap-centered
@@ -100,10 +98,9 @@ export function LandingPage() {
           settings.seo_default_description_id || settings.description_id,
         )}
       />
-      <SiteChrome settings={settings}>
-        {/* Thin fixed progress bar — only painted on mobile via CSS. */}
-        <span className="okr__scroll-progress" aria-hidden="true" />
-        <div ref={contentRef}>
+      {/* Thin fixed progress bar - only painted on mobile via CSS. */}
+      <span className="okr__scroll-progress" aria-hidden="true" />
+      <div>
           <section className="okr__hero">
             <div className="okr__wrap">
               {hero.kicker && (
@@ -291,8 +288,7 @@ export function LandingPage() {
               <p>{cta.subtitle}</p>
             </div>
           </section>
-        </div>
-      </SiteChrome>
+      </div>
     </>
   );
 }

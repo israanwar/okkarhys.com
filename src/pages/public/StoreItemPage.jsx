@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Navigate, useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, ShoppingBag, Check } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { cartRepo } from "../../lib/localStore";
 import { useLiveProductState } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
@@ -52,11 +51,9 @@ export function StoreItemPage() {
 
   if (loading && !product) {
     return (
-      <SiteChrome>
-        <section className="okr__section okr__page-hero">
+              <section className="okr__section okr__page-hero">
           <div className="okr__wrap" style={{ color: "var(--okr-muted)" }}>Loading…</div>
         </section>
-      </SiteChrome>
     );
   }
 
@@ -73,8 +70,7 @@ export function StoreItemPage() {
   return (
     <>
       <Seo title={`${displayProduct.name} — okkarhys`} description={seoDescription(displayProduct.description)} />
-      <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 100 }}>
+              <section className="okr__section" style={{ paddingTop: 100 }}>
           <div className="okr__wrap">
             <Link to="/store" className="okr__link" style={{ marginBottom: 24, display: "inline-flex" }}>
               <ArrowLeft size={14} /> {t("store_back")}
@@ -115,7 +111,6 @@ export function StoreItemPage() {
             </div>
           </div>
         </section>
-      </SiteChrome>
     </>
   );
 }

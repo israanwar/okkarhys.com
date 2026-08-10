@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Mail, MessageCircle, MapPin, Clock, Check } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { contactsData } from "../../lib/supabaseData";
 import { useLivePage, useLiveSettings } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
@@ -42,8 +41,7 @@ export function ContactPage() {
   return (
     <>
       <Seo title={`${t("nav_contact")} — okkarhys`} description={p.hero_subtitle} />
-      <SiteChrome>
-        <section className="okr__section okr__page-hero">
+              <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
             <h1 className="okr__h2" style={{ marginTop: 20 }}>{p.hero_title}</h1>
@@ -133,7 +131,6 @@ export function ContactPage() {
             </div>
           </div>
         </section>
-      </SiteChrome>
     </>
   );
 }

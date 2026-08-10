@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { ChevronDown, Search } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { useLivePosts } from "../../hooks/usePageData";
 import { BLOG_CATEGORIES, CATEGORY_BY_SLUG } from "../../data/blogCategories";
 import { PostCard } from "../../components/blog/PostCard";
@@ -108,8 +107,7 @@ export function BlogListPage({ initialCategorySlug = null }) {
   return (
     <>
       <Seo title={pageTitle} description={pageDesc} />
-      <SiteChrome>
-        <section className="okr__section okr__page-hero" style={{ paddingBottom: 40 }}>
+              <section className="okr__section okr__page-hero" style={{ paddingBottom: 40 }}>
           <div className="okr__wrap">
             {/* Breadcrumb ringan */}
             <nav aria-label="Breadcrumb" style={{ fontSize: 12, color: "var(--okr-muted)", marginBottom: 16, letterSpacing: "0.04em" }}>
@@ -257,7 +255,6 @@ export function BlogListPage({ initialCategorySlug = null }) {
             </div>
           </div>
         </section>
-      </SiteChrome>
 
       {/* Layout CSS via style tag — sidebar hidden di mobile, side-by-side di desktop.
           Grid card: 3 kolom di desktop, 2 di tablet, 2 compact kolom di mobile. */}

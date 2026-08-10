@@ -24,6 +24,7 @@ const CartPage = lazyNamed(() => import("../pages/public/CartPage"), "CartPage")
 const CheckoutPage = lazyNamed(() => import("../pages/public/CheckoutPage"), "CheckoutPage");
 const PaymentPage = lazyNamed(() => import("../pages/public/PaymentPage"), "PaymentPage");
 
+const PublicLayout = lazyNamed(() => import("../layouts/PublicLayout"), "PublicLayout");
 const AdminLoginPage = lazyNamed(() => import("../pages/admin/AdminLoginPage"), "AdminLoginPage");
 const AdminLayout = lazyNamed(() => import("../layouts/AdminLayout"), "AdminLayout");
 const AdminDashboardPage = lazyNamed(() => import("../pages/admin/AdminDashboardPage"), "AdminDashboardPage");
@@ -54,26 +55,29 @@ export function AppRoutes() {
     <Suspense fallback={<RouteFallback />}>
       <Routes>
         {/* Public */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/services" element={<ServicesPage />} />
-        <Route path="/services/:slug" element={<ServiceDetailPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/portfolio" element={<PortfolioPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/sitemap" element={<SitemapPage />} />
-        <Route path="/blog" element={<BlogListPage />} />
-        {/* /blog/:slug bisa berupa category slug ATAU post slug.
-            BlogSlugRouter melakukan disambiguation runtime. */}
-        <Route path="/blog/:slug" element={<BlogSlugRouter />} />
-        <Route path="/store" element={<StorePage />} />
-        <Route path="/store/:slug" element={<StoreItemPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/orders/:orderNumber/payment" element={<PaymentPage />} />
-        {/* Legacy: /order/:id -> same page for backward compat */}
-        <Route path="/order/:orderNumber" element={<PaymentPage />} />
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/services/:slug" element={<ServiceDetailPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/sitemap" element={<SitemapPage />} />
+          <Route path="/blog" element={<BlogListPage />} />
+          {/* /blog/:slug bisa berupa category slug ATAU post slug.
+              BlogSlugRouter melakukan disambiguation runtime. */}
+          <Route path="/blog/:slug" element={<BlogSlugRouter />} />
+          <Route path="/store" element={<StorePage />} />
+          <Route path="/store/:slug" element={<StoreItemPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/orders/:orderNumber/payment" element={<PaymentPage />} />
+          {/* Legacy: /order/:id -> same page for backward compat */}
+          <Route path="/order/:orderNumber" element={<PaymentPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
 
         {/* Admin auth */}
         <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -100,8 +104,6 @@ export function AppRoutes() {
             </Route>
           </Route>
         </Route>
-
-        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
   );

@@ -1,5 +1,4 @@
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { useLivePage } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizePage } from "../../lib/pageI18n";
@@ -12,8 +11,7 @@ export function AboutPage() {
   return (
     <>
       <Seo title={`${p.hero_title || t("nav_about")} — okkarhys`} description={p.hero_subtitle} />
-      <SiteChrome>
-        <section className="okr__section okr__page-hero">
+              <section className="okr__section okr__page-hero">
           <div className="okr__wrap" style={{ maxWidth: 900 }}>
             {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
             <h1 className="okr__h2">{p.hero_title}</h1>
@@ -73,7 +71,6 @@ export function AboutPage() {
             </div>
           </section>
         )}
-      </SiteChrome>
     </>
   );
 }

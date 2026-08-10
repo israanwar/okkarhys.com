@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowLeft, MessageCircle, Check, Code2, Search, Sparkles, FileText, Settings, BarChart3, Zap, Wrench } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
-import { SiteChrome } from "../../components/layout/SiteChrome";
 import { useLiveServiceState, useLiveServices, useLiveSettings } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizeServiceCardItem, localizeServiceItem } from "../../lib/serviceI18n";
@@ -40,11 +39,9 @@ export function ServiceDetailPage() {
 
   if (loading && !rawService) {
     return (
-      <SiteChrome>
-        <section className="okr__section okr__page-hero">
+              <section className="okr__section okr__page-hero">
           <div className="okr__wrap" style={{ color: "var(--okr-muted)" }}>Loading…</div>
         </section>
-      </SiteChrome>
     );
   }
 
@@ -63,8 +60,7 @@ export function ServiceDetailPage() {
   return (
     <>
       <Seo title={`${s.name} — Services okkarhys`} description={s.description ?? s.body} />
-      <SiteChrome>
-        <section className="okr__section" style={{ paddingTop: 100 }}>
+              <section className="okr__section" style={{ paddingTop: 100 }}>
           <div className="okr__wrap" style={{ maxWidth: 900 }}>
             <Link to={backTo} className="okr__link" style={{ marginBottom: 24, display: "inline-flex" }}>
               <ArrowLeft size={14} /> {backLabel}
@@ -137,7 +133,6 @@ export function ServiceDetailPage() {
             </div>
           </div>
         </section>
-      </SiteChrome>
     </>
   );
 }
