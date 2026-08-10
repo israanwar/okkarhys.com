@@ -3536,6 +3536,580 @@
   display: none !important;
 }
 
+/* --- Homepage + footer redesign: solid editorial black -------------------
+   Removes the remaining tinted/glass surface language from the public home
+   page and footer. Layout uses lines, spacing, images, and type hierarchy
+   instead of stacked panels. */
+.okr__home {
+  background: #000;
+}
+
+.okr__home .okr__section {
+  border-top: 1px solid rgba(238, 240, 246, 0.12);
+}
+
+.okr__home .okr__section .okr__wrap {
+  padding-top: clamp(44px, 7vw, 92px);
+  padding-bottom: clamp(46px, 7vw, 96px);
+}
+
+.okr__home .okr__section-topbar {
+  align-items: start;
+  border-bottom: 1px solid rgba(238, 240, 246, 0.12);
+  display: grid;
+  gap: clamp(18px, 3vw, 32px);
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: 0;
+  padding-bottom: clamp(22px, 3vw, 34px);
+}
+
+.okr__home .okr__eyebrow,
+.okr__home .okr__kicker,
+.okr__home .okr__process-detail-kicker,
+.okr__home .okr__process-detail-points > span {
+  border-top-color: rgba(255, 103, 200, 0.54);
+  color: #ff67c8;
+}
+
+.okr__home .okr__link--glass {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0;
+  box-shadow: none !important;
+  color: #ff67c8;
+  min-height: auto;
+  padding: 0;
+}
+
+.okr__home .okr__link--glass:hover,
+.okr__home .okr__link--glass:focus-visible {
+  color: #ffffff;
+}
+
+.okr__home .okr__cards {
+  border-top: 1px solid rgba(238, 240, 246, 0.12);
+  display: grid;
+  gap: 0;
+  grid-template-columns: 1fr;
+}
+
+.okr__home .okr__section-topbar + .okr__cards {
+  border-top: 0;
+}
+
+.okr__home .okr__card {
+  background: transparent !important;
+  border: 0;
+  border-bottom: 1px solid rgba(238, 240, 246, 0.12);
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  contain: layout style;
+  display: grid;
+  gap: clamp(18px, 4vw, 56px);
+  grid-template-columns: minmax(0, 0.36fr) minmax(0, 1fr);
+  padding: clamp(24px, 4vw, 42px) 0;
+  transform: none !important;
+}
+
+.okr__home .okr__card:hover,
+.okr__home .okr__card:focus-within {
+  background: transparent !important;
+  border-color: rgba(255, 103, 200, 0.42);
+}
+
+.okr__home .okr__card-title {
+  color: #ffffff;
+  font-size: clamp(21px, 3vw, 36px);
+  line-height: 1.08;
+  margin: 0;
+}
+
+.okr__home .okr__card-body {
+  color: rgba(238, 240, 246, 0.68);
+  font-size: clamp(14.5px, 1.45vw, 18px);
+  line-height: 1.66;
+  margin: 0;
+  max-width: 68ch;
+}
+
+.okr__home .okr__process-section {
+  padding: 0;
+}
+
+.okr__home .okr__process-section .okr__h2 {
+  max-width: 680px;
+}
+
+.okr__home .okr__process {
+  border-top: 1px solid rgba(238, 240, 246, 0.12);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: clamp(24px, 4vw, 44px);
+}
+
+.okr__home .okr__process-card {
+  background: transparent !important;
+  border: 0;
+  border-right: 1px solid rgba(238, 240, 246, 0.12);
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  min-height: clamp(150px, 18vw, 210px);
+  padding: clamp(18px, 2.5vw, 30px);
+  transform: none !important;
+}
+
+.okr__home .okr__process-card:last-child {
+  border-right: 0;
+}
+
+.okr__home .okr__process-card:hover,
+.okr__home .okr__process-card:focus-visible,
+.okr__home .okr__process-card.is-active {
+  background: transparent !important;
+  border-color: rgba(255, 103, 200, 0.45);
+  box-shadow: none !important;
+}
+
+.okr__home .okr__process-card:focus-visible {
+  outline: 1px solid rgba(255, 103, 200, 0.72);
+  outline-offset: -1px;
+}
+
+.okr__home .okr__step-title {
+  font-size: clamp(16px, 1.7vw, 22px);
+  line-height: 1.16;
+  margin: clamp(18px, 4vw, 42px) 0 10px;
+}
+
+.okr__home .okr__step-body {
+  color: rgba(238, 240, 246, 0.54);
+  font-size: 14px;
+}
+
+.okr__home .okr__process-card.is-active .okr__step-n,
+.okr__home .okr__process-card.is-active .okr__step-title {
+  color: #ff67c8;
+}
+
+.okr__home .okr__process-detail {
+  background: transparent !important;
+  border: 0;
+  border-bottom: 1px solid rgba(238, 240, 246, 0.12);
+  border-radius: 0 !important;
+  border-top: 1px solid rgba(255, 103, 200, 0.34);
+  box-shadow: none !important;
+  gap: clamp(24px, 5vw, 72px);
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.55fr);
+  margin-top: 0;
+  padding: clamp(26px, 4vw, 46px) 0;
+}
+
+.okr__home .okr__process-detail h3 {
+  font-size: clamp(24px, 3.6vw, 48px);
+}
+
+.okr__home .okr__process-detail p {
+  color: rgba(238, 240, 246, 0.7);
+  font-size: clamp(14.5px, 1.35vw, 17px);
+  max-width: 68ch;
+}
+
+.okr__home .okr__process-detail-points {
+  border-left: 1px solid rgba(238, 240, 246, 0.12);
+}
+
+.okr__home .okr__journal {
+  display: grid;
+  gap: clamp(24px, 4vw, 44px) clamp(18px, 3vw, 32px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: clamp(26px, 4vw, 44px);
+}
+
+.okr__home .okr__post {
+  background: transparent !important;
+  border: 0;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible;
+  transform: none !important;
+}
+
+.okr__home .okr__post:hover,
+.okr__home .okr__post:focus-visible {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.okr__home .okr__post-img {
+  border: 1px solid rgba(238, 240, 246, 0.14);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.okr__home .okr__post:hover .okr__post-img,
+.okr__home .okr__post:focus-visible .okr__post-img {
+  border-color: rgba(255, 103, 200, 0.52);
+}
+
+.okr__home .okr__post-body {
+  padding: 16px 0 0;
+}
+
+.okr__home .okr__post-tags,
+.okr__home .okr__case-tags {
+  color: #ff67c8;
+  font-size: 11px;
+}
+
+.okr__home .okr__post-title,
+.okr__home .okr__case-title {
+  color: #ffffff;
+}
+
+.okr__home .okr__post-excerpt,
+.okr__home .okr__case-body p {
+  color: rgba(238, 240, 246, 0.62);
+}
+
+.okr__home .okr__cases {
+  display: grid;
+  gap: clamp(24px, 4vw, 44px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: clamp(26px, 4vw, 44px);
+}
+
+.okr__home .okr__case {
+  background: transparent !important;
+  border: 0;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible;
+  transform: none !important;
+}
+
+.okr__home .okr__case:hover,
+.okr__home .okr__case:focus-within {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.okr__home .okr__case-img {
+  border: 1px solid rgba(238, 240, 246, 0.14);
+}
+
+.okr__home .okr__case:hover .okr__case-img {
+  border-color: rgba(255, 103, 200, 0.52);
+}
+
+.okr__home .okr__case-body {
+  padding: 18px 0 0;
+}
+
+.okr__home > .okr__wrap {
+  border-top: 1px solid rgba(238, 240, 246, 0.12);
+}
+
+.okr__home .okr__cta {
+  background: transparent !important;
+  border: 0;
+  border-bottom: 1px solid rgba(238, 240, 246, 0.12);
+  border-radius: 0 !important;
+  border-top: 1px solid rgba(255, 103, 200, 0.34);
+  box-shadow: none !important;
+  margin: 0 0 clamp(58px, 8vw, 110px);
+  overflow: visible;
+  padding: clamp(44px, 8vw, 90px) 0;
+  text-align: left;
+}
+
+.okr__home .okr__cta h3 {
+  max-width: 760px;
+}
+
+.okr__home .okr__cta p {
+  color: rgba(238, 240, 246, 0.68);
+  margin-bottom: 0;
+  max-width: 560px;
+}
+
+.okr__footer {
+  background: #000 !important;
+  border-top: 1px solid rgba(238, 240, 246, 0.14);
+  box-shadow: none !important;
+  color: rgba(238, 240, 246, 0.64);
+  overflow: visible;
+  padding: clamp(58px, 8vw, 104px) 0 28px !important;
+}
+
+.okr__footer::before {
+  display: none !important;
+}
+
+.okr__footer-grid {
+  border-bottom: 1px solid rgba(238, 240, 246, 0.12);
+  display: grid;
+  gap: clamp(30px, 5vw, 76px);
+  grid-template-columns: minmax(0, 1.75fr) repeat(3, minmax(120px, 0.72fr));
+  padding-bottom: clamp(34px, 5vw, 60px);
+}
+
+.okr__footer-brand-col,
+.okr__footer-col {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.okr__foot-brand {
+  margin-bottom: clamp(18px, 3vw, 30px);
+}
+
+.okr__foot-brand .okr-logo__word {
+  font-size: clamp(32px, 4.8vw, 64px);
+}
+
+.okr__foot-desc {
+  color: rgba(238, 240, 246, 0.66);
+  font-size: clamp(14px, 1.35vw, 17px);
+  line-height: 1.72;
+  margin-bottom: clamp(22px, 3vw, 32px);
+  max-width: 520px;
+}
+
+.okr__foot-social {
+  gap: 18px;
+}
+
+.okr__foot-social a {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: rgba(238, 240, 246, 0.58);
+  height: auto;
+  width: auto;
+}
+
+.okr__foot-social a:hover,
+.okr__foot-social a:focus-visible,
+.okr__foot-social a:active {
+  color: #ff67c8;
+  transform: none;
+}
+
+.okr__foot-title {
+  border-top: 0;
+  color: #ff67c8;
+  display: block;
+  font-size: 11.5px;
+  letter-spacing: 0.18em;
+  margin: 0 0 18px;
+  padding-top: 0;
+}
+
+.okr__foot-list {
+  display: grid;
+  gap: 11px;
+}
+
+.okr__foot-list a,
+.okr__foot-contact-link {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: rgba(238, 240, 246, 0.62);
+  margin: 0 !important;
+  min-height: auto !important;
+  padding: 0 !important;
+  width: fit-content !important;
+}
+
+.okr__foot-list a:hover,
+.okr__foot-list a:focus-visible,
+.okr__foot-list a:active,
+.okr__foot-contact-link:hover,
+.okr__foot-contact-link:focus-visible,
+.okr__foot-contact-link:active {
+  border-color: transparent;
+  color: #ffffff;
+  outline: none;
+}
+
+.okr__foot-contact {
+  gap: 14px;
+}
+
+.okr__foot-contact-link svg {
+  color: #ff67c8;
+}
+
+.okr__foot-bottom {
+  border-top: 0;
+  color: rgba(238, 240, 246, 0.42);
+  padding-top: 22px;
+}
+
+@media (max-width: 980px) {
+  .okr__footer-grid {
+    grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(112px, 1fr));
+  }
+
+  .okr__home .okr__journal {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .okr__home .okr__section .okr__wrap {
+    padding-top: 38px;
+    padding-bottom: 42px;
+  }
+
+  .okr__home .okr__section-topbar {
+    grid-template-columns: 1fr;
+    padding-bottom: 20px;
+  }
+
+  .okr__home .okr__card {
+    gap: 12px;
+    grid-template-columns: 1fr;
+    padding: 24px 0;
+  }
+
+  .okr__home .okr__card-title {
+    font-size: clamp(22px, 7vw, 30px);
+  }
+
+  .okr__home .okr__process {
+    border-top: 1px solid rgba(238, 240, 246, 0.12);
+    display: grid;
+    gap: 0;
+    grid-template-columns: 1fr;
+    margin-inline: 0;
+    overflow: visible;
+    padding-inline: 0;
+  }
+
+  .okr__home .okr__process--snap .okr__process-card,
+  .okr__home .okr__process-card {
+    border: 0;
+    border-bottom: 1px solid rgba(238, 240, 246, 0.12);
+    display: grid;
+    flex: none;
+    grid-template-columns: 40px minmax(0, 1fr);
+    min-height: 62px;
+    padding: 12px 0;
+    width: 100%;
+  }
+
+  .okr__home .okr__process--snap .okr__process-card.is-active,
+  .okr__home .okr__process-card.is-active {
+    background: transparent !important;
+    border-color: rgba(255, 103, 200, 0.48);
+  }
+
+  .okr__home .okr__step-title {
+    margin: 0 0 4px;
+  }
+
+  .okr__home .okr__process-dots {
+    display: none !important;
+  }
+
+  .okr__home .okr__process-detail {
+    grid-template-columns: 1fr;
+    padding: 24px 0;
+  }
+
+  .okr__home .okr__process-detail-points {
+    border-left: 0;
+    border-top: 1px solid rgba(238, 240, 246, 0.12);
+    padding-left: 0;
+    padding-top: 20px;
+  }
+
+  .okr__home .okr__journal {
+    gap: 22px 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .okr__home .okr__post-body {
+    padding-top: 12px;
+  }
+
+  .okr__home .okr__post-title {
+    font-size: clamp(14px, 4.1vw, 17px);
+  }
+
+  .okr__home .okr__post-excerpt {
+    font-size: 12px;
+    line-height: 1.48;
+  }
+
+  .okr__home .okr__cases {
+    grid-template-columns: 1fr;
+  }
+
+  .okr__home .okr__cta {
+    margin-bottom: 46px;
+    padding: 34px 0;
+  }
+
+  .okr__footer {
+    padding: 42px 0 22px !important;
+  }
+
+  .okr__footer-grid {
+    gap: 28px;
+    grid-template-columns: 1fr;
+    padding-bottom: 30px;
+  }
+
+  .okr__foot-list,
+  .okr__footer-col--legal .okr__foot-list {
+    gap: 10px 18px;
+    grid-template-columns: repeat(2, minmax(0, max-content));
+  }
+
+  .okr__foot-contact-link {
+    width: auto !important;
+  }
+
+  .okr__foot-bottom {
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
+
+@media (max-width: 380px) {
+  .okr__home .okr__journal {
+    grid-template-columns: 1fr;
+  }
+
+  .okr__foot-list,
+  .okr__footer-col--legal .okr__foot-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.okr .okr__home :is(
+  .okr__link--glass,
+  .okr__card,
+  .okr__process-card,
+  .okr__process-detail,
+  .okr__post,
+  .okr__case,
+  .okr__cta
+) {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
 /* =========================================================================
    Touch-device content protection.
 

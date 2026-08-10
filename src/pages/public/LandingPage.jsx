@@ -100,7 +100,7 @@ export function LandingPage() {
       />
       {/* Thin fixed progress bar - only painted on mobile via CSS. */}
       <span className="okr__scroll-progress" aria-hidden="true" />
-      <div>
+      <div className="okr__home">
           <section className="okr__hero">
             <div className="okr__wrap">
               {hero.kicker && (
