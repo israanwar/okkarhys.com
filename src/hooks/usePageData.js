@@ -9,6 +9,7 @@ import {
 } from "../lib/supabaseData";
 import { ensureRemoteChangeBridge } from "../lib/supabaseClient";
 import { applyProductPriceDiscount, applyProductPriceDiscounts } from "../lib/productPricing";
+import { normalizePortfolioProjects } from "../lib/portfolioProjects";
 
 // Universal auto-refresh hook — updates on local writes, storage changes from
 // other tabs, visibility return, or window focus. Avoid polling: rerendering a
@@ -62,7 +63,13 @@ function useLive(readFn, fallbackFn, deps = []) {
 }
 
 // Pages (about, contact, portfolio, privacy, terms)
-export function useLivePage(key) { return useLive(() => pagesData.get(key), () => pagesRepo.get(key) ?? {}, [key]) ?? {}; }
+export function useLivePage(key) {
+  return useLive(
+    () => pagesData.get(key),
+    () => key === "portfolio" ? normalizePortfolioProjects(pagesRepo.get(key)) : pagesRepo.get(key) ?? {},
+    [key],
+  ) ?? {};
+}
 
 // Global site settings
 export function useLiveSettings() { return useLive(() => settingsData.get(), () => settingsRepo.get() ?? {}, []) ?? {}; }

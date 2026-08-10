@@ -5,6 +5,7 @@
 import { OKKARHYS_BLOG_POSTS_SEED } from "../data/blogSeedOkkaVoice";
 import { OKKARHYS_SERVICES_SEED } from "../data/serviceCatalog";
 import { applyProductPriceDiscount } from "./productPricing";
+import { normalizePortfolioProjects } from "./portfolioProjects";
 import { generateStoreCover } from "./storePlaceholder";
 
 const KEYS = {
@@ -983,6 +984,16 @@ function ensureSeed() {
       write(KEYS.pages, existing);
     }
     localStorage.setItem("okr:migrated:portfolio:projects:v10", "1");
+  }
+  if (localStorage.getItem("okr:migrated:portfolio:projects:v11") !== "1") {
+    const existing = read(KEYS.pages, {}) ?? {};
+    const portfolio = existing.portfolio ?? {};
+    const nextPortfolio = normalizePortfolioProjects(portfolio);
+    if (JSON.stringify(nextPortfolio.consulting ?? []) !== JSON.stringify(portfolio.consulting ?? [])) {
+      existing.portfolio = { ...portfolio, ...nextPortfolio, updated_at: now() };
+      write(KEYS.pages, existing);
+    }
+    localStorage.setItem("okr:migrated:portfolio:projects:v11", "1");
   }
   // Services seed (v5 = shorter category summaries + long service detail pages)
   if (localStorage.getItem("okr:seeded:services:v5") !== "1") {
@@ -2203,8 +2214,14 @@ This policy may be updated at any time. The latest version will always be availa
       {
         year: "2024-Now",
         role: "Web Development & SEO Consultant",
-        org: "Investoft",
+        org: "R24 Studio",
         desc: "Website development, SEO architecture, and organic visibility optimization.",
+      },
+      {
+        year: "2024-Now",
+        role: "YouTube Sports Channel Consultant",
+        org: "Akraga TV",
+        desc: "Sports YouTube channel strategy, content direction, channel optimization, monetization, and audience growth.",
       },
     ],
     portfolio_groups: [

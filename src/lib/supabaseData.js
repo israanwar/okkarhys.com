@@ -13,6 +13,7 @@ import {
   ORDER_STATUS,
 } from "./localStore";
 import { applyProductPriceDiscount, applyProductPriceDiscounts } from "./productPricing";
+import { normalizePortfolioProjects } from "./portfolioProjects";
 
 const MEDIA_BUCKET = "okkarhys-media";
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -146,6 +147,10 @@ function servicePayload(service) {
   };
   if (isUuid(data.id)) payload.id = data.id;
   return payload;
+}
+
+function pageRowToItem(key, data) {
+  return key === "portfolio" ? normalizePortfolioProjects(data) : data;
 }
 
 function contactPayload(contact) {
@@ -294,9 +299,15 @@ export const pagesData = {
         .from("pages")
         .select("page_key,data");
       if (error) throw error;
-      if (!data?.length) return pagesRepo.getAll();
-      return Object.fromEntries(data.map((row) => [row.page_key, row.data]));
-    }, () => pagesRepo.getAll());
+      if (!data?.length) {
+        const pages = pagesRepo.getAll();
+        return { ...pages, portfolio: normalizePortfolioProjects(pages?.portfolio) };
+      }
+      return Object.fromEntries(data.map((row) => [row.page_key, pageRowToItem(row.page_key, row.data)]));
+    }, () => {
+      const pages = pagesRepo.getAll();
+      return { ...pages, portfolio: normalizePortfolioProjects(pages?.portfolio) };
+    });
   },
   async get(key) {
     return tryRemote(async () => {
@@ -306,21 +317,23 @@ export const pagesData = {
         .eq("page_key", key)
         .maybeSingle();
       if (error) throw error;
-      return data?.data ?? pagesRepo.get(key);
-    }, () => pagesRepo.get(key));
+      return pageRowToItem(key, data?.data ?? pagesRepo.get(key));
+    }, () => pageRowToItem(key, pagesRepo.get(key)));
   },
   async update(key, pageData) {
     return tryRemote(async () => {
+      const nextPage = pageRowToItem(key, clone(pageData));
       const { data, error } = await supabase
         .from("pages")
-        .upsert({ page_key: key, data: clone(pageData) }, { onConflict: "page_key" })
+        .upsert({ page_key: key, data: nextPage }, { onConflict: "page_key" })
         .select("data")
         .single();
       if (error) throw error;
-      pagesRepo.update(key, data.data);
+      const updatedPage = pageRowToItem(key, data.data);
+      pagesRepo.update(key, updatedPage);
       emitRemoteChange(`pages:${key}`);
-      return data.data;
-    }, () => pagesRepo.update(key, pageData));
+      return updatedPage;
+    }, () => pagesRepo.update(key, pageRowToItem(key, pageData)));
   },
 };
 
