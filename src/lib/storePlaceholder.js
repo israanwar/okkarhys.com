@@ -234,12 +234,12 @@ function wrapTitle(title, maxCharsPerLine = 16, maxLines = 4) {
 }
 
 function fontSizeFor(lines) {
-  const base = lines.length <= 1 ? 78 : lines.length === 2 ? 64 : lines.length === 3 ? 54 : 46;
+  const base = lines.length <= 1 ? 66 : lines.length === 2 ? 50 : lines.length === 3 ? 42 : 35;
   const longest = Math.max(1, ...lines.map((line) => line.length));
-  const maxWidth = lines.length <= 1 ? 630 : 540;
-  const charRatio = lines.length <= 1 ? 0.62 : 0.76;
+  const maxWidth = lines.length <= 1 ? 570 : 520;
+  const charRatio = lines.length <= 1 ? 0.64 : 0.74;
   const fitted = Math.floor(maxWidth / (longest * charRatio));
-  return Math.max(36, Math.min(base, fitted));
+  return Math.max(30, Math.min(base, fitted));
 }
 
 function chipSvg({ x, y, label, bg, ink, rotate = 0 }) {
@@ -254,15 +254,15 @@ function chipSvg({ x, y, label, bg, ink, rotate = 0 }) {
 
 function titleSvg(lines, palette) {
   const fontSize = fontSizeFor(lines);
-  const lineHeight = fontSize * 0.92;
-  const startY = 234 - ((lines.length - 1) * lineHeight) / 2;
+  const lineHeight = fontSize * 1.08;
+  const startY = 236 - ((lines.length - 1) * lineHeight) / 2;
   const highlightIndex = lines.length > 1 ? Math.min(1, lines.length - 1) : -1;
   const highlight = highlightIndex >= 0
-    ? `<rect x="45" y="${startY + highlightIndex * lineHeight - fontSize * 0.78}" width="650" height="${fontSize * 0.9}" rx="2" fill="${palette.accent}" opacity="0.9" transform="rotate(-1.6 370 ${startY + highlightIndex * lineHeight})"/>`
+    ? `<rect x="72" y="${startY + highlightIndex * lineHeight - fontSize * 0.72}" width="586" height="${fontSize * 0.84}" rx="3" fill="${palette.accent}" opacity="0.9" transform="rotate(-1.4 365 ${startY + highlightIndex * lineHeight})"/>`
     : "";
 
   const text = lines.map((line, index) => (
-    `<text x="60" y="${startY + index * lineHeight}" font-family="Arial Black, Arial, system-ui, sans-serif" font-size="${fontSize}" font-weight="900" fill="${palette.ink}" letter-spacing="0">${xmlEsc(line)}</text>`
+    `<text x="92" y="${startY + index * lineHeight}" font-family="Arial Black, Arial, system-ui, sans-serif" font-size="${fontSize}" font-weight="900" fill="${palette.ink}" letter-spacing="0">${xmlEsc(line)}</text>`
   )).join("");
 
   return highlight + text;
@@ -325,8 +325,8 @@ function ornamentSvg(palette, seed) {
 
 function metaSvg(category, palette) {
   return (
-    `<text x="58" y="72" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="800" fill="${palette.muted}" letter-spacing="5">${xmlEsc(String(category || palette.label).toUpperCase())}</text>` +
-    `<text x="58" y="542" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="${palette.footer}" opacity="0.74" letter-spacing="4">${xmlEsc(STORE_WATERMARK)}</text>`
+    `<text x="92" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="800" fill="${palette.muted}" letter-spacing="4">${xmlEsc(String(category || palette.label).toUpperCase())}</text>` +
+    `<text x="92" y="542" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="${palette.footer}" opacity="0.74" letter-spacing="4">${xmlEsc(STORE_WATERMARK)}</text>`
   );
 }
 
@@ -335,7 +335,7 @@ export function generateStoreCover(product = {}) {
   const title = cleanTitle(product.name);
   const palette = classifyProduct(product);
   const seed = hashString(`${product.slug || ""} ${product.name || ""}`);
-  const lines = wrapTitle(title, seed % 3 === 0 ? 14 : 15, 4);
+  const lines = wrapTitle(title, seed % 3 === 0 ? 15 : 16, 4);
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">` +
     `<defs>` +

@@ -1,15 +1,15 @@
 const BRAND = {
-  bgTop: "#170716",
-  bgMid: "#10040d",
-  bgBot: "#050103",
-  panel: "#24101f",
-  panel2: "#34142a",
-  accent: "#e044a8",
-  accentSoft: "#ff9add",
-  cool: "#7db6df",
-  ink: "#f4edf3",
-  muted: "#c4aabb",
-  dim: "#786576",
+  paper: "#ffffff",
+  paperSoft: "#f6fbff",
+  ink: "#111722",
+  muted: "#5e6a78",
+  dim: "#93a0ad",
+  line: "#cfdae5",
+  pink: "#ff4fbd",
+  pinkSoft: "#ffd6f0",
+  cyan: "#43d9ec",
+  cyanSoft: "#d8f8ff",
+  lime: "#c9ff72",
   watermark: "OKKARHYS - JOURNAL",
 };
 
@@ -32,12 +32,13 @@ function hashString(value) {
   return Math.abs(hash);
 }
 
-function wrapTitle(title, maxCharsPerLine = 25, maxLines = 3) {
+function wrapTitle(title, maxCharsPerLine = 24, maxLines = 3) {
   const words = String(title || "Untitled")
     .split(/\s+/)
     .filter(Boolean);
   const lines = [];
   let line = "";
+
   for (const word of words) {
     const next = (line + " " + word).trim();
     if (next.length > maxCharsPerLine && line) {
@@ -48,6 +49,7 @@ function wrapTitle(title, maxCharsPerLine = 25, maxLines = 3) {
     }
     if (lines.length === maxLines) break;
   }
+
   if (line && lines.length < maxLines) lines.push(line);
   if (words.join(" ").length > lines.join(" ").length && lines.length) {
     lines[lines.length - 1] = `${lines[lines.length - 1].replace(/\.+$/, "")}...`;
@@ -56,19 +58,26 @@ function wrapTitle(title, maxCharsPerLine = 25, maxLines = 3) {
 }
 
 function fontSizeFor(lines) {
-  const base = lines.length <= 1 ? 50 : lines.length === 2 ? 42 : 35;
+  const base = lines.length <= 1 ? 58 : lines.length === 2 ? 48 : 38;
   const longest = Math.max(1, ...lines.map((line) => line.length));
-  const fitted = Math.floor(632 / (longest * 0.58));
-  return Math.max(28, Math.min(base, fitted));
+  const fitted = Math.floor(642 / (longest * 0.58));
+  return Math.max(30, Math.min(base, fitted));
 }
 
-function titleSvg(lines) {
+function titleSvg(lines, seed) {
   const fontSize = fontSizeFor(lines);
-  const lineHeight = fontSize * 1.17;
-  const startY = 230 - ((lines.length - 1) * lineHeight) / 2;
-  return lines.map((line, index) => (
-    `<text x="64" y="${startY + index * lineHeight}" font-family="Plus Jakarta Sans, Arial, system-ui, sans-serif" font-size="${fontSize}" font-weight="800" fill="${BRAND.ink}" letter-spacing="-0.7">${xmlEsc(line)}</text>`
-  )).join("");
+  const lineHeight = fontSize * 1.12;
+  const startY = 228 - ((lines.length - 1) * lineHeight) / 2;
+  const accentIndex = lines.length > 1 ? Math.min(1, lines.length - 1) : 0;
+  const accentWidth = Math.min(610, Math.max(210, lines[accentIndex].length * fontSize * 0.52));
+  const markerY = startY + accentIndex * lineHeight - fontSize * 0.72;
+
+  return (
+    `<rect x="58" y="${markerY}" width="${accentWidth}" height="${fontSize * 0.82}" rx="4" fill="${seed % 2 ? BRAND.pinkSoft : BRAND.cyanSoft}" opacity="0.92" transform="rotate(-1.2 360 ${markerY})"/>` +
+    lines.map((line, index) => (
+      `<text x="72" y="${startY + index * lineHeight}" font-family="Plus Jakarta Sans, Arial, system-ui, sans-serif" font-size="${fontSize}" font-weight="850" fill="${index === accentIndex ? BRAND.pink : BRAND.ink}" letter-spacing="0">${xmlEsc(line)}</text>`
+    )).join("")
+  );
 }
 
 function categoryLabel(value) {
@@ -77,58 +86,37 @@ function categoryLabel(value) {
 
 export function generateBlogCover({ title, category = "", slug = "" }) {
   const seed = hashString(`${slug}|${title}|${category}`);
-  const lines = wrapTitle(title || "Untitled", seed % 2 ? 24 : 27, 3);
-  const topShift = seed % 38;
+  const lines = wrapTitle(title || "Untitled", seed % 2 ? 23 : 25, 3);
+  const topShift = seed % 34;
+  const badge = seed % 2 ? "FIELD NOTE" : "SIGNAL";
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice">` +
     `<defs>` +
-    `<linearGradient id="base" x1="0" y1="0" x2="0" y2="1">` +
-    `<stop offset="0" stop-color="${BRAND.bgTop}"/>` +
-    `<stop offset="0.54" stop-color="${BRAND.bgMid}"/>` +
-    `<stop offset="1" stop-color="${BRAND.bgBot}"/>` +
+    `<linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">` +
+    `<stop offset="0" stop-color="${BRAND.paper}"/>` +
+    `<stop offset="0.58" stop-color="${BRAND.paper}"/>` +
+    `<stop offset="1" stop-color="${BRAND.paperSoft}"/>` +
     `</linearGradient>` +
-    `<linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">` +
-    `<stop offset="0" stop-color="#ffffff" stop-opacity="0.105"/>` +
-    `<stop offset="0.45" stop-color="#ffffff" stop-opacity="0.03"/>` +
-    `<stop offset="1" stop-color="${BRAND.accent}" stop-opacity="0.07"/>` +
-    `</linearGradient>` +
-    `<radialGradient id="aurora" cx="0.5" cy="0" r="0.82">` +
-    `<stop offset="0" stop-color="${BRAND.accentSoft}" stop-opacity="0.18"/>` +
-    `<stop offset="0.38" stop-color="${BRAND.accent}" stop-opacity="0.1"/>` +
-    `<stop offset="1" stop-color="${BRAND.accent}" stop-opacity="0"/>` +
-    `</radialGradient>` +
-    `<radialGradient id="cool" cx="0.1" cy="0.9" r="0.62">` +
-    `<stop offset="0" stop-color="${BRAND.cool}" stop-opacity="0.1"/>` +
-    `<stop offset="1" stop-color="${BRAND.cool}" stop-opacity="0"/>` +
-    `</radialGradient>` +
     `<pattern id="grid" width="34" height="34" patternUnits="userSpaceOnUse">` +
-    `<path d="M34 0H0V34" fill="none" stroke="#fff" stroke-opacity="0.035" stroke-width="1"/>` +
+    `<path d="M34 0H0V34" fill="none" stroke="${BRAND.line}" stroke-opacity="0.38" stroke-width="1"/>` +
     `</pattern>` +
-    `<filter id="grain" x="-10%" y="-10%" width="120%" height="120%">` +
-    `<feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="2" stitchTiles="stitch"/>` +
-    `<feColorMatrix type="saturate" values="0"/>` +
-    `<feComponentTransfer><feFuncA type="table" tableValues="0 0.032"/></feComponentTransfer>` +
-    `</filter>` +
     `</defs>` +
-    `<rect width="800" height="450" fill="url(#base)"/>` +
-    `<rect width="800" height="450" fill="url(#aurora)"/>` +
-    `<rect width="800" height="450" fill="url(#cool)"/>` +
-    `<rect width="800" height="450" fill="url(#grid)" opacity="0.86"/>` +
-    `<rect width="800" height="450" fill="#fff" filter="url(#grain)" opacity="0.78"/>` +
-    `<path d="M0 ${90 + topShift} C148 ${45 + topShift} 240 ${130 + topShift} 394 ${82 + topShift} C526 ${40 + topShift} 638 ${90 + topShift} 800 ${54 + topShift}" fill="none" stroke="${BRAND.accentSoft}" stroke-opacity="0.13" stroke-width="24"/>` +
-    `<path d="M0 ${116 + topShift} C158 ${72 + topShift} 254 ${156 + topShift} 408 ${108 + topShift} C540 ${66 + topShift} 652 ${116 + topShift} 800 ${82 + topShift}" fill="none" stroke="${BRAND.cool}" stroke-opacity="0.07" stroke-width="18"/>` +
-    `<rect x="30" y="30" width="740" height="390" rx="28" fill="${BRAND.panel}" fill-opacity="0.4" stroke="#fff" stroke-opacity="0.12" stroke-width="1.2"/>` +
-    `<rect x="31" y="31" width="738" height="388" rx="27" fill="url(#panel)" opacity="0.75"/>` +
-    `<path d="M58 86 H316" stroke="${BRAND.accentSoft}" stroke-opacity="0.28" stroke-width="1.2"/>` +
-    `<path d="M58 382 H742" stroke="${BRAND.accent}" stroke-opacity="0.12" stroke-width="1.2"/>` +
-    `<rect x="506" y="270" width="206" height="56" rx="3" fill="${BRAND.panel2}" fill-opacity="0.62" stroke="${BRAND.accentSoft}" stroke-opacity="0.13"/>` +
-    `<rect x="530" y="292" width="140" height="7" rx="3.5" fill="${BRAND.accentSoft}" fill-opacity="0.36"/>` +
-    `<circle cx="708" cy="72" r="4" fill="${BRAND.accentSoft}" fill-opacity="0.9"/>` +
-    `<circle cx="708" cy="72" r="18" fill="${BRAND.accent}" fill-opacity="0.12"/>` +
-    `<circle cx="650" cy="110" r="62" fill="none" stroke="#fff" stroke-opacity="0.08" stroke-width="2"/>` +
-    `<text x="58" y="70" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="${BRAND.muted}" letter-spacing="4">${xmlEsc(categoryLabel(category))}</text>` +
-    titleSvg(lines) +
-    `<text x="58" y="402" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="600" fill="${BRAND.dim}" letter-spacing="3">${xmlEsc(BRAND.watermark)}</text>` +
+    `<rect width="800" height="450" fill="url(#paper)"/>` +
+    `<rect width="800" height="450" fill="url(#grid)" opacity="0.42"/>` +
+    `<path d="M0 ${82 + topShift} C158 ${38 + topShift} 260 ${122 + topShift} 418 ${76 + topShift} C552 ${38 + topShift} 646 ${92 + topShift} 800 ${56 + topShift}" fill="none" stroke="${BRAND.cyan}" stroke-opacity="0.35" stroke-width="18"/>` +
+    `<path d="M-28 396 C132 330 274 414 426 352 C552 300 660 338 842 278" fill="none" stroke="${BRAND.pink}" stroke-opacity="0.24" stroke-width="28"/>` +
+    `<rect x="34" y="28" width="732" height="394" rx="30" fill="#ffffff" fill-opacity="0.76" stroke="${BRAND.line}" stroke-width="2"/>` +
+    `<path d="M34 104 H766" stroke="${BRAND.line}" stroke-opacity="0.85" stroke-width="2"/>` +
+    `<rect x="58" y="52" width="192" height="32" rx="16" fill="${BRAND.ink}"/>` +
+    `<text x="154" y="73" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="800" fill="${BRAND.pink}" letter-spacing="3">${xmlEsc(categoryLabel(category))}</text>` +
+    `<rect x="592" y="52" width="110" height="32" rx="16" fill="${BRAND.cyanSoft}" stroke="${BRAND.ink}" stroke-opacity="0.18"/>` +
+    `<text x="647" y="73" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="800" fill="${BRAND.ink}" letter-spacing="1.8">${xmlEsc(badge)}</text>` +
+    `<circle cx="718" cy="68" r="6" fill="${BRAND.pink}"/>` +
+    `<rect x="72" y="326" width="318" height="34" rx="4" fill="${BRAND.lime}" stroke="${BRAND.ink}" stroke-opacity="0.18" transform="rotate(-2 230 343)"/>` +
+    `<rect x="548" y="286" width="126" height="92" rx="18" fill="${BRAND.pinkSoft}" opacity="0.72"/>` +
+    titleSvg(lines, seed) +
+    `<text x="72" y="394" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="700" fill="${BRAND.dim}" letter-spacing="3">${xmlEsc(BRAND.watermark)}</text>` +
+    `<path d="M710 386 l34 0 l-16 16" fill="none" stroke="${BRAND.ink}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.48"/>` +
     `</svg>`;
 
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;

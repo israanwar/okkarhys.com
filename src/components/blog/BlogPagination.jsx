@@ -1,22 +1,33 @@
+import { Fragment } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useI18n } from "../../lib/i18n";
 
 // Pagination klasik. Bukan infinite scroll (sesuai spec).
-// Menampilkan window numerik max 5 halaman + previous/next.
+// Menampilkan maksimal 5 nomor halaman total + previous/next.
 // onChange(page) dipanggil ketika user klik nomor. Halaman 1-indexed.
 
-function buildRange(current, total, windowSize = 5) {
-  if (total <= windowSize) {
+function buildRange(current, total, maxButtons = 5) {
+  if (total <= maxButtons) {
     return Array.from({ length: total }, (_, i) => i + 1);
   }
-  const half = Math.floor(windowSize / 2);
-  let start = Math.max(1, current - half);
-  let end = start + windowSize - 1;
-  if (end > total) {
-    end = total;
-    start = end - windowSize + 1;
+
+  const pages = new Set([1, total, current]);
+  let left = current - 1;
+  let right = current + 1;
+
+  while (pages.size < maxButtons && (left > 1 || right < total)) {
+    if (left > 1) {
+      pages.add(left);
+      left -= 1;
+    }
+    if (pages.size >= maxButtons) break;
+    if (right < total) {
+      pages.add(right);
+      right += 1;
+    }
   }
-  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+
+  return Array.from(pages).sort((a, b) => a - b);
 }
 
 export function BlogPagination({ current, total, onChange, ariaLabel }) {
@@ -67,38 +78,28 @@ export function BlogPagination({ current, total, onChange, ariaLabel }) {
         <ChevronLeft size={16} /> {t("pagination_previous")}
       </button>
 
-      {pages[0] > 1 && (
-        <>
-          <button type="button" onClick={() => onChange(1)} style={btnBase}>1</button>
-          {pages[0] > 2 && <span style={{ color: "var(--okr-dim)" }}>…</span>}
-        </>
-      )}
-
-      {pages.map((p) => (
-        <button
-          key={p}
-          type="button"
-          onClick={() => onChange(p)}
-          style={{
-            ...btnBase,
-            background: p === current ? "var(--okr-touch-glass)" : "transparent",
-            borderColor: p === current ? "var(--okr-touch-glass-border)" : btnBase.border,
-            boxShadow: p === current ? "var(--okr-touch-glass-shadow)" : undefined,
-            color: "var(--okr-text)",
-            fontWeight: p === current ? 600 : 400,
-          }}
-          aria-current={p === current ? "page" : undefined}
-        >
-          {p}
-        </button>
+      {pages.map((p, index) => (
+        <Fragment key={p}>
+          {index > 0 && p - pages[index - 1] > 1 && (
+            <span style={{ color: "var(--okr-dim)" }}>…</span>
+          )}
+          <button
+            type="button"
+            onClick={() => onChange(p)}
+            style={{
+              ...btnBase,
+              background: p === current ? "var(--okr-touch-glass)" : "transparent",
+              borderColor: p === current ? "var(--okr-touch-glass-border)" : btnBase.border,
+              boxShadow: p === current ? "var(--okr-touch-glass-shadow)" : undefined,
+              color: "var(--okr-text)",
+              fontWeight: p === current ? 600 : 400,
+            }}
+            aria-current={p === current ? "page" : undefined}
+          >
+            {p}
+          </button>
+        </Fragment>
       ))}
-
-      {pages[pages.length - 1] < total && (
-        <>
-          {pages[pages.length - 1] < total - 1 && <span style={{ color: "var(--okr-dim)" }}>…</span>}
-          <button type="button" onClick={() => onChange(total)} style={btnBase}>{total}</button>
-        </>
-      )}
 
       <button
         type="button"
