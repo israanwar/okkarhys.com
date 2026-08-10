@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import {
   MessageCircle, Github, Instagram, Twitter, Linkedin, Mail, ShoppingBag, Menu, X,
+  Home, Fingerprint, Compass, LayoutGrid, ShoppingCart, BookOpen,
 } from "lucide-react";
 import { useLiveSettings, useLiveProducts, useLiveCart } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
@@ -23,13 +24,13 @@ export function SiteHeader({ settings }) {
   const hasProducts = products.length > 0;
 
   const nav = [
-    { label: t("nav_home"), to: "/", route: true },
-    { label: t("nav_about"), to: "/about", route: true },
-    { label: t("nav_services"), to: "/services", route: true },
-    { label: t("nav_portfolio"), to: "/portfolio", route: true },
-    ...(hasProducts ? [{ label: t("nav_store"), to: "/store", route: true }] : []),
-    { label: t("nav_blog"), to: "/blog", route: true },
-    { label: t("nav_contact"), to: "/contact", route: true },
+    { label: t("nav_home"), to: "/", route: true, icon: Home },
+    { label: t("nav_about"), to: "/about", route: true, icon: Fingerprint },
+    { label: t("nav_services"), to: "/services", route: true, icon: Compass },
+    { label: t("nav_portfolio"), to: "/portfolio", route: true, icon: LayoutGrid },
+    ...(hasProducts ? [{ label: t("nav_store"), to: "/store", route: true, icon: ShoppingCart }] : []),
+    { label: t("nav_blog"), to: "/blog", route: true, icon: BookOpen },
+    { label: t("nav_contact"), to: "/contact", route: true, icon: Mail },
   ];
 
   useEffect(() => {
@@ -129,25 +130,39 @@ export function SiteHeader({ settings }) {
           which would clip the menu to the 60px header box. Rendering here keeps
           the menu positioned against the viewport. */}
       <div className={`okr__mobile-menu${menuOpen ? " is-open" : ""}`} id="okr-mobile-nav">
-        <nav className="okr__mobile-menu-panel" aria-label="Mobile primary">
-          {nav.map((item) => (
-            item.route ? (
-              <NavLink
-                key={item.label}
-                to={item.to}
-                end={item.to === "/"}
-                className={({ isActive }) => `okr__mobile-navlink${isActive ? " is-active" : ""}`}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-              </NavLink>
-            ) : (
-              <a key={item.label} href={item.to} className="okr__mobile-navlink" onClick={() => setMenuOpen(false)}>
-                {item.label}
-              </a>
-            )
-          ))}
-        </nav>
+        <button
+          className="okr__mobile-menu-close"
+          type="button"
+          aria-label={t("nav_close_menu")}
+          onClick={() => setMenuOpen(false)}
+        >
+          <X size={30} strokeWidth={2.2} />
+        </button>
+        <div className="okr__mobile-menu-content">
+          <span className="okr__mobile-menu-kicker">INDEX</span>
+          <nav className="okr__mobile-menu-panel" aria-label="Mobile primary">
+            {nav.map((item) => {
+              const Icon = item.icon;
+              return item.route ? (
+                <NavLink
+                  key={item.label}
+                  to={item.to}
+                  end={item.to === "/"}
+                  className={({ isActive }) => `okr__mobile-navlink${isActive ? " is-active" : ""}`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <Icon size={30} strokeWidth={1.9} aria-hidden="true" />
+                  <span>{item.label}</span>
+                </NavLink>
+              ) : (
+                <a key={item.label} href={item.to} className="okr__mobile-navlink" onClick={() => setMenuOpen(false)}>
+                  <Icon size={30} strokeWidth={1.9} aria-hidden="true" />
+                  <span>{item.label}</span>
+                </a>
+              );
+            })}
+          </nav>
+        </div>
       </div>
     </>
   );
