@@ -25,7 +25,7 @@ export function PortfolioPage() {
                   <section className="okr__section" style={{ paddingTop: 140, paddingBottom: 100 }}>
             <div className="okr__wrap" style={{ maxWidth: 640, textAlign: "center" }}>
               {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
-              <AnimatedHeadline text={t("portfolio_empty_title")} className="okr__h2" style={{ marginTop: 20 }} />
+              <AnimatedHeadline text={t("portfolio_empty_title")} className="okr__h2" highlightLast={1} style={{ marginTop: 20 }} />
               <p style={{ color: "var(--okr-muted)", marginTop: 20, fontSize: 16, lineHeight: 1.6 }}>
                 {t("portfolio_empty_body")}
               </p>
@@ -48,6 +48,7 @@ export function PortfolioPage() {
               <AnimatedHeadline
                 text={p.hero_title || t("portfolio_empty_title")}
                 className="okr__hero-title"
+                highlightLast={1}
                 style={{ marginTop: 24, maxWidth: 920 }}
               />
               {p.hero_subtitle && (

@@ -74,7 +74,7 @@ export function CheckoutPage() {
       <Seo title={`${t("checkout_title")} — okkarhys`} description={t("checkout_title")} noindex />
               <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
-            <AnimatedHeadline text={t("checkout_title")} className="okr__h2" />
+            <AnimatedHeadline text={t("checkout_title")} className="okr__h2" highlightLast={1} />
 
             <form onSubmit={submit} className="okr__checkout-grid" style={{ marginTop: 40 }}>
               <div className="okr__panel">

@@ -91,6 +91,7 @@ export function StoreItemPage() {
                 <AnimatedHeadline
                   text={displayProduct.name}
                   className="okr__h2 okr__detail-title"
+                  highlightLast={1}
                   style={{ margin: "8px 0 16px" }}
                 />
                 <ProductSocialProof product={displayProduct} variant="detail" />

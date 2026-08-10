@@ -78,6 +78,7 @@ export function ServiceDetailPage() {
             <AnimatedHeadline
               text={s.name}
               className="okr__h2 okr__detail-title"
+              highlightLast={1}
               style={{ margin: "0 0 12px" }}
             />
             {s.tagline && (

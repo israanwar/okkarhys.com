@@ -62,7 +62,7 @@ export function SitemapPage() {
             </nav>
 
             <span className="okr__eyebrow">// SITEMAP</span>
-            <AnimatedHeadline text="Peta situs" className="okr__h2" style={{ marginBottom: 16 }} />
+            <AnimatedHeadline text="Peta situs" className="okr__h2" highlightLast={1} style={{ marginBottom: 16 }} />
             <p style={{ color: "var(--okr-muted)", maxWidth: 640, marginTop: 8, marginBottom: 40, fontSize: 16, lineHeight: 1.6 }}>
               Daftar lengkap {totalPosts} artikel di {activeCategories} kategori aktif, plus halaman utama dan legal.
               Halaman ini juga tersedia dalam format XML di{" "}
