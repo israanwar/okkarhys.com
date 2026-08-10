@@ -3166,6 +3166,12 @@
   animation-delay: calc(60ms + var(--i, 0) * 58ms);
   will-change: opacity, transform, filter;
 }
+.okr__headline--stagger.is-waiting .okr__word {
+  animation: none;
+  opacity: 0;
+  filter: blur(12px);
+  transform: translate3d(0, 0.32em, 0);
+}
 /* Each word inside the gradient wrapper needs its own clipped background —
    `background-clip: text` doesn't stretch a single gradient across
    `display: inline-block` children, so we let each word bake its own copy of
