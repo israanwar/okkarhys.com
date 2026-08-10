@@ -32,51 +32,31 @@ function hashString(value) {
   return Math.abs(hash);
 }
 
-function wrapTitle(title, maxCharsPerLine = 24, maxLines = 3) {
-  const words = String(title || "Untitled")
-    .split(/\s+/)
-    .filter(Boolean);
-  const lines = [];
-  let line = "";
-
-  for (const word of words) {
-    const next = (line + " " + word).trim();
-    if (next.length > maxCharsPerLine && line) {
-      lines.push(line);
-      line = word;
-    } else {
-      line = next;
-    }
-    if (lines.length === maxLines) break;
-  }
-
-  if (line && lines.length < maxLines) lines.push(line);
-  if (words.join(" ").length > lines.join(" ").length && lines.length) {
-    lines[lines.length - 1] = `${lines[lines.length - 1].replace(/\.+$/, "")}...`;
-  }
-  return lines;
-}
-
-function fontSizeFor(lines) {
-  const base = lines.length <= 1 ? 58 : lines.length === 2 ? 48 : 38;
-  const longest = Math.max(1, ...lines.map((line) => line.length));
-  const fitted = Math.floor(642 / (longest * 0.58));
-  return Math.max(30, Math.min(base, fitted));
-}
-
-function titleSvg(lines, seed) {
-  const fontSize = fontSizeFor(lines);
-  const lineHeight = fontSize * 1.12;
-  const startY = 228 - ((lines.length - 1) * lineHeight) / 2;
-  const accentIndex = lines.length > 1 ? Math.min(1, lines.length - 1) : 0;
-  const accentWidth = Math.min(610, Math.max(210, lines[accentIndex].length * fontSize * 0.52));
-  const markerY = startY + accentIndex * lineHeight - fontSize * 0.72;
-  const markerFill = seed % 2 ? BRAND.graphiteSoft : BRAND.signalSoft;
+// Skeleton-style title placeholders. We intentionally do NOT bake the real
+// post title into the SVG anymore — the article card already renders the
+// title as HTML text below the cover, so putting it inside the artwork
+// meant (a) the title was rendered twice and (b) whenever the image
+// container's aspect ratio differed from the SVG's native 16:9 (e.g.
+// mobile 4:3), `background-size: cover` cropped the left+right edges and
+// the first characters of the title were sliced off. Skeleton rects read
+// as a designed editorial layout and never clip visibly.
+function titlePlaceholderSvg(seed) {
+  // Three lines of varying widths, keyed off the seed so each post gets a
+  // slightly different "layout" without importing per-post data.
+  const rows = [
+    { y: 178, width: 604 + (seed % 3) * 24 },
+    { y: 220, width: 484 + ((seed >> 2) % 3) * 40 },
+    { y: 262, width: seed % 4 === 0 ? 360 : 428 + ((seed >> 3) % 3) * 32 },
+  ];
+  const accentIndex = seed % 3 === 0 ? 0 : 1;
+  const accentFill = seed % 2 ? BRAND.graphiteSoft : BRAND.signalSoft;
 
   return (
-    `<rect x="58" y="${markerY}" width="${accentWidth}" height="${fontSize * 0.82}" rx="3" fill="${markerFill}" opacity="0.86" transform="rotate(-0.7 360 ${markerY})"/>` +
-    lines.map((line, index) => (
-      `<text x="72" y="${startY + index * lineHeight}" font-family="Plus Jakarta Sans, Arial, system-ui, sans-serif" font-size="${fontSize}" font-weight="${index === accentIndex ? 830 : 800}" fill="${BRAND.ink}" letter-spacing="0">${xmlEsc(line)}</text>`
+    // The accent block sits behind one of the skeleton rows for the same
+    // "highlight bar" energy the old title had.
+    `<rect x="60" y="${rows[accentIndex].y - 6}" width="${Math.min(rows[accentIndex].width + 22, 630)}" height="42" rx="4" fill="${accentFill}" opacity="0.82" transform="rotate(-0.6 360 ${rows[accentIndex].y})"/>` +
+    rows.map(({ y, width }) => (
+      `<rect x="72" y="${y}" width="${width}" height="28" rx="3" fill="${BRAND.ink}" fill-opacity="${seed % 2 ? 0.86 : 0.9}"/>`
     )).join("")
   );
 }
@@ -87,7 +67,6 @@ function categoryLabel(value) {
 
 export function generateBlogCover({ title, category = "", slug = "" }) {
   const seed = hashString(`${slug}|${title}|${category}`);
-  const lines = wrapTitle(title || "Untitled", seed % 2 ? 23 : 25, 3);
   const topShift = seed % 34;
   const badge = seed % 2 ? "FIELD NOTE" : "SIGNAL";
   const svg =
@@ -115,7 +94,7 @@ export function generateBlogCover({ title, category = "", slug = "" }) {
     `<circle cx="718" cy="68" r="4" fill="${BRAND.signal}" opacity="0.62"/>` +
     `<rect x="72" y="326" width="318" height="24" rx="3" fill="${BRAND.lime}" stroke="${BRAND.ink}" stroke-opacity="0.1" transform="rotate(-1 230 338)"/>` +
     `<rect x="548" y="286" width="126" height="92" rx="10" fill="${BRAND.signalSoft}" opacity="0.62"/>` +
-    titleSvg(lines, seed) +
+    titlePlaceholderSvg(seed) +
     `<text x="72" y="394" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="700" fill="${BRAND.dim}" letter-spacing="3">${xmlEsc(BRAND.watermark)}</text>` +
     `<path d="M710 386 l34 0 l-16 16" fill="none" stroke="${BRAND.ink}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.48"/>` +
     `</svg>`;
