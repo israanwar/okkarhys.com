@@ -11,6 +11,11 @@ const STATUS_LABEL = {
   [ORDER_STATUS.CANCELLED]:            { label: "Cancelled",            badge: "draft" },
 };
 
+const REVIEWABLE_STATUSES = new Set([
+  ORDER_STATUS.PENDING_PAYMENT,
+  ORDER_STATUS.WAITING_VERIFICATION,
+]);
+
 export function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [detailOrder, setDetailOrder] = useState(null);
@@ -41,6 +46,7 @@ export function AdminOrdersPage() {
 
   const filtered = filter === "all" ? orders : orders.filter((o) => o.status === filter);
   const counts = orders.reduce((a, o) => { a[o.status] = (a[o.status] ?? 0) + 1; return a; }, {});
+  const reviewCount = (counts[ORDER_STATUS.PENDING_PAYMENT] ?? 0) + (counts[ORDER_STATUS.WAITING_VERIFICATION] ?? 0);
 
   return (
     <>
@@ -48,7 +54,7 @@ export function AdminOrdersPage() {
         <h1>Orders</h1>
         <div className="spacer" />
         <span style={{ color: "var(--text-mute)", fontSize: 13 }}>
-          {orders.length} total · {counts[ORDER_STATUS.WAITING_VERIFICATION] ?? 0} awaiting verification
+          {orders.length} total · {reviewCount} perlu dicek di GoPay Merchant
         </span>
       </div>
 
@@ -104,7 +110,7 @@ export function AdminOrdersPage() {
                     onClick={() => setDetailOrder(o)} title="View details">
                     <Eye size={12} />
                   </button>
-                  {o.status === ORDER_STATUS.WAITING_VERIFICATION && (
+                  {REVIEWABLE_STATUSES.has(o.status ?? ORDER_STATUS.PENDING_PAYMENT) && (
                     <>
                       <button className="wpx__btn wpx__btn--primary" style={{ padding: "4px 10px", marginRight: 4 }}
                         onClick={() => approve(o.id)} title="Approve → Paid">
@@ -180,6 +186,9 @@ function OrderDetailModal({ order, onClose, onApprove, onReject }) {
             <div><strong>Address:</strong> {order.shipping_address}</div>
             {order.notes && <div><strong>Notes:</strong> {order.notes}</div>}
             <div><strong>Total:</strong> Rp {order.total.toLocaleString("id-ID")}</div>
+            {order.payment_confirmed_without_proof_at && (
+              <div><strong>Customer confirmed paid:</strong> {new Date(order.payment_confirmed_without_proof_at).toLocaleString("id-ID")} · cek di GoPay Merchant app</div>
+            )}
             {gateway && (
               <>
                 <div><strong>Payment gateway:</strong> {gateway.provider ?? "gopay_merchant"} {gateway.adapter ? `(${gateway.adapter})` : ""}</div>
@@ -216,11 +225,11 @@ function OrderDetailModal({ order, onClose, onApprove, onReject }) {
             </div>
           ) : (
             <div style={{ padding: 24, background: "var(--panel-2)", borderRadius: 8, textAlign: "center", color: "var(--text-mute)", fontSize: 13 }}>
-              Payment proof not uploaded yet.
+              Tidak ada upload bukti. Cocokkan nominal dan waktu transaksi di aplikasi GoPay Merchant.
             </div>
           )}
 
-          {order.status === ORDER_STATUS.WAITING_VERIFICATION && (
+          {REVIEWABLE_STATUSES.has(order.status ?? ORDER_STATUS.PENDING_PAYMENT) && (
             <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
               <button className="wpx__btn wpx__btn--primary" onClick={() => { onApprove(order.id); onClose(); }} style={{ flex: 1, justifyContent: "center" }}>
                 <Check size={14} /> Approve → Paid

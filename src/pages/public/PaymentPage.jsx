@@ -1,7 +1,7 @@
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import {
-  Check, Copy, Upload, Clock, X, Download, ShoppingBag, FileImage, ChevronRight, RefreshCw,
+  Check, Copy, Clock, X, Download, ShoppingBag, FileImage, ChevronRight, RefreshCw,
 } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
 import { ORDER_STATUS } from "../../lib/localStore";
@@ -17,9 +17,6 @@ import {
   refreshGopayMerchantPayment,
 } from "../../lib/gopayMerchantGateway";
 import { createDynamicQrisDataUrl } from "../../lib/qrisDynamic";
-
-const ACCEPT_TYPES = ["image/png", "image/jpeg", "image/jpg"];
-const MAX_SIZE = 2 * 1024 * 1024;
 
 export function PaymentPage() {
   const { orderNumber } = useParams();
@@ -110,16 +107,15 @@ function PaymentBody({ order, settings, onChanged }) {
 }
 
 /* ============================================================
- * PENDING: QRIS + upload proof + submit
+ * PENDING: QRIS + merchant-app verification
  * ============================================================ */
 function PendingView({ order, settings, L, onChanged }) {
   const storedGatewayPayment = getOrderGatewayPayment(order);
   const useGopayAuto = isGopayMerchantOrder(order, settings);
   const [copied, setCopied] = useState(false);
   const [imgBroken, setImgBroken] = useState(false);
-  const [proofFile, setProofFile] = useState(null); // { dataUrl, name, size }
-  const [error, setError] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [manualConfirmError, setManualConfirmError] = useState(null);
   const [gatewayPayment, setGatewayPayment] = useState(storedGatewayPayment);
   const [gatewayLoading, setGatewayLoading] = useState(false);
   const [gatewayChecking, setGatewayChecking] = useState(false);
@@ -128,9 +124,8 @@ function PendingView({ order, settings, L, onChanged }) {
   const [dynamicQrisPayload, setDynamicQrisPayload] = useState(null);
   const [dynamicQrisLoading, setDynamicQrisLoading] = useState(false);
   const [dynamicQrisError, setDynamicQrisError] = useState(null);
-  const fileRef = useRef(null);
 
-  const showManualProof = !useGopayAuto || Boolean(gatewayError);
+  const showManualFlow = !useGopayAuto || Boolean(gatewayError);
   const amountToPay = useGopayAuto && !gatewayError
     ? (gatewayPayment?.amountToPay || order.total)
     : order.total;
@@ -153,7 +148,7 @@ function PendingView({ order, settings, L, onChanged }) {
   }, [qrisImage]);
 
   useEffect(() => {
-    if (!showManualProof) {
+    if (!showManualFlow) {
       setDynamicQrisImage(null);
       setDynamicQrisPayload(null);
       setDynamicQrisError(null);
@@ -180,7 +175,7 @@ function PendingView({ order, settings, L, onChanged }) {
         if (alive) setDynamicQrisLoading(false);
       });
     return () => { alive = false; };
-  }, [showManualProof, settings.qris_payload, amountToPay, order.order_number]);
+  }, [showManualFlow, settings.qris_payload, amountToPay, order.order_number]);
 
   useEffect(() => {
     setGatewayPayment(storedGatewayPayment);
@@ -229,7 +224,7 @@ function PendingView({ order, settings, L, onChanged }) {
 
   async function checkGatewayStatus({ quiet = false } = {}) {
     if (!useGopayAuto || gatewayChecking) return;
-    if (!quiet) setError(null);
+    if (!quiet) setManualConfirmError(null);
     setGatewayChecking(true);
     try {
       const payment = await refreshGopayMerchantPayment(order.order_number);
@@ -243,41 +238,18 @@ function PendingView({ order, settings, L, onChanged }) {
     }
   }
 
-  async function onFile(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setError(null);
-    if (!ACCEPT_TYPES.includes(file.type)) {
-      setError(L.err_type); e.target.value = ""; return;
-    }
-    if (file.size > MAX_SIZE) {
-      setError(L.err_size); e.target.value = ""; return;
-    }
+  async function confirmManualPayment() {
+    setManualConfirmError(null);
+    setConfirming(true);
     try {
-      const dataUrl = await new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload = () => res(r.result); r.onerror = rej;
-        r.readAsDataURL(file);
+      await ordersData.updateStatus(order.id ?? order.order_number, ORDER_STATUS.WAITING_VERIFICATION, {
+        payment_confirmed_without_proof_at: new Date().toISOString(),
+        payment_verification_source: "gopay_merchant_app",
       });
-      setProofFile({ dataUrl, name: file.name, size: file.size });
-    } catch {
-      setError(L.err_read);
-    } finally {
-      e.target.value = "";
-    }
-  }
-
-  function removeProof() { setProofFile(null); }
-
-  async function submit() {
-    if (!proofFile) { setError(L.err_no_proof); return; }
-    setSubmitting(true);
-    try {
-      await ordersData.uploadProof(order.id ?? order.order_number, proofFile.dataUrl);
       onChanged();
     } catch (e) {
-      setError(e.message ?? "Failed to submit.");
-      setSubmitting(false);
+      setManualConfirmError(e.message ?? L.manual_confirm_error);
+      setConfirming(false);
     }
   }
 
@@ -323,7 +295,7 @@ function PendingView({ order, settings, L, onChanged }) {
               {L.unique_amount_note.replace("{base}", order.total.toLocaleString("id-ID"))}
             </div>
           )}
-          {showManualProof && dynamicQrisImage && dynamicQrisPayload && !dynamicQrisError && (
+          {showManualFlow && dynamicQrisImage && dynamicQrisPayload && !dynamicQrisError && (
             <div style={{ marginTop: 10, fontSize: 12, color: "var(--okr-muted)", lineHeight: 1.5 }}>
               <strong style={{ color: "var(--okr-primary-2)" }}>{L.dynamic_qris_active}</strong>
               <br />
@@ -365,58 +337,26 @@ function PendingView({ order, settings, L, onChanged }) {
         </div>
       )}
 
-      {showManualProof && (
-        <>
-          {/* Upload proof card */}
-          <div className="okr__panel" style={{ marginBottom: 16 }}>
-            <h3 className="okr__pay-section-title">{L.upload_title}</h3>
-            <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/jpg" onChange={onFile} style={{ display: "none" }} />
-
-            {!proofFile ? (
-              <button
-                onClick={() => fileRef.current?.click()}
-                className="okr__pay-upload-dropzone"
-                type="button"
-              >
-                <Upload size={22} />
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: 14 }}>{L.upload_click}</div>
-                  <div style={{ fontSize: 12, color: "var(--okr-dim)", marginTop: 4 }}>{L.upload_hint}</div>
-                </div>
-              </button>
-            ) : (
-              <div className="okr__pay-proof-preview">
-                <img src={proofFile.dataUrl} alt="Preview" />
-                <div className="okr__pay-proof-meta">
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                    <FileImage size={14} style={{ color: "var(--okr-primary-2)" }} />
-                    <span style={{ fontWeight: 600, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{proofFile.name}</span>
-                  </div>
-                  <div style={{ fontSize: 12, color: "var(--okr-muted)" }}>{formatSize(proofFile.size)}</div>
-                  <button onClick={removeProof} className="okr__pay-proof-remove" type="button">
-                    <X size={12} /> {L.remove}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {error && (
-              <div style={{ color: "#fca5a5", fontSize: 13, marginTop: 10, display: "flex", alignItems: "center", gap: 6 }}>
-                <X size={14} /> {error}
-              </div>
-            )}
+      {showManualFlow && (
+        <div className="okr__panel" style={{ marginBottom: 20 }}>
+          <h3 className="okr__pay-section-title">{L.no_proof_title}</h3>
+          <div style={{ color: "var(--okr-muted)", fontSize: 13, lineHeight: 1.6, marginBottom: 16 }}>
+            {L.no_proof_body}
           </div>
-
-          {/* Submit */}
           <button
-            onClick={submit}
-            disabled={!proofFile || submitting}
+            onClick={confirmManualPayment}
+            disabled={!hasQris || confirming}
             className="okr__btn okr__btn--primary"
-            style={{ width: "100%", justifyContent: "center", padding: "16px", fontSize: 15, marginBottom: 20, opacity: proofFile ? 1 : 0.5 }}
+            style={{ width: "100%", justifyContent: "center", padding: "16px", fontSize: 15, opacity: hasQris ? 1 : 0.5 }}
           >
-            <Check size={17} /> {submitting ? L.submitting : L.submit}
+            <Check size={17} /> {confirming ? L.confirming_paid : L.confirm_paid}
           </button>
-        </>
+          {manualConfirmError && (
+            <div style={{ color: "#fca5a5", fontSize: 13, marginTop: 10, display: "flex", alignItems: "center", gap: 6 }}>
+              <X size={14} /> {manualConfirmError}
+            </div>
+          )}
+        </div>
       )}
 
       {autoStatusActive && (
@@ -566,7 +506,7 @@ function RejectedView({ order, L, onChanged }) {
         </div>
       )}
       <button onClick={retry} className="okr__btn okr__btn--primary" style={{ padding: "12px 24px" }}>
-        <Upload size={15} /> {L.retry}
+        <RefreshCw size={15} /> {L.retry}
       </button>
     </div>
   );
@@ -644,11 +584,6 @@ function formatMs(ms) {
   const rs = s % 60;
   return `${String(m).padStart(2, "0")}:${String(rs).padStart(2, "0")}`;
 }
-function formatSize(bytes) {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-}
 
 /* ============================================================
  * i18n strings
@@ -656,10 +591,10 @@ function formatSize(bytes) {
 const LANG_EN = {
   order_num: "Order number",
   step_created: "Order Created",
-  step_submitted: "Payment Submitted",
+  step_submitted: "Payment Confirmed",
   step_verified: "Verification",
   step_download: "Download Ready",
-  pending_body: "Please scan the QRIS below and complete payment.",
+  pending_body: "Please scan the QRIS below and complete payment. No proof upload is needed.",
   auto_pending_body: "Please pay the exact GoPay/QRIS amount below. Payment will be checked automatically.",
   total_pay: "Total to pay",
   total_pay_exact: "Exact amount to pay",
@@ -669,6 +604,11 @@ const LANG_EN = {
   dynamic_qris_error: "Unable to create QRIS with automatic amount.",
   dynamic_qris_active: "Dynamic amount QRIS is active.",
   manual_dynamic_note: "This QRIS was generated for this order with Rp {amount} embedded. If your wallet still asks for an amount, enter exactly Rp {amount}.",
+  no_proof_title: "No payment proof upload",
+  no_proof_body: "After paying, the transaction will appear in the Okka Rhys GoPay Merchant app. Tap the button below so admin can match the order and mark it paid.",
+  confirm_paid: "I have paid",
+  confirming_paid: "Sending confirmation...",
+  manual_confirm_error: "Unable to send payment confirmation.",
   unique_amount_note: "Base total is Rp {base}. This exact amount may include a small unique code for automatic matching.",
   auto_title: "Automatic payment check",
   auto_starting: "Creating a dynamic QRIS payment for this order.",
@@ -677,22 +617,12 @@ const LANG_EN = {
   auto_gateway_error: "Automatic GoPay gateway is not ready",
   auto_status_error: "Unable to check payment status",
   auto_fallback_title: "Manual fallback active",
-  auto_fallback_body: "Please use the QRIS above and upload payment proof below.",
+  auto_fallback_body: "Please use the QRIS above. Admin will verify the transaction from the GoPay Merchant app.",
   check_status: "Check payment status",
   checking_status: "Checking status…",
   expire_at: "Expires",
-  upload_title: "Upload payment proof",
-  upload_click: "Click to upload",
-  upload_hint: "PNG · JPG · JPEG · max 2 MB",
-  remove: "Remove",
-  submit: "Submit payment",
-  submitting: "Submitting…",
-  err_type: "Only PNG / JPG / JPEG allowed.",
-  err_size: "File too large. Max 2 MB.",
-  err_read: "Failed to read file.",
-  err_no_proof: "Please upload payment proof first.",
-  waiting_title: "Payment Submitted",
-  waiting_body: "Waiting for admin verification. Admin will verify your payment shortly.",
+  waiting_title: "Payment Confirmation Sent",
+  waiting_body: "Waiting for admin verification from the GoPay Merchant app.",
   waiting_estimate: "Estimated: 5–30 minutes",
   your_proof: "Your uploaded proof",
   paid_title: "Payment Verified",
@@ -702,17 +632,17 @@ const LANG_EN = {
   rejected_title: "Payment Rejected",
   rejected_body: "There was an issue with your payment. Please try again or contact admin.",
   admin_note: "Note from admin",
-  retry: "Retry upload",
-  retry_confirm: "Reset order to pending and re-upload payment proof?",
+  retry: "Retry payment",
+  retry_confirm: "Reset order to pending and try payment again?",
   summary: "Order summary",
 };
 const LANG_ID = {
   order_num: "Nomor pesanan",
   step_created: "Order Dibuat",
-  step_submitted: "Bukti Dikirim",
+  step_submitted: "Bayar Dikonfirmasi",
   step_verified: "Verifikasi",
   step_download: "Siap Diunduh",
-  pending_body: "Silakan scan QRIS di bawah dan selesaikan pembayaran.",
+  pending_body: "Silakan scan QRIS di bawah dan selesaikan pembayaran. Tidak perlu upload bukti.",
   auto_pending_body: "Silakan bayar nominal GoPay/QRIS persis di bawah. Status pembayaran akan dicek otomatis.",
   total_pay: "Total pembayaran",
   total_pay_exact: "Nominal persis yang dibayar",
@@ -722,6 +652,11 @@ const LANG_ID = {
   dynamic_qris_error: "Gagal membuat QRIS dengan nominal otomatis.",
   dynamic_qris_active: "QRIS nominal otomatis aktif.",
   manual_dynamic_note: "QRIS ini dibuat khusus untuk order ini dengan nominal Rp {amount} tertanam. Jika aplikasi tetap meminta nominal, isi persis Rp {amount}.",
+  no_proof_title: "Tidak perlu upload bukti pembayaran",
+  no_proof_body: "Setelah bayar, transaksi akan masuk di aplikasi GoPay Merchant Okka Rhys. Tekan tombol di bawah agar admin mencocokkan order dan menandainya lunas.",
+  confirm_paid: "Saya sudah bayar",
+  confirming_paid: "Mengirim konfirmasi...",
+  manual_confirm_error: "Gagal mengirim konfirmasi pembayaran.",
   unique_amount_note: "Total dasar Rp {base}. Nominal persis ini bisa memuat kode unik kecil agar pembayaran terbaca otomatis.",
   auto_title: "Cek pembayaran otomatis",
   auto_starting: "Membuat QRIS dinamis untuk order ini.",
@@ -730,22 +665,12 @@ const LANG_ID = {
   auto_gateway_error: "Gateway GoPay otomatis belum siap",
   auto_status_error: "Gagal cek status pembayaran",
   auto_fallback_title: "Fallback manual aktif",
-  auto_fallback_body: "Silakan gunakan QRIS di atas dan upload bukti pembayaran di bawah.",
+  auto_fallback_body: "Silakan gunakan QRIS di atas. Admin akan verifikasi transaksi dari aplikasi GoPay Merchant.",
   check_status: "Cek status pembayaran",
   checking_status: "Mengecek status…",
   expire_at: "Kedaluwarsa",
-  upload_title: "Upload bukti pembayaran",
-  upload_click: "Klik untuk upload",
-  upload_hint: "PNG · JPG · JPEG · maks 2 MB",
-  remove: "Hapus",
-  submit: "Kirim bukti pembayaran",
-  submitting: "Mengirim…",
-  err_type: "Hanya PNG / JPG / JPEG.",
-  err_size: "File terlalu besar. Maks 2 MB.",
-  err_read: "Gagal membaca file.",
-  err_no_proof: "Upload bukti pembayaran terlebih dahulu.",
-  waiting_title: "Bukti Terkirim",
-  waiting_body: "Menunggu verifikasi admin. Admin akan memverifikasi pembayaran Anda segera.",
+  waiting_title: "Konfirmasi Pembayaran Terkirim",
+  waiting_body: "Menunggu admin mencocokkan pembayaran dari aplikasi GoPay Merchant.",
   waiting_estimate: "Estimasi: 5–30 menit",
   your_proof: "Bukti yang Anda upload",
   paid_title: "Pembayaran Terverifikasi",
@@ -755,7 +680,7 @@ const LANG_ID = {
   rejected_title: "Pembayaran Ditolak",
   rejected_body: "Ada masalah dengan pembayaran. Silakan coba lagi atau hubungi admin.",
   admin_note: "Catatan dari admin",
-  retry: "Upload ulang",
-  retry_confirm: "Reset order ke pending dan upload bukti baru?",
+  retry: "Coba bayar ulang",
+  retry_confirm: "Reset order ke pending dan coba bayar ulang?",
   summary: "Ringkasan pesanan",
 };

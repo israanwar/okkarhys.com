@@ -9,7 +9,7 @@ const L = {
     subject: (n, amt) => `[New Order] ${n} — Rp ${amt}`,
     email_intro: "New order received:",
     body_hello: (site) => `Hi ${site} admin,\n\nI just placed an order:`,
-    body_pay: "I'll pay via QRIS and send proof after this. Please confirm — thanks 🙏",
+    body_pay: "I'll pay via QRIS. Please verify the transaction in the GoPay Merchant app — thanks 🙏",
     body_will_pay: "Total",
   },
   id: {
@@ -20,7 +20,7 @@ const L = {
     subject: (n, amt) => `[Order Baru] ${n} — Rp ${amt}`,
     email_intro: "Ada order baru masuk:",
     body_hello: (site) => `Halo admin ${site},\n\nSaya baru saja membuat pesanan:`,
-    body_pay: "Saya akan bayar via QRIS dan kirim bukti transfer setelah ini. Mohon konfirmasi ya, terima kasih 🙏",
+    body_pay: "Saya akan bayar via QRIS. Mohon cek transaksinya di aplikasi GoPay Merchant ya, terima kasih 🙏",
     body_will_pay: "Total",
   },
 };
@@ -100,7 +100,7 @@ export function buildAdminMailtoLink(order, settings) {
   return `mailto:${to}?subject=${subject}&body=${body}`;
 }
 
-// Customer → admin: send payment proof
+// Customer → admin: payment follow-up without proof upload
 export function buildCustomerPaymentWaLink(order, settings) {
   const t = L[pickLang()];
   const amount = order.total.toLocaleString("id-ID");
