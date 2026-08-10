@@ -6,6 +6,7 @@ import { OKKARHYS_BLOG_POSTS_SEED } from "../data/blogSeedOkkaVoice";
 import { OKKARHYS_SERVICES_SEED } from "../data/serviceCatalog";
 import { applyProductPriceDiscount } from "./productPricing";
 import { normalizePortfolioProjects } from "./portfolioProjects";
+import { DEFAULT_QRIS_SETTINGS, normalizePaymentSettings } from "./paymentSettings";
 import { generateStoreCover } from "./storePlaceholder";
 
 const KEYS = {
@@ -64,9 +65,7 @@ function ensureSeed() {
     social_twitter: "",
     seo_default_title: "OKKARHYS",
     seo_default_description: "Building smarter digital systems for stronger visibility, efficient operations, and sustainable business growth.",
-    qris_image: "",
-    qris_merchant_name: "OKKA RHYS, DIGITAL & KREATIF",
-    qris_nmid: "ID1025456495932",
+    ...DEFAULT_QRIS_SETTINGS,
     admin_email: "admin@okkarhys.com",
     admin_whatsapp: "082189594190",
     admin_whatsapp_url: "https://wa.me/6282189594190",
@@ -92,9 +91,9 @@ function ensureSeed() {
     if (!s.email || s.email === "hello@okkarhys.com") {
       migrated.email = DEFAULT_SETTINGS.email;
     }
-    // Bersihkan qris_image kalau masih pakai broken placeholder path
+    // Pulihkan qris_image kalau masih pakai broken placeholder path
     if (s.qris_image === "/assets/qris/okkarhys-qris.png") {
-      migrated.qris_image = "";
+      migrated.qris_image = DEFAULT_SETTINGS.qris_image;
     }
     migrated.updated_at = now();
     write(KEYS.settings, migrated);
@@ -111,6 +110,14 @@ function ensureSeed() {
     }
     localStorage.setItem("okr:migrated:settings:v5", "1");
     localStorage.setItem("okr:migrated:settings:v4", "1");
+  }
+  if (localStorage.getItem("okr:migrated:settings:qris-default:v1") !== "1") {
+    const current = read(KEYS.settings);
+    const migrated = normalizePaymentSettings(current);
+    if (JSON.stringify(current) !== JSON.stringify(migrated)) {
+      write(KEYS.settings, { ...migrated, updated_at: now() });
+    }
+    localStorage.setItem("okr:migrated:settings:qris-default:v1", "1");
   }
   const HOMEPAGE_DEFAULT = {
     hero: {
@@ -1786,10 +1793,10 @@ export const usersRepo = {
 
 // -------------- settings --------------
 export const settingsRepo = {
-  get() { return read(KEYS.settings); },
+  get() { return normalizePaymentSettings(read(KEYS.settings)); },
   update(patch) {
-    const cur = read(KEYS.settings);
-    const next = { ...cur, ...patch, updated_at: now() };
+    const cur = normalizePaymentSettings(read(KEYS.settings));
+    const next = normalizePaymentSettings({ ...cur, ...patch, updated_at: now() });
     write(KEYS.settings, next);
     return next;
   },

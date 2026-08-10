@@ -48,6 +48,7 @@ const SECTIONS = [
     fields: [
       { key: "qris_merchant_name", label: "Merchant name" },
       { key: "qris_nmid", label: "NMID" },
+      { key: "qris_terminal_label", label: "Terminal label" },
     ],
     qrisUploader: true,
   },
@@ -322,6 +323,8 @@ export function AdminSettingsPage() {
                           <div style={{ fontWeight: 700, marginBottom: 10 }}>{data.qris_merchant_name || "—"}</div>
                           <div style={{ color: "#8b8f9d", fontSize: 11, marginBottom: 4 }}>NMID</div>
                           <div style={{ fontFamily: "monospace", marginBottom: 10 }}>{data.qris_nmid || "—"}</div>
+                          <div style={{ color: "#8b8f9d", fontSize: 11, marginBottom: 4 }}>Terminal</div>
+                          <div style={{ fontFamily: "monospace", marginBottom: 10 }}>{data.qris_terminal_label || "—"}</div>
                           <div style={{ color: "#8b8f9d", fontSize: 11, marginBottom: 4 }}>Total</div>
                           <div style={{ color: "#ff9add", fontSize: 22, fontWeight: 700 }}>Rp 149.000</div>
                         </div>

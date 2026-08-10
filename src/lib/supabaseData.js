@@ -14,6 +14,7 @@ import {
 } from "./localStore";
 import { applyProductPriceDiscount, applyProductPriceDiscounts } from "./productPricing";
 import { normalizePortfolioProjects } from "./portfolioProjects";
+import { normalizePaymentSettings } from "./paymentSettings";
 
 const MEDIA_BUCKET = "okkarhys-media";
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -218,13 +219,13 @@ export const settingsData = {
         .eq("id", "site")
         .maybeSingle();
       if (error) throw error;
-      return data?.data ?? settingsRepo.get();
+      return normalizePaymentSettings(data?.data ?? settingsRepo.get());
     }, () => settingsRepo.get());
   },
   async update(patch) {
     return tryRemote(async () => {
       const current = await this.get();
-      const next = { ...current, ...patch };
+      const next = normalizePaymentSettings({ ...current, ...patch });
       if (
         patch.description
         && shouldFollowDescription(current.seo_default_description, current.description)
@@ -263,7 +264,7 @@ export const settingsData = {
       }
       settingsRepo.update(data.data);
       emitRemoteChange("settings");
-      return data.data;
+      return normalizePaymentSettings(data.data);
     }, () => settingsRepo.update(patch));
   },
 };
