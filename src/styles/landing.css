@@ -1,9 +1,9 @@
 /* ===== Okkarhys landing page ===== */
 .okr {
   --okr-bg: #000000;
-  --okr-bg-2: #080005;
+  --okr-bg-2: #070707;
   --okr-line: rgba(255, 255, 255, 0.06);
-  --okr-line-strong: rgba(255, 255, 255, 0.1);
+  --okr-line-strong: rgba(255, 255, 255, 0.12);
   --okr-text: #eef0f6;
   --okr-logo-ink: #d8d0dd;
   --okr-muted: #8b8f9d;
@@ -11,33 +11,16 @@
   --okr-primary: #e044a8;
   --okr-primary-2: #ff9add;
   --okr-cyan: #ff67c8;
-  --okr-card-bg: rgba(255, 255, 255, 0.02);
-  --okr-input-bg: rgba(0, 0, 0, 0.3);
-  --okr-header-bg: rgba(8, 0, 5, 0.66);
-  --okr-glass-bg:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.092), rgba(255, 255, 255, 0.024)),
-    radial-gradient(circle at 12% 0%, rgba(255, 154, 221, 0.105), transparent 42%),
-    radial-gradient(circle at 92% 12%, rgba(224, 68, 168, 0.09), transparent 46%),
-    rgba(7, 0, 5, 0.54);
-  --okr-glass-bg-hover:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.034)),
-    radial-gradient(circle at 12% 0%, rgba(255, 154, 221, 0.15), transparent 42%),
-    radial-gradient(circle at 92% 12%, rgba(224, 68, 168, 0.12), transparent 46%),
-    rgba(7, 0, 5, 0.58);
-  --okr-glass-border: rgba(255, 255, 255, 0.115);
-  --okr-glass-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.34),
-    0 18px 44px rgba(0, 0, 0, 0.2);
-  --okr-touch-glass:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.052)),
-    radial-gradient(circle at 20% 0%, rgba(255, 154, 221, 0.18), transparent 48%),
-    rgba(22, 6, 17, 0.36);
-  --okr-touch-glass-border: rgba(255, 255, 255, 0.18);
-  --okr-touch-glass-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.24),
-    0 10px 24px rgba(0, 0, 0, 0.13);
+  --okr-card-bg: #111111;
+  --okr-input-bg: #0d0d0d;
+  --okr-header-bg: #000000;
+  --okr-glass-bg: #111111;
+  --okr-glass-bg-hover: #171717;
+  --okr-glass-border: rgba(255, 255, 255, 0.12);
+  --okr-glass-shadow: none;
+  --okr-touch-glass: #151515;
+  --okr-touch-glass-border: rgba(255, 103, 200, 0.42);
+  --okr-touch-glass-shadow: none;
   --okr-aurora-teal: 224, 68, 168;
   --okr-aurora-cyan: 255, 103, 200;
   --okr-aurora-ice: 255, 214, 242;
@@ -81,6 +64,14 @@
 .okr *,
 .okr *::before,
 .okr *::after { box-sizing: border-box; }
+
+.okr,
+.okr *,
+.okr *::before,
+.okr *::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
 
 /* Global aurora */
 .okr::before,
@@ -3431,20 +3422,17 @@
 }
 
 /* =========================================================================
-   Mobile perf pass — the aurora canvas + a page full of backdrop-filter is
-   the #1 scroll-jank culprit on mobile GPUs. We compensate by:
+   Mobile perf pass — keep the public site matte and cheap to paint.
 
-   1. Killing every backdrop-filter under `.okr` at mobile width, and bumping
-      the underlying glass tokens toward a slightly more opaque solid — the
-      cards still read as "glass" over the darker aurora but no per-pixel
-      blur is running.
+   1. Keep every backdrop-filter under `.okr` disabled at mobile width, and
+      pin the old glass tokens to opaque charcoal surfaces.
    2. Dropping the `will-change` hint on reveal targets — with 20+ nodes it
       hogs GPU memory more than it saves.
    3. `touch-action: manipulation` on interactive controls — kills the
       legacy 300ms tap delay + prevents accidental double-tap zoom.
 
-   Together with SiteChrome's mobile skip of the aurora canvas, this cuts
-   the per-frame paint cost dramatically on phones.
+   This keeps the dark editorial direction intact and cuts per-frame paint
+   cost dramatically on phones.
    ------------------------------------------------------------------------- */
 @media (max-width: 900px) {
   .okr,
@@ -3454,18 +3442,12 @@
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
-  /* Repaint the glass tokens so cards keep enough contrast without blur. */
+  /* Keep legacy glass variables matte on mobile too. */
   .okr {
-    --okr-glass-bg:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.026)),
-      rgba(10, 3, 8, 0.78);
-    --okr-glass-bg-hover:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.038)),
-      rgba(10, 3, 8, 0.82);
-    --okr-touch-glass:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)),
-      rgba(22, 6, 17, 0.7);
-    --okr-header-bg: rgba(6, 0, 4, 0.88);
+    --okr-glass-bg: #111111;
+    --okr-glass-bg-hover: #171717;
+    --okr-touch-glass: #151515;
+    --okr-header-bg: #000000;
   }
 
   /* Reveal transitions still work fine without the will-change layer hint. */
@@ -3496,6 +3478,62 @@
       transparent 68%
     );
   }
+}
+
+/* --- Matte editorial surface pass ---------------------------------------
+   Keep legacy "glass" class names as implementation details, but render them
+   as opaque charcoal panels. Pink remains reserved for active states, links,
+   icons, and primary actions. */
+.okr :is(
+  .okr__link--glass,
+  .okr__card,
+  .okr__process-card,
+  .okr__process-detail,
+  .okr__post,
+  .okr__case,
+  .okr__cta,
+  .okr__product,
+  .okr__product-hero-img,
+  .okr__portfolio-chip,
+  .okr__portfolio-pill,
+  .okr__store-toolbar,
+  .okr__store-results-bar,
+  .okr__store-page-size-select,
+  .okr__cart-count,
+  .okr__rail-chip.is-active
+) {
+  background: var(--okr-glass-bg) !important;
+  box-shadow: none !important;
+}
+
+.okr :is(
+  .okr__card,
+  .okr__process-card,
+  .okr__post,
+  .okr__case,
+  .okr__product,
+  .okr__portfolio-chip,
+  .okr__portfolio-pill,
+  .okr__link--glass
+):is(:hover, :focus-visible, :active),
+.okr .okr__process-card.is-active {
+  background: var(--okr-glass-bg-hover) !important;
+  box-shadow: none !important;
+}
+
+.okr :is(.okr__glass-input, .okr__glass-select) {
+  background: var(--okr-input-bg) !important;
+  box-shadow: none !important;
+}
+
+.okr :is(.okr__product-img, .okr__product-hero-img) {
+  background: #0d0d0d !important;
+}
+
+.okr :is(.okr__cta, .okr__process-detail)::before,
+.okr :is(.okr__portfolio-chip, .okr__portfolio-pill)::before,
+.okr .okr__spotlight::after {
+  display: none !important;
 }
 
 /* =========================================================================

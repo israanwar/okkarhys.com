@@ -46,16 +46,10 @@ img, svg, video { display: block; max-width: 100%; }
   font-size: 16px;
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 12px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
-    radial-gradient(circle at 94% 0%, rgba(224, 68, 168, 0.16), transparent 46%),
-    rgba(6, 1, 4, 0.52);
+  background: #0d0d0d;
   color: var(--okr-text);
   outline: none;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
-    0 12px 30px rgba(0, 0, 0, 0.16);
+  box-shadow: none;
   transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
 
@@ -86,10 +80,7 @@ img, svg, video { display: block; max-width: 100%; }
 .okr__glass-select:focus {
   border-color: rgba(255, 154, 221, 0.54);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.32),
-    0 0 0 3px rgba(224, 68, 168, 0.16),
-    0 14px 34px rgba(224, 68, 168, 0.13);
+    0 0 0 3px rgba(224, 68, 168, 0.16);
 }
 
 .okr__control-row {
