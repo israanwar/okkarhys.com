@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Code2, Search, Sparkles, FileText, Settings, BarChart3, Zap, Wrench, ArrowRight } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { useLiveServices } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizeServiceCardItems } from "../../lib/serviceI18n";
@@ -32,7 +33,7 @@ export function ServicesPage() {
               <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             <span className="okr__eyebrow">// {t("services_eyebrow").toUpperCase()}</span>
-            <h1 className="okr__h2">{t("services_page_title")}</h1>
+            <AnimatedHeadline text={t("services_page_title")} className="okr__h2" />
             <p style={{ color: "var(--okr-muted)", maxWidth: 640, marginTop: 20, marginBottom: 56 }}>
               {t("services_page_subtitle", { count: serviceCount })}
             </p>

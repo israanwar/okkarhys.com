@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowLeft, MessageCircle, Check, Code2, Search, Sparkles, FileText, Settings, BarChart3, Zap, Wrench } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { useLiveServiceState, useLiveServices, useLiveSettings } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizeServiceCardItem, localizeServiceItem } from "../../lib/serviceI18n";
@@ -74,9 +75,11 @@ export function ServiceDetailPage() {
                 {parentCategory.name}
               </Link>
             )}
-            <h1 style={{ fontSize: "clamp(36px, 5vw, 56px)", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 12px" }}>
-              {s.name}
-            </h1>
+            <AnimatedHeadline
+              text={s.name}
+              className="okr__h2 okr__detail-title"
+              style={{ margin: "0 0 12px" }}
+            />
             {s.tagline && (
               <p style={{ color: "var(--okr-primary-2)", fontSize: 18, fontWeight: 500, marginBottom: 24 }}>
                 {s.tagline}

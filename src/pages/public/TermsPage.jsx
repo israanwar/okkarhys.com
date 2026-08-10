@@ -1,4 +1,5 @@
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { useLivePage } from "../../hooks/usePageData";
 import { renderRichText } from "../../components/layout/renderRichText";
 import { useI18n } from "../../lib/i18n";
@@ -14,7 +15,7 @@ export function TermsPage() {
               <section className="okr__section okr__page-hero">
           <div className="okr__wrap" style={{ maxWidth: 780 }}>
             <span className="okr__eyebrow">{t("foot_legal_label")}</span>
-            <h1 className="okr__h2" style={{ marginTop: 20 }}>{p.title || t("foot_terms")}</h1>
+            <AnimatedHeadline text={p.title || t("foot_terms")} className="okr__h2" style={{ marginTop: 20 }} />
             {p.updated && (
               <p style={{ color: "var(--okr-dim)", fontSize: 14, marginTop: 12 }}>
                 {t("foot_updated")} {p.updated}

@@ -1,4 +1,5 @@
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { useLivePage } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizePage } from "../../lib/pageI18n";
@@ -12,9 +13,9 @@ export function AboutPage() {
     <>
       <Seo title={`${p.hero_title || t("nav_about")} — okkarhys`} description={p.hero_subtitle} />
               <section className="okr__section okr__page-hero">
-          <div className="okr__wrap" style={{ maxWidth: 900 }}>
+            <div className="okr__wrap" style={{ maxWidth: 900 }}>
             {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
-            <h1 className="okr__h2">{p.hero_title}</h1>
+            <AnimatedHeadline text={p.hero_title} className="okr__h2" />
             {p.hero_subtitle && (
               <p className="okr__page-hero-lead">
                 {p.hero_subtitle}

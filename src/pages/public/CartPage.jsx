@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Trash2, ShoppingBag } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { cartRepo } from "../../lib/localStore";
 import { useLiveCart } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
@@ -16,7 +17,7 @@ export function CartPage() {
       <Seo title={`${t("cart_title")} — okkarhys`} description={t("cart_title")} noindex />
               <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
-            <h1 className="okr__h2">{t("cart_title")}</h1>
+            <AnimatedHeadline text={t("cart_title")} className="okr__h2" />
 
             {rows.length === 0 ? (
               <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--okr-muted)" }}>

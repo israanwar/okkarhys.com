@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { ChevronDown, Search } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { useLivePosts } from "../../hooks/usePageData";
 import { BLOG_CATEGORIES, CATEGORY_BY_SLUG } from "../../data/blogCategories";
 import { PostCard } from "../../components/blog/PostCard";
@@ -124,7 +125,7 @@ export function BlogListPage({ initialCategorySlug = null }) {
 
             {/* Hero */}
             <span className="okr__eyebrow">{heroKicker}</span>
-            <h1 className="okr__h2" style={{ marginBottom: 16 }}>{heroTitle}</h1>
+            <AnimatedHeadline text={heroTitle} className="okr__h2" style={{ marginBottom: 16 }} />
             <p style={{ color: "var(--okr-muted)", maxWidth: 720, marginTop: 8, marginBottom: 40, fontSize: 16, lineHeight: 1.6 }}>
               {heroSubtitle}
             </p>

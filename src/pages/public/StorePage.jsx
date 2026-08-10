@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, Search } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { useLiveProducts } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizeProduct, storeCategoryLabel } from "../../lib/storeI18n";
@@ -87,7 +88,7 @@ export function StorePage() {
               <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             <span className="okr__eyebrow">{t("store_eyebrow")}</span>
-            <h1 className="okr__h2">{t("store_title")}</h1>
+            <AnimatedHeadline text={t("store_title")} className="okr__h2" />
             <p style={{ color: "var(--okr-muted)", maxWidth: 640, marginTop: 20, marginBottom: 40 }}>
               {t("store_subtitle")}
             </p>

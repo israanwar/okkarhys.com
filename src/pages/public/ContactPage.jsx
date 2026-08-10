@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Mail, MessageCircle, MapPin, Clock, Check } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { contactsData } from "../../lib/supabaseData";
 import { useLivePage, useLiveSettings } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
@@ -44,7 +45,7 @@ export function ContactPage() {
               <section className="okr__section okr__page-hero">
           <div className="okr__wrap">
             {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
-            <h1 className="okr__h2" style={{ marginTop: 20 }}>{p.hero_title}</h1>
+            <AnimatedHeadline text={p.hero_title} className="okr__h2" style={{ marginTop: 20 }} />
             {p.hero_subtitle && (
               <p style={{ color: "var(--okr-muted)", fontSize: 18, lineHeight: 1.6, marginTop: 24, maxWidth: 640 }}>
                 {p.hero_subtitle}

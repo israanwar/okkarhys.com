@@ -817,6 +817,14 @@
   margin: clamp(16px, 2vw, 24px) 0 0;
   max-width: 640px;
 }
+.okr__detail-title {
+  max-width: 900px;
+  font-size: clamp(34px, 5vw, 56px);
+  line-height: 1.08;
+}
+.okr__product-detail .okr__detail-title {
+  font-size: clamp(32px, 4vw, 46px);
+}
 .okr__eyebrow {
   color: var(--okr-primary-2);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -3139,10 +3147,12 @@
    Word spans get their `--i` from React; delay stacks so the phrase reads
    left-to-right as it materializes. The blur exit is what sells the reveal
    as "premium" instead of "slid up". */
+.okr__headline--stagger,
 .okr__hero-title--stagger {
   /* Prevent inline-block words from creating awkward gaps at line breaks. */
   word-spacing: 0;
 }
+.okr__headline--stagger .okr__word,
 .okr__hero-title--stagger .okr__word {
   display: inline-block;
   opacity: 0;
@@ -3160,11 +3170,13 @@
    `background-clip: text` doesn't stretch a single gradient across
    `display: inline-block` children, so we let each word bake its own copy of
    the wrapper's gradient. Visually indistinguishable at typical title lengths. */
+.okr__headline--stagger .okr__word.is-grad,
 .okr__hero-title--stagger .grad .okr__word {
-  background: inherit;
+  background: linear-gradient(90deg, #ff9add 0%, #ff67c8 52%, #ffd6f2 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  text-shadow: 0 0 42px rgba(255, 154, 221, 0.16);
 }
 @keyframes okrWordIn {
   0%   { opacity: 0; filter: blur(12px); transform: translate3d(0, 0.32em, 0); }
@@ -3401,6 +3413,7 @@
     animation: none;
     transition: none;
   }
+  .okr__headline--stagger .okr__word,
   .okr__hero-title--stagger .okr__word,
   .okr__hero-kicker,
   .okr__hero-sub--reveal,

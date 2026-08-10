@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Navigate, useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, ShoppingBag, Check } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { cartRepo } from "../../lib/localStore";
 import { useLiveProductState } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
@@ -87,7 +88,11 @@ export function StoreItemPage() {
               </div>
               <div>
                 {displayProduct.category && <div className="okr__product-cat">{displayProduct.category}</div>}
-                <h1 style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.02em", margin: "8px 0 16px" }}>{displayProduct.name}</h1>
+                <AnimatedHeadline
+                  text={displayProduct.name}
+                  className="okr__h2 okr__detail-title"
+                  style={{ margin: "8px 0 16px" }}
+                />
                 <ProductSocialProof product={displayProduct} variant="detail" />
                 <div style={{ fontSize: 32, fontWeight: 700, color: "var(--okr-primary-2)", marginBottom: 24 }}>
                   Rp {(product.price ?? 0).toLocaleString("id-ID")}

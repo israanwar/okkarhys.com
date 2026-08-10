@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { useLiveSettings, useLiveHomepage, useLivePosts } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizeHomepage, localizeSiteDescription } from "../../lib/pageI18n";
@@ -17,34 +18,6 @@ const DEFAULT_HERO_SUBTITLES = new Set([
 
 function isDefaultHeroSubtitle(value) {
   return DEFAULT_HERO_SUBTITLES.has(String(value ?? "").trim().toLowerCase());
-}
-
-/**
- * Split a phrase into word-sized spans so CSS can stagger their reveal. Each
- * word carries a `--i` custom prop that the stylesheet reads to offset its
- * transition-delay. We ship an inline `data-word` too so the animated span
- * keeps its text selectable and doesn't confuse screen readers.
- */
-function StaggerWords({ text, className = "", baseIndex = 0 }) {
-  if (!text) return null;
-  const words = String(text).split(/(\s+)/);
-  return (
-    <span className={className}>
-      {words.map((chunk, idx) => {
-        if (/^\s+$/.test(chunk)) return chunk;
-        const wordIndex = baseIndex + idx;
-        return (
-          <span
-            key={`${chunk}-${idx}`}
-            className="okr__word"
-            style={{ "--i": wordIndex }}
-          >
-            {chunk}
-          </span>
-        );
-      })}
-    </span>
-  );
 }
 
 export function LandingPage() {
@@ -106,15 +79,11 @@ export function LandingPage() {
               {hero.kicker && (
                 <span className="okr__kicker okr__hero-kicker">{hero.kicker}</span>
               )}
-              <h1 className="okr__hero-title okr__hero-title--stagger">
-                <StaggerWords text={hero.title_line1} />
-                {hero.title_line1 && hero.title_line2 ? " " : null}
-                <StaggerWords
-                  text={hero.title_line2}
-                  className="grad"
-                  baseIndex={line1WordCount}
-                />
-              </h1>
+              <AnimatedHeadline
+                text={[hero.title_line1, hero.title_line2].filter(Boolean).join(" ")}
+                className="okr__hero-title okr__hero-title--stagger"
+                highlightFrom={line1WordCount}
+              />
               {heroSubtitle && (
                 <p className="okr__hero-sub okr__hero-sub--reveal">{heroSubtitle}</p>
               )}

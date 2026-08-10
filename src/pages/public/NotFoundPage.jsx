@@ -1,4 +1,5 @@
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { useI18n } from "../../lib/i18n";
 
 export function NotFoundPage() {
@@ -9,7 +10,7 @@ export function NotFoundPage() {
               <section className="okr__section" style={{ textAlign: "center" }}>
           <div className="okr__wrap">
             <span className="okr__eyebrow">404</span>
-            <h1 className="okr__h2">{t("nf_title")}</h1>
+            <AnimatedHeadline text={t("nf_title")} className="okr__h2" />
             <p style={{ color: "var(--okr-muted)", marginTop: 20, marginBottom: 32 }}>
               {t("nf_body")}
             </p>

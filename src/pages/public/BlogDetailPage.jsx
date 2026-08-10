@@ -1,5 +1,6 @@
 import { useParams, Link, Navigate } from "react-router-dom";
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { useLivePostState, useLivePosts } from "../../hooks/usePageData";
 import { RenderTiptap } from "../../components/blog/RenderTiptap";
 import { ArrowLeft } from "lucide-react";
@@ -54,7 +55,11 @@ export function BlogDetailPage() {
             {post.tags?.length > 0 && (
               <div className="okr__post-tags" style={{ marginTop: 16 }}>{post.tags.join(" · ").toUpperCase()}</div>
             )}
-            <h1 style={{ fontSize: "clamp(36px, 5vw, 56px)", fontWeight: 700, letterSpacing: "-0.02em", margin: "8px 0 20px" }}>{post.title}</h1>
+            <AnimatedHeadline
+              text={post.title}
+              className="okr__h2 okr__detail-title"
+              style={{ margin: "8px 0 20px" }}
+            />
             <p style={{ color: "var(--okr-muted)", fontSize: 15, marginBottom: 32, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
               <span>
                 {new Date(post.published_at ?? post.created_at).toLocaleDateString(lang === "id" ? "id-ID" : "en-US", {

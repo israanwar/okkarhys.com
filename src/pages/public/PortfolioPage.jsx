@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Blocks, BriefcaseBusiness, CircuitBoard, Megaphone, Orbit, Radar } from "lucide-react";
 import { Seo } from "../../components/seo/Seo";
+import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { useLivePage } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizePage } from "../../lib/pageI18n";
@@ -24,7 +25,7 @@ export function PortfolioPage() {
                   <section className="okr__section" style={{ paddingTop: 140, paddingBottom: 100 }}>
             <div className="okr__wrap" style={{ maxWidth: 640, textAlign: "center" }}>
               {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
-              <h1 className="okr__h2" style={{ marginTop: 20 }}>{t("portfolio_empty_title")}</h1>
+              <AnimatedHeadline text={t("portfolio_empty_title")} className="okr__h2" style={{ marginTop: 20 }} />
               <p style={{ color: "var(--okr-muted)", marginTop: 20, fontSize: 16, lineHeight: 1.6 }}>
                 {t("portfolio_empty_body")}
               </p>
@@ -44,9 +45,11 @@ export function PortfolioPage() {
           <div className="okr__wrap">
             <header style={{ maxWidth: 860, marginBottom: 54 }}>
               {p.hero_kicker && <span className="okr__kicker">{p.hero_kicker}</span>}
-              <h1 className="okr__hero-title" style={{ marginTop: 24, maxWidth: 920 }}>
-                {p.hero_title || t("portfolio_empty_title")}
-              </h1>
+              <AnimatedHeadline
+                text={p.hero_title || t("portfolio_empty_title")}
+                className="okr__hero-title"
+                style={{ marginTop: 24, maxWidth: 920 }}
+              />
               {p.hero_subtitle && (
                 <p className="okr__hero-sub" style={{ maxWidth: 720 }}>
                   {p.hero_subtitle}
