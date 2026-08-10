@@ -106,7 +106,7 @@
     linear-gradient(180deg, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.12) 50%, rgba(0, 0, 0, 0.86) 100%);
   opacity: 1;
 }
-.okr > :not(.okr__aurora):not(.okr__header):not(.okr__mobile-menu) {
+.okr > :not(.okr__aurora):not(.okr__header):not(.okr__mobile-menu):not(.okr__scroll-progress) {
   position: relative;
   z-index: 1;
 }
@@ -3171,7 +3171,7 @@
 }
 @media (max-width: 720px) {
   @supports (animation-timeline: scroll()) {
-    .okr__scroll-progress {
+    .okr > .okr__scroll-progress {
       display: block;
       position: fixed;
       top: 0;
