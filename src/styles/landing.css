@@ -562,13 +562,21 @@
     color: currentColor;
   }
   .okr__mobile-navlink:hover,
-  .okr__mobile-navlink:focus-visible,
-  .okr__mobile-navlink:active {
+  .okr__mobile-navlink:focus-visible {
     color: rgba(255, 255, 255, 0.94);
     outline: none;
     transform: translate3d(2px, 0, 0);
   }
-  .okr__mobile-navlink.is-active { color: rgba(255, 255, 255, 0.94); }
+  .okr__mobile-navlink:active {
+    color: #ff67c8;
+    font-style: italic;
+    outline: none;
+    transform: translate3d(2px, 0, 0);
+  }
+  .okr__mobile-navlink.is-active {
+    color: #ff67c8;
+    font-style: italic;
+  }
 
   @supports selector(.okr__mobile-menu-panel:has(.okr__mobile-navlink:hover)) {
     .okr__mobile-menu-panel:has(.okr__mobile-navlink:is(:hover, :focus-visible, :active)) .okr__mobile-navlink {
@@ -576,6 +584,9 @@
     }
     .okr__mobile-menu-panel:has(.okr__mobile-navlink:is(:hover, :focus-visible, :active)) .okr__mobile-navlink:is(:hover, :focus-visible, :active) {
       color: rgba(255, 255, 255, 0.94);
+    }
+    .okr__mobile-menu-panel:has(.okr__mobile-navlink:is(:hover, :focus-visible, :active)) .okr__mobile-navlink:is(:active, .is-active) {
+      color: #ff67c8;
     }
   }
 }
