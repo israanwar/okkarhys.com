@@ -4871,7 +4871,18 @@
   justify-content: space-between;
   letter-spacing: 0.14em;
   line-height: 1.2;
+  min-width: 0;
   text-transform: uppercase;
+}
+
+.okr .okr__blog-card-signal span {
+  min-width: 0;
+}
+
+.okr .okr__blog-card-signal span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .okr .okr__service-card-meta::before,
@@ -5011,6 +5022,7 @@
   /* 380-520 → 320-440. Editorial cards were bigger than needed for the
      amount of content they hold, especially on mid-desktop widths. */
   min-height: clamp(320px, 28vw, 440px);
+  min-width: 0;
   text-decoration: none;
 }
 
@@ -5072,11 +5084,11 @@
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 0 !important;
   box-shadow: none !important;
-  /* Tightened top margin from 34-48 → 14-22. Combined with the signal's
-     padding above, that used to add up to 76px of empty space at the
-     top of every card. Now ~40px. */
-  margin: clamp(14px, 1.8vw, 22px) clamp(18px, 2vw, 28px) 0;
+  /* The generated covers are artwork now, not tiny framed thumbnails. Let
+     them run edge-to-edge so the visual leads the card. */
+  margin: clamp(12px, 1.4vw, 18px) 0 0;
   max-height: none;
+  min-width: 0;
   overflow: hidden;
   position: relative;
   z-index: 1;
