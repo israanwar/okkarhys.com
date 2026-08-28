@@ -135,8 +135,8 @@ export function CheckoutPage() {
                 </div>
 
                 <div style={{
-                  padding: "14px 16px", borderRadius: 10, background: "rgba(224,68,168,0.08)",
-                  border: "1px solid rgba(224,68,168,0.25)", fontSize: 14,
+                  padding: "14px 16px", borderRadius: 10, background: "rgba(86, 99, 111, 0.08)",
+                  border: "1px solid rgba(86, 99, 111, 0.25)", fontSize: 14,
                 }}>
                   <div style={{ fontWeight: 600, marginBottom: 4 }}>
                     {isGopayMerchantAutoEnabled(settings) ? "Metode pembayaran: GoPay / QRIS otomatis" : t("checkout_payment_title")}
@@ -155,7 +155,7 @@ export function CheckoutPage() {
                   const displayProduct = localizeProduct(product, lang);
                   return (
                     <div key={product.id} style={{ display: "flex", gap: 12, padding: "10px 0", borderBottom: "1px solid var(--okr-line)" }}>
-                      <img src={resolveProductCover(displayProduct)} alt="" style={{ width: 56, height: 56, borderRadius: 6, objectFit: "contain", background: "#0f0d18", padding: 3, flexShrink: 0, border: "1px solid var(--okr-line)" }} />
+                      <img src={resolveProductCover(displayProduct)} alt="" style={{ width: 56, height: 56, borderRadius: 6, objectFit: "contain", background: "#121416", padding: 3, flexShrink: 0, border: "1px solid var(--okr-line)" }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis" }}>{displayProduct.name}</div>
                         <div style={{ fontSize: 12, color: "var(--okr-muted)", marginTop: 2 }}>{t("qty_label")}: {qty}</div>

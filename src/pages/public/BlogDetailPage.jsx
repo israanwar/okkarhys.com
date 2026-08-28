@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { useI18n } from "../../lib/i18n";
 import { formatPostReadCount, getPostReadCount } from "../../lib/blogMetrics";
 import { CATEGORY_BY_SLUG, DEFAULT_CATEGORY_SLUG } from "../../data/blogCategories";
-import { resolveCover } from "../../lib/blogPlaceholder";
+import { getPostCardArtwork } from "../../components/blog/PostCard";
 
 export function BlogDetailPage() {
   const { lang, t } = useI18n();
@@ -37,7 +37,8 @@ export function BlogDetailPage() {
   const readingTime = post.reading_time ?? 1;
   const readCount = getPostReadCount(post);
   const rawCategory = CATEGORY_BY_SLUG[post.category] ?? CATEGORY_BY_SLUG[DEFAULT_CATEGORY_SLUG];
-  const cover = resolveCover(post, rawCategory);
+  const postIndex = Math.max(0, allPosts.findIndex((candidate) => candidate.id === post.id));
+  const { theme: artworkTheme, Icon: ArtworkIcon } = getPostCardArtwork(postIndex);
 
   return (
     <>
@@ -72,11 +73,14 @@ export function BlogDetailPage() {
               <span aria-hidden>·</span>
               <span>{t("blog_read_count", { count: formatPostReadCount(readCount, lang) })}</span>
             </p>
-            <img
-              src={cover}
-              alt={post.image_alt || post.title}
-              style={{ width: "100%", aspectRatio: "16 / 9", objectFit: "cover", borderRadius: 12, marginBottom: 32 }}
-            />
+            <div
+              className="okr__blog-detail-art"
+              style={{ "--okr-blog-art": artworkTheme }}
+              role="img"
+              aria-label={post.image_alt || post.title}
+            >
+              <ArtworkIcon aria-hidden="true" strokeWidth={1.15} />
+            </div>
             {post.excerpt && (
               <p style={{ color: "var(--okr-text)", fontSize: 20, lineHeight: 1.5, marginBottom: 32 }}>{post.excerpt}</p>
             )}

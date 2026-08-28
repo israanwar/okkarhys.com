@@ -237,19 +237,20 @@ export function SiteFooter({ settings }) {
 
 function AuroraBackdrop() {
   const canvasRef = useRef(null);
-  // Skip the heavy canvas draw loop on mobile / touch-primary devices. The
+  // Skip the heavy canvas draw loop on laptop-width, mobile, and touch-primary
+  // devices. The
   // CSS pseudo-element aurora (.okr__aurora::before/::after) already provides
   // a rich static+animated backdrop; the extra curtains, filaments, and folds
   // aren't worth the scroll jank on mobile GPUs. Kept desktop untouched.
   const [renderCanvas, setRenderCanvas] = useState(() => {
     if (typeof window === "undefined") return true;
-    const mq = window.matchMedia("(max-width: 900px), (hover: none) and (pointer: coarse)");
+    const mq = window.matchMedia("(max-width: 1180px), (hover: none), (pointer: coarse)");
     return !mq.matches;
   });
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
-    const mq = window.matchMedia("(max-width: 900px), (hover: none) and (pointer: coarse)");
+    const mq = window.matchMedia("(max-width: 1180px), (hover: none), (pointer: coarse)");
     const onChange = (event) => setRenderCanvas(!event.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
@@ -385,11 +386,11 @@ function AuroraBackdrop() {
         const bottom = h * (0.46 + Math.sin(i * 0.82 - t * 0.6) * 0.055);
         const stroke = ctx.createLinearGradient(0, top, 0, bottom);
 
-        stroke.addColorStop(0, "rgba(255, 214, 242, 0)");
-        stroke.addColorStop(0.2, "rgba(255, 214, 242, 0.08)");
-        stroke.addColorStop(0.48, "rgba(255, 103, 200, 0.16)");
-        stroke.addColorStop(0.72, "rgba(224, 68, 168, 0.11)");
-        stroke.addColorStop(1, "rgba(224, 68, 168, 0)");
+        stroke.addColorStop(0, "rgba(217, 219, 222, 0)");
+        stroke.addColorStop(0.2, "rgba(217, 219, 222, 0.08)");
+        stroke.addColorStop(0.48, "rgba(119, 125, 133, 0.16)");
+        stroke.addColorStop(0.72, "rgba(86, 99, 111, 0.11)");
+        stroke.addColorStop(1, "rgba(86, 99, 111, 0)");
 
         ctx.globalAlpha = 0.2 + (i % 3) * 0.035;
         ctx.strokeStyle = stroke;
@@ -425,26 +426,26 @@ function AuroraBackdrop() {
       ctx.globalCompositeOperation = "source-over";
       ctx.globalAlpha = 1;
       const base = ctx.createLinearGradient(0, 0, w, h);
-      base.addColorStop(0, "#160411");
-      base.addColorStop(0.42, "#080005");
+      base.addColorStop(0, "#111316");
+      base.addColorStop(0.42, "#070809");
       base.addColorStop(1, "#000000");
       ctx.fillStyle = base;
       ctx.fillRect(0, 0, w, h);
 
       radial(w * 0.38, h * 0.1, h * 0.74, [
-        [0, "rgba(255, 103, 200, 0.38)"],
-        [0.48, "rgba(224, 68, 168, 0.16)"],
-        [1, "rgba(224, 68, 168, 0)"],
+        [0, "rgba(119, 125, 133, 0.38)"],
+        [0.48, "rgba(86, 99, 111, 0.16)"],
+        [1, "rgba(86, 99, 111, 0)"],
       ], 0.9);
       radial(w * 0.16, h * 0.34, h * 0.58, [
-        [0, "rgba(255, 214, 242, 0.14)"],
-        [0.46, "rgba(224, 68, 168, 0.095)"],
-        [1, "rgba(224, 68, 168, 0)"],
+        [0, "rgba(217, 219, 222, 0.14)"],
+        [0.46, "rgba(86, 99, 111, 0.095)"],
+        [1, "rgba(86, 99, 111, 0)"],
       ], 0.7);
       radial(w * 0.82, h * 0.08, h * 0.58, [
-        [0, "rgba(122, 20, 88, 0.16)"],
-        [0.54, "rgba(255, 103, 200, 0.07)"],
-        [1, "rgba(255, 103, 200, 0)"],
+        [0, "rgba(48, 54, 61, 0.16)"],
+        [0.54, "rgba(119, 125, 133, 0.07)"],
+        [1, "rgba(119, 125, 133, 0)"],
       ], 0.75);
 
       curtain({
@@ -457,11 +458,11 @@ function AuroraBackdrop() {
         alpha: 0.68,
         blur: 22,
         stops: [
-          [0, "rgba(255, 103, 200, 0)"],
-          [0.24, "rgba(255, 103, 200, 0.28)"],
-          [0.48, "rgba(255, 214, 242, 0.52)"],
-          [0.68, "rgba(224, 68, 168, 0.32)"],
-          [1, "rgba(224, 68, 168, 0)"],
+          [0, "rgba(119, 125, 133, 0)"],
+          [0.24, "rgba(119, 125, 133, 0.28)"],
+          [0.48, "rgba(217, 219, 222, 0.52)"],
+          [0.68, "rgba(86, 99, 111, 0.32)"],
+          [1, "rgba(86, 99, 111, 0)"],
         ],
       }, t);
 
@@ -475,11 +476,11 @@ function AuroraBackdrop() {
         alpha: 0.52,
         blur: 32,
         stops: [
-          [0, "rgba(122, 20, 88, 0)"],
-          [0.22, "rgba(122, 20, 88, 0.12)"],
-          [0.42, "rgba(255, 103, 200, 0.28)"],
-          [0.62, "rgba(224, 68, 168, 0.25)"],
-          [1, "rgba(224, 68, 168, 0)"],
+          [0, "rgba(48, 54, 61, 0)"],
+          [0.22, "rgba(48, 54, 61, 0.12)"],
+          [0.42, "rgba(119, 125, 133, 0.28)"],
+          [0.62, "rgba(86, 99, 111, 0.25)"],
+          [1, "rgba(86, 99, 111, 0)"],
         ],
       }, t);
 
@@ -493,10 +494,10 @@ function AuroraBackdrop() {
         alpha: 0.3,
         blur: 42,
         stops: [
-          [0, "rgba(255, 103, 200, 0)"],
-          [0.34, "rgba(224, 68, 168, 0.16)"],
-          [0.58, "rgba(255, 103, 200, 0.15)"],
-          [1, "rgba(122, 20, 88, 0)"],
+          [0, "rgba(119, 125, 133, 0)"],
+          [0.34, "rgba(86, 99, 111, 0.16)"],
+          [0.58, "rgba(119, 125, 133, 0.15)"],
+          [1, "rgba(48, 54, 61, 0)"],
         ],
       }, t);
 
@@ -512,11 +513,11 @@ function AuroraBackdrop() {
         alpha: 0.3,
         blur: 16,
         stops: [
-          [0, "rgba(255, 214, 242, 0)"],
-          [0.24, "rgba(255, 214, 242, 0.24)"],
-          [0.5, "rgba(255, 214, 242, 0.42)"],
-          [0.76, "rgba(255, 103, 200, 0.18)"],
-          [1, "rgba(255, 103, 200, 0)"],
+          [0, "rgba(217, 219, 222, 0)"],
+          [0.24, "rgba(217, 219, 222, 0.24)"],
+          [0.5, "rgba(217, 219, 222, 0.42)"],
+          [0.76, "rgba(119, 125, 133, 0.18)"],
+          [1, "rgba(119, 125, 133, 0)"],
         ],
       }, t);
 
@@ -530,11 +531,11 @@ function AuroraBackdrop() {
         alpha: 0.15,
         blur: 20,
         stops: [
-          [0, "rgba(224, 68, 168, 0)"],
-          [0.22, "rgba(224, 68, 168, 0.16)"],
-          [0.48, "rgba(255, 103, 200, 0.22)"],
-          [0.72, "rgba(255, 214, 242, 0.1)"],
-          [1, "rgba(255, 103, 200, 0)"],
+          [0, "rgba(86, 99, 111, 0)"],
+          [0.22, "rgba(86, 99, 111, 0.16)"],
+          [0.48, "rgba(119, 125, 133, 0.22)"],
+          [0.72, "rgba(217, 219, 222, 0.1)"],
+          [1, "rgba(119, 125, 133, 0)"],
         ],
       }, t);
 
@@ -648,6 +649,7 @@ export function SiteChrome({ children, settings: providedSettings }) {
 
   return (
     <div className="okr" ref={shellRef}>
+      <AuroraBackdrop />
       <SiteHeader settings={settings} />
       {children}
       <SiteFooter settings={settings} />

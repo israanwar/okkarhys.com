@@ -376,7 +376,7 @@ function WaitingView({ order, L }) {
     <div className="okr__panel" style={{ textAlign: "center", padding: "40px 32px", marginBottom: 20 }}>
       <div style={{
         width: 72, height: 72, borderRadius: "50%",
-        background: "rgba(224,68,168,0.15)",
+        background: "rgba(86, 99, 111, 0.15)",
         display: "grid", placeItems: "center",
         margin: "0 auto 20px", color: "var(--okr-primary-2)",
       }}>
@@ -388,8 +388,8 @@ function WaitingView({ order, L }) {
       </p>
       <div style={{
         display: "inline-block", padding: "8px 16px",
-        background: "rgba(224,68,168,0.08)",
-        border: "1px solid rgba(224,68,168,0.25)",
+        background: "rgba(86, 99, 111, 0.08)",
+        border: "1px solid rgba(86, 99, 111, 0.25)",
         borderRadius: 999, fontSize: 13, color: "var(--okr-primary-2)",
       }}>
         ⏱ {L.waiting_estimate}
@@ -459,8 +459,8 @@ function PaidView({ order, L }) {
         </div>
       ) : (
         <div style={{
-          padding: 16, background: "rgba(224,68,168,0.06)",
-          border: "1px solid rgba(224,68,168,0.25)", borderRadius: 10,
+          padding: 16, background: "rgba(86, 99, 111, 0.06)",
+          border: "1px solid rgba(86, 99, 111, 0.25)", borderRadius: 10,
           fontSize: 14, color: "var(--okr-muted)",
         }}>
           {L.download_via_email}

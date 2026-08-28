@@ -104,7 +104,7 @@ export function BlogSidebar({ posts, activeCategorySlug }) {
         </ul>
       </div>
 
-      <div style={{ ...sectionStyle, background: "linear-gradient(135deg, rgba(224,68,168,0.08), rgba(255,103,200,0.04))" }}>
+      <div style={{ ...sectionStyle, background: "linear-gradient(135deg, rgba(86, 99, 111, 0.08), rgba(119, 125, 133, 0.04))" }}>
         <h4 style={headingStyle}>{t("blog_sidebar_about_title")}</h4>
         <p style={{ fontSize: 14, lineHeight: 1.55, color: "var(--okr-muted)", margin: "0 0 14px" }}>
           {t("blog_sidebar_about_body")}

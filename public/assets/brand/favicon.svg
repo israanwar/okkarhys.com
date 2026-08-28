@@ -1,13 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Okkarhys">
-  <rect width="128" height="128" rx="24" fill="#030405"/>
+  <rect width="128" height="128" rx="24" fill="#ffffff"/>
+  <defs>
+    <linearGradient id="noir-logo-gradient" x1="32" y1="28" x2="106" y2="96" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#171a1e"/>
+      <stop offset="11.11%" stop-color="#1d2125"/>
+      <stop offset="22.22%" stop-color="#252a2f"/>
+      <stop offset="33.33%" stop-color="#30363d"/>
+      <stop offset="44.44%" stop-color="#3c434b"/>
+      <stop offset="55.55%" stop-color="#4a525b"/>
+      <stop offset="66.66%" stop-color="#53616e"/>
+      <stop offset="77.77%" stop-color="#56636f"/>
+      <stop offset="88.88%" stop-color="#52565a"/>
+      <stop offset="100%" stop-color="#4b555d"/>
+    </linearGradient>
+  </defs>
   <g transform="translate(20 21) scale(1.26)">
-    <g fill="#f7f7f8">
+    <g fill="url(#noir-logo-gradient)">
       <path d="M10 26V17C10 9.82 15.82 4 23 4h10v8H23c-2.76 0-5 2.24-5 5v9h-8Z"/>
       <path d="M37 4h10c7.18 0 13 5.82 13 13v10h-8V17c0-2.76-2.24-5-5-5H37V4Z"/>
       <path d="M10 30h8v10c0 2.76 2.24 5 5 5h10v8H23c-7.18 0-13-5.82-13-13V30Z"/>
       <path d="M52 30h8v10c0 3.55-1.43 6.76-3.75 9.1l-6.03-5.24A4.97 4.97 0 0 0 52 40V30Z"/>
       <path d="m34 34 5.45-5.45L63 49.2V60L34 34Z"/>
     </g>
-    <path fill="#ff2d95" d="m52.35 49.52 5.34-4.67L68 54.05V60h-6.76l-8.89-10.48Z"/>
+    <path fill="url(#noir-logo-gradient)" d="m52.35 49.52 5.34-4.67L68 54.05V60h-6.76l-8.89-10.48Z"/>
   </g>
 </svg>

@@ -66,7 +66,7 @@ export function SitemapPage() {
             <p style={{ color: "var(--okr-muted)", maxWidth: 640, marginTop: 8, marginBottom: 40, fontSize: 16, lineHeight: 1.6 }}>
               Daftar lengkap {totalPosts} artikel di {activeCategories} kategori aktif, plus halaman utama dan legal.
               Halaman ini juga tersedia dalam format XML di{" "}
-              <a href="/sitemap.xml" style={{ color: "var(--okr-primary-2, #ff9add)", textDecoration: "underline" }}>
+              <a href="/sitemap.xml" style={{ color: "var(--okr-primary-2, #c9cdd1)", textDecoration: "underline" }}>
                 /sitemap.xml
               </a>{" "}
               untuk search engine.

@@ -108,7 +108,7 @@ export function AdminDashboardPage() {
 
 function StatCard({ icon: Icon, label, value, to, highlight }) {
   const content = (
-    <div className="wpx__stat" style={highlight ? { borderColor: "rgba(224, 68, 168, 0.5)" } : undefined}>
+    <div className="wpx__stat" style={highlight ? { borderColor: "rgba(86, 99, 111, 0.5)" } : undefined}>
       <div className="wpx__stat-icon"><Icon size={20} /></div>
       <div>
         <div className="wpx__stat-label">{label}</div>

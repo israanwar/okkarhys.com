@@ -6,8 +6,8 @@ import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { useLiveSettings, useLiveHomepage, useLivePosts } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizeHomepage, localizeSiteDescription } from "../../lib/pageI18n";
-import { resolveCover } from "../../lib/blogPlaceholder";
 import { useLandingEffects, useSnapActiveIndex } from "../../hooks/useLandingEffects";
+import { PostCard } from "../../components/blog/PostCard";
 
 const DEFAULT_HERO_SUBTITLES = new Set([
   "web, seo, ai workflow & content strategy for personal brands and businesses.",
@@ -73,7 +73,7 @@ export function LandingPage() {
       />
       {/* Thin fixed progress bar - only painted on mobile via CSS. */}
       <span className="okr__scroll-progress" aria-hidden="true" />
-      <div className="okr__home">
+    <div className="okr__home">
           <section className="okr__hero">
             <div className="okr__wrap">
               {hero.kicker && (
@@ -211,28 +211,9 @@ export function LandingPage() {
                     {t("section_journal_all")} <ArrowRight size={15} />
                   </Link>
                 </div>
-                <div className="okr__journal okr__journal--editorial">
+                <div className="okr__journal okr__journal--editorial okr__blog-grid--editorial">
                   {posts.map((p, i) => (
-                    <Link
-                      key={p.id}
-                      className="okr__post okr__editorial-card okr__spotlight okr__reveal"
-                      data-card-index={String(i + 1).padStart(2, "0")}
-                      style={{ "--reveal-delay": `${Math.min(i, 5) * 60}ms` }}
-                      to={`/blog/${p.slug}`}
-                    >
-                      {/* Signal already carries the primary tag + index —
-                          the body-level `.okr__post-tags` was duplicate info
-                          and cluttered the compact editorial layout. */}
-                      <div className="okr__blog-card-signal" aria-hidden="true">
-                        <span>{String(i + 1).padStart(2, "0")}</span>
-                        <span>{((p.tags ?? [])[0] ?? t("section_journal")).toUpperCase()}</span>
-                      </div>
-                      <div className="okr__post-img" style={{ backgroundImage: `url("${resolveCover(p)}")` }} />
-                      <div className="okr__post-body">
-                        <h3 className="okr__post-title">{p.title}</h3>
-                        <p className="okr__post-excerpt">{p.excerpt}</p>
-                      </div>
-                    </Link>
+                    <PostCard key={p.id} post={p} index={i} />
                   ))}
                 </div>
               </div>

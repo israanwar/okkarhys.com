@@ -122,7 +122,7 @@ export function ContactPage() {
                 {p.response_time && (
                   <div style={{
                     marginTop: 24, padding: 14, borderRadius: 10,
-                    background: "rgba(224,68,168,0.08)", border: "1px solid rgba(224,68,168,0.25)",
+                    background: "rgba(86, 99, 111, 0.08)", border: "1px solid rgba(86, 99, 111, 0.25)",
                     fontSize: 13, color: "var(--okr-muted)",
                   }}>
                     ⏱ {p.response_time}

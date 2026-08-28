@@ -1,6 +1,5 @@
 .okr-logo,
 .okr-mark {
-  --okr-logo-accent: #ff2d95;
   color: currentColor;
 }
 
@@ -25,26 +24,12 @@
   flex: 0 0 auto;
 }
 
-.okr-logo__accent {
-  fill: var(--okr-logo-accent);
-  transform-origin: 59px 54px;
-  transition: transform 240ms cubic-bezier(.2, .8, .2, 1), filter 240ms ease;
-}
-
 .okr-logo__wordmark {
   fill: currentColor;
   font-family: "Archivo Black", "Arial Black", ui-sans-serif, system-ui, sans-serif;
   font-size: 29px;
   font-weight: 900;
   letter-spacing: 2.6px;
-}
-
-a:hover .okr-logo__accent,
-a:focus-visible .okr-logo__accent,
-.okr-logo:hover .okr-logo__accent,
-.okr-mark:hover .okr-logo__accent {
-  transform: translate(2px, 1px);
-  filter: drop-shadow(0 0 7px color-mix(in srgb, var(--okr-logo-accent) 58%, transparent));
 }
 
 @media (max-width: 640px) {
@@ -58,7 +43,4 @@ a:focus-visible .okr-logo__accent,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .okr-logo__accent {
-    transition: none;
-  }
 }

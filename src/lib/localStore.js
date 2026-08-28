@@ -1121,8 +1121,8 @@ const CATEGORY_STYLE = {
   "Productivity Resources": { c1: "#0ea5e9", c2: "#0369a1", icon: "◉" },
   "Printables":             { c1: "#eab308", c2: "#a16207", icon: "▨" },
   "Digital Bundles":        { c1: "#8b5cf6", c2: "#4c1d95", icon: "◆" },
-  "Modules":                { c1: "#e044a8", c2: "#8a145f", icon: "▷" },
-  "Modul":                  { c1: "#e044a8", c2: "#8a145f", icon: "▷" }, // legacy
+  "Modules":                { c1: "#56636f", c2: "#30363d", icon: "▷" },
+  "Modul":                  { c1: "#56636f", c2: "#30363d", icon: "▷" }, // legacy
 };
 
 export function coverSvg(product) {

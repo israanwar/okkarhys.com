@@ -209,7 +209,7 @@ export function AdminSettingsPage() {
           padding: "14px 18px", borderRadius: 10,
           background: toast.type === "success" ? "rgba(34, 197, 94, 0.15)"
             : toast.type === "error" ? "rgba(239, 68, 68, 0.15)"
-            : "rgba(224, 68, 168, 0.15)",
+            : "rgba(86, 99, 111, 0.15)",
           border: `1px solid ${
             toast.type === "success" ? "rgba(34,197,94,0.5)"
             : toast.type === "error" ? "rgba(239,68,68,0.5)"
@@ -217,7 +217,7 @@ export function AdminSettingsPage() {
           }`,
           color: toast.type === "success" ? "#86efac"
             : toast.type === "error" ? "#fca5a5"
-            : "#ffd1ed",
+            : "#d9dbde",
           backdropFilter: "blur(10px)",
           boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
           display: "flex", alignItems: "center", gap: 10,
@@ -338,7 +338,7 @@ export function AdminSettingsPage() {
                       background: "#0a0912", borderRadius: 12, padding: 24,
                       border: "1px solid var(--border)",
                     }}>
-                      <div style={{ fontSize: 11, color: "#ff9add", letterSpacing: 2, marginBottom: 4, textTransform: "uppercase" }}>Preview QRIS nominal otomatis</div>
+                      <div style={{ fontSize: 11, color: "#c9cdd1", letterSpacing: 2, marginBottom: 4, textTransform: "uppercase" }}>Preview QRIS nominal otomatis</div>
                       <div style={{ fontSize: 12, color: "#a8adba", marginBottom: 18, lineHeight: 1.5 }}>
                         Scan preview ini untuk mengetes nominal Rp 149.000. Jangan scan gambar QRIS statis di kiri karena nominalnya memang kosong.
                       </div>
@@ -363,7 +363,7 @@ export function AdminSettingsPage() {
                           <div style={{ color: "#8b8f9d", fontSize: 11, marginBottom: 4 }}>Terminal</div>
                           <div style={{ fontFamily: "monospace", marginBottom: 10 }}>{data.qris_terminal_label || "—"}</div>
                           <div style={{ color: "#8b8f9d", fontSize: 11, marginBottom: 4 }}>Total</div>
-                          <div style={{ color: "#ff9add", fontSize: 22, fontWeight: 700 }}>Rp {QRIS_PREVIEW_AMOUNT.toLocaleString("id-ID")}</div>
+                          <div style={{ color: "#c9cdd1", fontSize: 22, fontWeight: 700 }}>Rp {QRIS_PREVIEW_AMOUNT.toLocaleString("id-ID")}</div>
                           {dynamicQrisPreview && (
                             <div style={{ color: "#8b8f9d", fontSize: 11, marginTop: 10, lineHeight: 1.5 }}>
                               Mode QRIS: dinamis / amount embedded

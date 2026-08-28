@@ -8,9 +8,9 @@
   --okr-logo-ink: #d8d0dd;
   --okr-muted: #8b8f9d;
   --okr-dim: #6b6f7c;
-  --okr-primary: #e044a8;
-  --okr-primary-2: #ff9add;
-  --okr-cyan: #ff67c8;
+  --okr-primary: #56636f;
+  --okr-primary-2: #c9cdd1;
+  --okr-cyan: #777d85;
   --okr-card-bg: #111111;
   --okr-input-bg: #0d0d0d;
   --okr-header-bg: #000000;
@@ -19,12 +19,15 @@
   --okr-glass-border: rgba(255, 255, 255, 0.12);
   --okr-glass-shadow: none;
   --okr-touch-glass: #151515;
-  --okr-touch-glass-border: rgba(255, 103, 200, 0.42);
+  --okr-touch-glass-border: rgba(119, 125, 133, 0.42);
   --okr-touch-glass-shadow: none;
-  --okr-aurora-teal: 224, 68, 168;
-  --okr-aurora-cyan: 255, 103, 200;
-  --okr-aurora-ice: 255, 214, 242;
-  --okr-aurora-blue: 122, 20, 88;
+  /* Noir Aurora spectrum: neutral, layered, and deliberately free of pink. */
+  --okr-aurora-carbon: 29, 33, 37;
+  --okr-aurora-steel: 86, 99, 111;
+  --okr-aurora-ash: 82, 86, 90;
+  --okr-aurora-obsidian: 37, 44, 51;
+  --okr-aurora-silver: 174, 180, 186;
+  --okr-aurora-slate: 83, 97, 110;
   color-scheme: dark;
   --okr-radius: 18px;
   --okr-max: 1240px;
@@ -37,7 +40,12 @@
   --okr-card-pad: clamp(18px, 3vw, 28px);
   --okr-header-h: 72px;
   --okr-content-max: 68ch;
-  background: #000;
+  background:
+    radial-gradient(ellipse 88% 48% at 14% 4%, rgba(174, 180, 186, 0.12), transparent 64%),
+    radial-gradient(ellipse 74% 52% at 66% 8%, rgba(86, 99, 111, 0.2), transparent 66%),
+    radial-gradient(ellipse 62% 44% at 100% 34%, rgba(83, 97, 110, 0.15), transparent 68%),
+    linear-gradient(150deg, #090b0d 0%, #06080a 28%, #030405 54%, #000 80%);
+  background-attachment: fixed;
   color: var(--okr-text);
   font-family: "Plus Jakarta Sans", Inter, ui-sans-serif, system-ui, sans-serif;
   min-height: 100svh;
@@ -98,7 +106,11 @@
   overflow: hidden;
   z-index: 0;
   pointer-events: none;
-  background: #000;
+  background:
+    radial-gradient(ellipse 82% 54% at 16% 6%, rgba(var(--okr-aurora-silver), 0.1), transparent 66%),
+    radial-gradient(ellipse 72% 46% at 62% 0%, rgba(var(--okr-aurora-steel), 0.18), transparent 62%),
+    radial-gradient(ellipse 64% 52% at 96% 28%, rgba(var(--okr-aurora-slate), 0.14), transparent 68%),
+    linear-gradient(150deg, #090b0d 0%, #06080a 30%, #030405 58%, #000 82%);
   contain: layout paint style;
   transform: translate3d(0, 0, 0);
 }
@@ -113,36 +125,43 @@
 .okr__aurora::after {
   content: "";
   transform: translate3d(0, 0, 0);
-  will-change: transform;
+  transform-origin: 50% 38%;
+  will-change: transform, opacity;
+  mix-blend-mode: screen;
 }
 .okr__aurora::before {
-  top: -22vh;
-  left: -16vw;
-  width: 132vw;
-  height: 74vh;
+  top: -30vh;
+  left: -24vw;
+  width: 152vw;
+  height: 164vh;
   background:
-    radial-gradient(ellipse at 22% 48%, rgba(var(--okr-aurora-ice), 0.28), transparent 38%),
-    radial-gradient(ellipse at 48% 28%, rgba(var(--okr-aurora-cyan), 0.34), transparent 40%),
-    radial-gradient(ellipse at 78% 46%, rgba(var(--okr-aurora-teal), 0.24), transparent 42%),
-    conic-gradient(from 190deg at 52% 54%, transparent 0 15%, rgba(var(--okr-aurora-blue), 0.1) 22%, rgba(var(--okr-aurora-cyan), 0.18) 32%, rgba(var(--okr-aurora-ice), 0.2) 41%, rgba(var(--okr-aurora-teal), 0.16) 52%, transparent 72% 100%);
+    radial-gradient(ellipse 10% 72% at 8% 42%, rgba(var(--okr-aurora-silver), 0.28), transparent 70%),
+    radial-gradient(ellipse 13% 78% at 29% 48%, rgba(var(--okr-aurora-steel), 0.42), transparent 72%),
+    radial-gradient(ellipse 9% 68% at 52% 38%, rgba(var(--okr-aurora-slate), 0.36), transparent 68%),
+    radial-gradient(ellipse 14% 82% at 76% 54%, rgba(var(--okr-aurora-ash), 0.28), transparent 72%),
+    radial-gradient(ellipse 8% 64% at 96% 44%, rgba(var(--okr-aurora-steel), 0.34), transparent 66%),
+    conic-gradient(from 205deg at 48% 44%, transparent 0 13%, rgba(var(--okr-aurora-obsidian), 0.2) 22%, rgba(var(--okr-aurora-steel), 0.28) 34%, rgba(var(--okr-aurora-silver), 0.16) 43%, rgba(var(--okr-aurora-carbon), 0.22) 56%, transparent 72% 100%);
   border-radius: 50%;
-  opacity: 0.58;
-  animation: okrAuroraDrift 18s ease-in-out infinite alternate;
+  filter: blur(12px) contrast(1.08);
+  opacity: 0.72;
+  animation: okrAuroraDrift 7.2s cubic-bezier(0.42, 0.05, 0.22, 1) infinite alternate;
   z-index: 2;
 }
 .okr__aurora::after {
-  top: 7vh;
-  left: -20vw;
-  width: 140vw;
-  height: 48vh;
+  top: -24vh;
+  left: -28vw;
+  width: 160vw;
+  height: 156vh;
   background:
-    radial-gradient(ellipse at 14% 38%, rgba(var(--okr-aurora-teal), 0.2), transparent 34%),
-    radial-gradient(ellipse at 42% 48%, rgba(var(--okr-aurora-ice), 0.18), transparent 32%),
-    radial-gradient(ellipse at 70% 36%, rgba(var(--okr-aurora-cyan), 0.2), transparent 38%),
-    radial-gradient(ellipse at 92% 54%, rgba(var(--okr-aurora-blue), 0.12), transparent 36%);
+    radial-gradient(ellipse 11% 76% at 16% 58%, rgba(var(--okr-aurora-carbon), 0.38), transparent 68%),
+    radial-gradient(ellipse 8% 62% at 39% 46%, rgba(var(--okr-aurora-silver), 0.22), transparent 66%),
+    radial-gradient(ellipse 13% 80% at 63% 56%, rgba(var(--okr-aurora-steel), 0.36), transparent 70%),
+    radial-gradient(ellipse 10% 70% at 88% 42%, rgba(var(--okr-aurora-obsidian), 0.42), transparent 68%),
+    conic-gradient(from 72deg at 54% 50%, transparent 0 18%, rgba(var(--okr-aurora-obsidian), 0.2) 30%, rgba(var(--okr-aurora-silver), 0.1) 44%, rgba(var(--okr-aurora-steel), 0.2) 58%, transparent 76% 100%);
   border-radius: 50%;
-  opacity: 0.5;
-  animation: okrAuroraPulse 22s ease-in-out infinite alternate;
+  filter: blur(18px) contrast(1.12);
+  opacity: 0.64;
+  animation: okrAuroraPulse 10.6s cubic-bezier(0.37, 0.02, 0.18, 1) infinite alternate;
   z-index: 3;
 }
 .okr__aurora-canvas {
@@ -167,14 +186,40 @@
   animation-play-state: paused;
 }
 @keyframes okrAuroraDrift {
-  0% { opacity: 0.5; transform: translate3d(-4vw, -1vh, 0) rotate(-5deg) scale(1.02); }
-  48% { opacity: 0.68; transform: translate3d(2vw, 2vh, 0) rotate(-2deg) scale(1.08); }
-  100% { opacity: 0.56; transform: translate3d(5vw, -2vh, 0) rotate(3deg) scale(1.04); }
+  0% {
+    opacity: 0.54;
+    transform: translate3d(-19vw, -8vh, 0) rotate(-11deg) scale3d(0.96, 0.9, 1);
+  }
+  36% {
+    opacity: 0.84;
+    transform: translate3d(-4vw, 7vh, 0) rotate(-3deg) scale3d(1.14, 1.1, 1);
+  }
+  68% {
+    opacity: 0.68;
+    transform: translate3d(11vw, -5vh, 0) rotate(5deg) scale3d(1.02, 1.18, 1);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translate3d(21vw, 9vh, 0) rotate(12deg) scale3d(1.18, 0.98, 1);
+  }
 }
 @keyframes okrAuroraPulse {
-  0% { opacity: 0.38; transform: translate3d(4vw, -1vh, 0) rotate(2deg) scaleX(1.02); }
-  50% { opacity: 0.56; transform: translate3d(-2vw, 2vh, 0) rotate(-3deg) scaleX(1.08); }
-  100% { opacity: 0.46; transform: translate3d(-6vw, 0, 0) rotate(1deg) scaleX(1.04); }
+  0% {
+    opacity: 0.46;
+    transform: translate3d(18vw, 7vh, 0) rotate(10deg) scale3d(1.02, 0.88, 1);
+  }
+  42% {
+    opacity: 0.76;
+    transform: translate3d(3vw, -9vh, 0) rotate(1deg) scale3d(1.18, 1.14, 1);
+  }
+  74% {
+    opacity: 0.62;
+    transform: translate3d(-12vw, 8vh, 0) rotate(-7deg) scale3d(1.04, 1.2, 1);
+  }
+  100% {
+    opacity: 0.84;
+    transform: translate3d(-22vw, -7vh, 0) rotate(-13deg) scale3d(1.2, 1.04, 1);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .okr__aurora::before,
@@ -211,8 +256,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.13),
     inset 0 -1px 0 rgba(0, 0, 0, 0.36),
     0 18px 48px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(24px) saturate(145%);
-  -webkit-backdrop-filter: blur(24px) saturate(145%);
   contain: layout style;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
@@ -222,7 +265,7 @@
   position: absolute;
   inset: 0 0 auto;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 214, 242, 0.24), rgba(255, 154, 221, 0.18), transparent);
+  background: linear-gradient(90deg, transparent, rgba(217, 219, 222, 0.24), rgba(174, 180, 186, 0.18), transparent);
   pointer-events: none;
 }
 .okr__header > * {
@@ -292,8 +335,6 @@
   box-shadow: var(--okr-touch-glass-shadow);
   opacity: 0;
   transition: opacity .16s ease;
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 .okr__navlink:hover,
 .okr__navlink:focus-visible,
@@ -423,8 +464,6 @@
   padding: 1px 7px;
   min-width: 20px;
   text-align: center;
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 @media (max-width: 900px) {
   .okr__navlinks { display: none; }
@@ -486,10 +525,10 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding-top: clamp(188px, 25dvh, 296px);
+    padding-top: clamp(104px, 14dvh, 176px);
   }
   .okr__mobile-menu-kicker {
-    color: #ff67c8;
+    color: #777d85;
     font-size: 52px;
     font-weight: 500;
     line-height: 0.95;
@@ -535,13 +574,13 @@
     transform: translate3d(2px, 0, 0);
   }
   .okr__mobile-navlink:active {
-    color: #ff67c8;
+    color: #777d85;
     font-style: italic;
     outline: none;
     transform: translate3d(2px, 0, 0);
   }
   .okr__mobile-navlink.is-active {
-    color: #ff67c8;
+    color: #777d85;
     font-style: italic;
   }
 
@@ -553,14 +592,14 @@
       color: rgba(255, 255, 255, 0.94);
     }
     .okr__mobile-menu-panel:has(.okr__mobile-navlink:is(:hover, :focus-visible, :active)) .okr__mobile-navlink:is(:active, .is-active) {
-      color: #ff67c8;
+      color: #777d85;
     }
   }
 }
 
 @media (max-width: 900px) and (max-height: 760px) {
   .okr__mobile-menu-content {
-    padding-top: 118px;
+    padding-top: 88px;
   }
   .okr__mobile-menu-kicker {
     margin-bottom: 22px;
@@ -576,7 +615,7 @@
 
 @media (max-width: 430px) and (max-height: 900px) {
   .okr__mobile-menu-content {
-    padding-top: 154px;
+    padding-top: 104px;
   }
   .okr__mobile-menu-kicker {
     margin-bottom: 24px;
@@ -602,6 +641,123 @@
   .okr__mobile-navlink svg {
     width: 28px;
     height: 28px;
+  }
+}
+
+/* Blog directory cards — compact editorial tiles with a distinct visual field. */
+.okr .okr__blog-grid--editorial .okr__blog-card {
+  background: #171a1e !important;
+  border: 1px solid #30363d !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  min-height: 0 !important;
+  overflow: hidden;
+}
+
+.okr .okr__blog-grid--editorial .okr__blog-card::before,
+.okr .okr__blog-grid--editorial .okr__blog-card-signal {
+  display: none !important;
+}
+
+.okr .okr__blog-grid--editorial .okr__blog-card-cover {
+  align-items: center;
+  aspect-ratio: 1.52 / 1 !important;
+  background: var(--okr-blog-art) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  color: #c9cdd1;
+  display: flex !important;
+  justify-content: center;
+  margin: 0 !important;
+  overflow: hidden;
+  transition: filter 180ms ease;
+}
+
+.okr .okr__blog-grid--editorial .okr__blog-card-cover svg {
+  height: clamp(52px, 5vw, 76px);
+  width: clamp(52px, 5vw, 76px);
+}
+
+.okr .okr__blog-grid--editorial .okr__blog-card:is(:hover, :focus-within) .okr__blog-card-cover {
+  filter: brightness(1.14);
+}
+
+.okr .okr__blog-grid--editorial .okr__blog-card-body {
+  gap: 0 !important;
+  min-height: 190px;
+  padding: 18px 18px 16px !important;
+}
+
+.okr .okr__blog-grid--editorial .okr__blog-card-date {
+  color: #96918d;
+  font-size: 9px;
+  line-height: 1.3;
+  margin-bottom: 11px;
+}
+
+.okr .okr__blog-grid--editorial .okr__blog-card-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(18px, 1.45vw, 23px) !important;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.06 !important;
+  margin: 0 !important;
+}
+
+.okr .okr__blog-grid--editorial .okr__blog-card-title-link {
+  color: #f1eeea;
+  font-family: inherit;
+}
+
+.okr .okr__blog-grid--editorial .okr__blog-card-meta {
+  align-items: center;
+  border: 0;
+  color: #85807c;
+  display: flex !important;
+  font-size: 9px;
+  gap: 8px;
+  letter-spacing: 0;
+  margin-top: auto;
+  padding-top: 16px;
+  text-transform: none;
+}
+
+.okr .okr__blog-grid--editorial .okr__blog-card-category {
+  color: #c7c1ba !important;
+  font-family: inherit;
+  font-size: 9px !important;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.okr .okr__blog-detail-art {
+  align-items: center;
+  aspect-ratio: 16 / 9;
+  background: var(--okr-blog-art, #171a1e);
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  color: #c9cdd1;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+
+.okr .okr__blog-detail-art svg {
+  height: clamp(86px, 13vw, 148px);
+  opacity: 0.92;
+  width: clamp(86px, 13vw, 148px);
+}
+
+@media (max-width: 640px) {
+  .okr .okr__blog-grid--editorial .okr__blog-card-body {
+    min-height: 158px;
+    padding: 13px 12px !important;
+  }
+
+  .okr .okr__blog-grid--editorial .okr__blog-card-title {
+    font-size: clamp(16px, 4.7vw, 20px) !important;
   }
 }
 
@@ -665,7 +821,7 @@
   color: var(--okr-primary-2);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12.5px; letter-spacing: 0.14em; text-transform: uppercase;
-  border-top: 1px solid rgba(126,231,220,0.45);
+  border-top: 1px solid rgba(174, 180, 186, 0.36);
   padding-top: 12px; display: inline-block;
 }
 .okr__hero-title {
@@ -677,7 +833,7 @@
   text-wrap: balance;
 }
 .okr__hero-title .grad {
-  background: linear-gradient(90deg, #ffe6f6 0%, #ffb1e3 40%, #ff67c8 100%);
+  background: linear-gradient(90deg, #e9ebed 0%, #b5b9be 40%, #777d85 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .okr__hero-sub {
@@ -707,8 +863,6 @@
   background: var(--okr-touch-glass);
   color: var(--okr-text);
   box-shadow: var(--okr-touch-glass-shadow);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 .okr__btn--primary::before {
   content: "";
@@ -816,7 +970,7 @@
   color: var(--okr-primary-2);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12.5px; letter-spacing: 0.18em; text-transform: uppercase;
-  border-top: 1px solid rgba(126,231,220,0.4); padding-top: 12px; display: inline-block;
+  border-top: 1px solid rgba(174, 180, 186, 0.32); padding-top: 12px; display: inline-block;
 }
 .okr__h2 {
   margin: clamp(16px, 2.4vw, 24px) 0 0;
@@ -833,7 +987,7 @@
   color: var(--okr-primary-2); text-decoration: none; font-weight: 500; font-size: 15px;
   display: inline-flex; align-items: center; gap: 6px;
 }
-.okr__link:hover { color: #ffe6f6; }
+.okr__link:hover { color: #e9ebed; }
 .okr__link--glass {
   position: relative;
   min-height: 42px;
@@ -845,8 +999,6 @@
   box-shadow: var(--okr-touch-glass-shadow);
   overflow: hidden;
   isolation: isolate;
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 .okr__link--glass:hover,
 .okr__link--glass:focus-visible,
@@ -868,13 +1020,11 @@
   border-radius: var(--okr-radius);
   padding: var(--okr-card-pad);
   box-shadow: var(--okr-glass-shadow);
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
   contain: layout paint style;
   transition: border-color .2s ease, transform .2s ease, background .2s ease, box-shadow .2s ease;
 }
 .okr__card:hover {
-  border-color: rgba(255,154,221,0.28);
+  border-color: rgba(174, 180, 186, 0.28);
   transform: translateY(-2px);
   background: var(--okr-glass-bg-hover);
   box-shadow:
@@ -884,8 +1034,8 @@
 }
 .okr__card-icon {
   width: 44px; height: 44px; border-radius: 12px;
-  background: rgba(224,68,168,0.12);
-  border: 1px solid rgba(224,68,168,0.25);
+  background: rgba(86, 99, 111, 0.12);
+  border: 1px solid rgba(86, 99, 111, 0.25);
   display: grid; place-items: center; color: var(--okr-primary-2);
   margin-bottom: 22px;
 }
@@ -904,7 +1054,7 @@
   min-height: 24px;
   padding: 3px 9px;
   margin: 0 0 14px;
-  border: 1px solid rgba(255, 154, 221, 0.16);
+  border: 1px solid rgba(174, 180, 186, 0.16);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.035);
   color: var(--okr-muted);
@@ -925,7 +1075,7 @@
   text-transform: uppercase;
 }
 .okr__service-parent:hover {
-  color: #ffe6f6;
+  color: #e9ebed;
 }
 .okr__service-text {
   margin: 28px 0 44px;
@@ -985,8 +1135,6 @@
   border-radius: var(--okr-radius);
   background: var(--okr-glass-bg);
   box-shadow: var(--okr-glass-shadow);
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
   contain: layout paint style;
   color: inherit;
   cursor: pointer;
@@ -1006,7 +1154,7 @@
 .okr__process-card:hover,
 .okr__process-card:focus-visible,
 .okr__process-card.is-active {
-  border-color: rgba(255,154,221,0.32);
+  border-color: rgba(174, 180, 186, 0.32);
   transform: translate3d(0, -3px, 0);
   background: var(--okr-glass-bg-hover);
   box-shadow:
@@ -1015,11 +1163,11 @@
     0 24px 58px rgba(0, 0, 0, 0.26);
 }
 .okr__process-card:focus-visible {
-  outline: 2px solid rgba(255, 154, 221, 0.58);
+  outline: 2px solid rgba(174, 180, 186, 0.58);
   outline-offset: 4px;
 }
 .okr__process-card.is-active .okr__step-n {
-  color: #ffd6f2;
+  color: #d9dbde;
 }
 .okr__step-n {
   color: var(--okr-primary-2);
@@ -1038,8 +1186,8 @@
   border-radius: var(--okr-radius);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
-    radial-gradient(circle at 12% 0%, rgba(255, 154, 221, 0.13), transparent 44%),
-    radial-gradient(circle at 88% 18%, rgba(224, 68, 168, 0.1), transparent 48%),
+    radial-gradient(circle at 12% 0%, rgba(174, 180, 186, 0.13), transparent 44%),
+    radial-gradient(circle at 88% 18%, rgba(86, 99, 111, 0.1), transparent 48%),
     rgba(8, 0, 6, 0.58);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
@@ -1096,7 +1244,7 @@
   height: 6px;
   border-radius: 50%;
   background: var(--okr-primary-2);
-  box-shadow: 0 0 16px rgba(255, 154, 221, 0.42);
+  box-shadow: 0 0 16px rgba(174, 180, 186, 0.42);
 }
 @keyframes okrProcessDetailIn {
   from {
@@ -1132,15 +1280,13 @@
   border: 1px solid var(--okr-glass-border);
   background: var(--okr-glass-bg);
   box-shadow: var(--okr-glass-shadow);
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
   display: flex; flex-direction: column;
   text-decoration: none; color: inherit;
   contain: layout paint style;
   transition: border-color .2s ease, transform .2s ease, background .2s ease, box-shadow .2s ease;
 }
 .okr__post:hover {
-  border-color: rgba(255,154,221,0.28);
+  border-color: rgba(174, 180, 186, 0.28);
   transform: translateY(-2px);
   background: var(--okr-glass-bg-hover);
   box-shadow:
@@ -1171,13 +1317,11 @@
   border: 1px solid var(--okr-glass-border);
   background: var(--okr-glass-bg);
   box-shadow: var(--okr-glass-shadow);
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
   contain: layout paint style;
   transition: border-color .2s ease, transform .2s ease, background .2s ease, box-shadow .2s ease;
 }
 .okr__case:hover {
-  border-color: rgba(255,154,221,0.28);
+  border-color: rgba(174, 180, 186, 0.28);
   transform: translateY(-2px);
   background: var(--okr-glass-bg-hover);
   box-shadow:
@@ -1203,9 +1347,9 @@
   border: 1px solid var(--okr-glass-border);
   background:
     linear-gradient(180deg, rgba(255,255,255,0.11), rgba(255,255,255,0.026)),
-    radial-gradient(580px 230px at 28% 34%, rgba(255,154,221,0.16), transparent 62%),
-    radial-gradient(520px 220px at 76% 62%, rgba(224,68,168,0.12), transparent 64%),
-    rgba(7,0,5,0.62);
+    radial-gradient(580px 230px at 28% 34%, rgba(174, 180, 186, 0.16), transparent 62%),
+    radial-gradient(520px 220px at 76% 62%, rgba(86, 99, 111, 0.12), transparent 64%),
+    rgba(7, 8, 9, 0.72);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.14),
     inset 0 -1px 0 rgba(0, 0, 0, 0.38),
@@ -1281,7 +1425,7 @@
   flex: 1;
   height: 1px;
   margin-top: 22px;
-  background: linear-gradient(90deg, rgba(255, 154, 221, 0.3), rgba(255, 255, 255, 0.08), transparent);
+  background: linear-gradient(90deg, rgba(174, 180, 186, 0.3), rgba(255, 255, 255, 0.08), transparent);
 }
 .okr__portfolio-consulting-grid {
   display: grid;
@@ -1325,7 +1469,7 @@
 }
 .okr__portfolio-group:hover,
 .okr__portfolio-group:active {
-  border-color: rgba(255,154,221,0.28);
+  border-color: rgba(174, 180, 186, 0.28);
   transform: translateY(-2px);
   background: var(--okr-glass-bg-hover);
   box-shadow:
@@ -1353,7 +1497,7 @@
   color: var(--okr-primary-2);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.028)),
-    rgba(255, 154, 221, 0.055);
+    rgba(174, 180, 186, 0.055);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     inset 0 -1px 0 rgba(0, 0, 0, 0.26);
@@ -1383,8 +1527,6 @@
     0 10px 24px rgba(0, 0, 0, 0.12);
   overflow: hidden;
   isolation: isolate;
-  backdrop-filter: blur(14px) saturate(135%);
-  -webkit-backdrop-filter: blur(14px) saturate(135%);
   -webkit-tap-highlight-color: transparent;
   transition: border-color .16s ease, background .16s ease, box-shadow .16s ease, transform .16s ease;
 }
@@ -1423,8 +1565,8 @@
   border-color: rgba(255, 255, 255, 0.18);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
-    radial-gradient(circle at 20% 0%, rgba(255, 154, 221, 0.2), transparent 48%),
-    rgba(22, 6, 17, 0.4);
+    radial-gradient(circle at 20% 0%, rgba(174, 180, 186, 0.2), transparent 48%),
+    rgba(29, 33, 37, 0.46);
 }
 .okr__portfolio-chip:hover,
 .okr__portfolio-chip:active,
@@ -1484,8 +1626,6 @@
   border-radius: 12px;
   background: var(--okr-glass-bg);
   box-shadow: var(--okr-glass-shadow);
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
   flex-wrap: wrap;
 }
 .okr__store-results-bar {
@@ -1617,8 +1757,6 @@
   overflow: hidden; text-decoration: none; color: inherit;
   display: flex; flex-direction: column;
   box-shadow: var(--okr-glass-shadow);
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
   contain: layout paint style;
   transition: border-color .2s, transform .2s, background .2s, box-shadow .2s;
   -webkit-tap-highlight-color: transparent;
@@ -1626,7 +1764,7 @@
 .okr__product:hover,
 .okr__product:focus-visible,
 .okr__product:active {
-  border-color: rgba(255,154,221,0.28);
+  border-color: rgba(174, 180, 186, 0.28);
   transform: translateY(-2px);
   background: var(--okr-glass-bg-hover);
   box-shadow:
@@ -1639,7 +1777,7 @@
   aspect-ratio: 4/3;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)),
-    radial-gradient(circle at 50% 0%, rgba(255,154,221,0.08), transparent 50%),
+    radial-gradient(circle at 50% 0%, rgba(174, 180, 186, 0.08), transparent 50%),
     rgba(8, 1, 6, 0.72);
   border-bottom: 1px solid rgba(255,255,255,0.075);
   overflow: hidden;
@@ -1710,8 +1848,6 @@
   border-radius: var(--okr-radius);
   padding: var(--okr-card-pad);
   box-shadow: var(--okr-glass-shadow);
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
 }
 
 /* Product detail (StoreItemPage) */
@@ -1782,7 +1918,7 @@
 .okr__cart-row:last-child { border-bottom: none; }
 .okr__cart-row img {
   width: 88px; height: 88px; object-fit: contain;
-  border-radius: 10px; background: #0f0d18;
+  border-radius: 10px; background: #121416;
   border: 1px solid var(--okr-line); padding: 4px;
 }
 .okr__cart-info { min-width: 0; }
@@ -1868,7 +2004,7 @@
 }
 .okr__input:focus {
   outline: none; border-color: var(--okr-primary);
-  box-shadow: 0 0 0 3px rgba(224,68,168,0.15);
+  box-shadow: 0 0 0 3px rgba(86, 99, 111, 0.15);
 }
 .okr__input.has-error {
   border-color: rgba(239, 68, 68, 0.6);
@@ -1892,7 +2028,7 @@
 }
 .okr__prose a { color: var(--okr-primary-2); text-decoration: underline; }
 .okr__prose code {
-  background: rgba(224,68,168,0.15); color: var(--okr-primary-2);
+  background: rgba(86, 99, 111, 0.15); color: var(--okr-primary-2);
   padding: 2px 6px; border-radius: 4px; font-size: 0.9em;
 }
 
@@ -1943,13 +2079,11 @@
   border-color: var(--okr-touch-glass-border);
   color: var(--okr-text);
   box-shadow: var(--okr-touch-glass-shadow);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 .okr__pay-step.is-active .okr__pay-step-dot {
   background: var(--okr-bg); border-color: var(--okr-primary);
   color: var(--okr-primary-2);
-  box-shadow: 0 0 0 4px rgba(224,68,168,0.15);
+  box-shadow: 0 0 0 4px rgba(86, 99, 111, 0.15);
 }
 .okr__pay-step-label {
   font-size: 11px; color: var(--okr-muted); text-align: center;
@@ -2010,12 +2144,12 @@
   margin-top: 10px;
   display: inline-flex; align-items: center; gap: 6px;
   padding: 8px 14px; border-radius: 999px;
-  background: rgba(224,68,168,0.1); border: 1px solid rgba(224,68,168,0.3);
+  background: rgba(86, 99, 111, 0.1); border: 1px solid rgba(86, 99, 111, 0.3);
   color: var(--okr-primary-2); cursor: pointer; font-size: 13px;
   font-family: inherit;
   transition: background-color .15s, border-color .15s, color .15s;
 }
-.okr__pay-copy-btn:hover { background: rgba(224,68,168,0.18); }
+.okr__pay-copy-btn:hover { background: rgba(86, 99, 111, 0.18); }
 
 /* Section title */
 .okr__pay-section-title {
@@ -2035,8 +2169,8 @@
   transition: background-color .15s, border-color .15s, color .15s;
 }
 .okr__pay-upload-dropzone:hover {
-  background: rgba(224,68,168,0.06);
-  border-color: rgba(224,68,168,0.4);
+  background: rgba(86, 99, 111, 0.06);
+  border-color: rgba(86, 99, 111, 0.4);
 }
 .okr__pay-upload-dropzone > svg { color: var(--okr-primary-2); flex-shrink: 0; }
 
@@ -2048,7 +2182,7 @@
 }
 .okr__pay-proof-preview img {
   width: 96px; height: 96px; object-fit: cover;
-  border-radius: 8px; background: #0f0d18;
+  border-radius: 8px; background: #121416;
   border: 1px solid var(--okr-line);
 }
 .okr__pay-proof-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
@@ -2070,8 +2204,8 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.072), rgba(255, 255, 255, 0.018)),
-    radial-gradient(circle at 14% 0%, rgba(255, 154, 221, 0.105), transparent 42%),
-    radial-gradient(circle at 86% 12%, rgba(224, 68, 168, 0.08), transparent 46%),
+    radial-gradient(circle at 14% 0%, rgba(174, 180, 186, 0.105), transparent 42%),
+    radial-gradient(circle at 86% 12%, rgba(86, 99, 111, 0.08), transparent 46%),
     rgba(6, 0, 4, 0.62);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
@@ -2087,7 +2221,7 @@
   position: absolute;
   inset: 0 0 auto;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 214, 242, 0.22), rgba(255, 154, 221, 0.16), transparent);
+  background: linear-gradient(90deg, transparent, rgba(217, 219, 222, 0.22), rgba(174, 180, 186, 0.16), transparent);
   pointer-events: none;
 }
 .okr__footer > .okr__wrap {
@@ -2139,7 +2273,7 @@
   color: var(--okr-primary-2);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
-  border-top: 1px solid rgba(126,231,220,0.35); padding-top: 12px; margin: 0 0 18px;
+  border-top: 1px solid rgba(174, 180, 186, 0.3); padding-top: 12px; margin: 0 0 18px;
   display: inline-block;
 }
 .okr__foot-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
@@ -2266,13 +2400,13 @@
     bottom: 8px;
     height: 2px;
     border-radius: 999px;
-    background: linear-gradient(90deg, rgba(255, 154, 221, 0.7), rgba(255, 214, 242, 0.18));
+    background: linear-gradient(90deg, rgba(174, 180, 186, 0.7), rgba(217, 219, 222, 0.18));
   }
 
   .okr__hero-deck-chip:hover,
   .okr__hero-deck-chip:focus-visible,
   .okr__hero-deck-chip:active {
-    border-color: rgba(255, 154, 221, 0.28);
+    border-color: rgba(174, 180, 186, 0.28);
     background: var(--okr-glass-bg-hover);
     outline: none;
     transform: translateY(-1px);
@@ -3164,11 +3298,11 @@
    the wrapper's gradient. Visually indistinguishable at typical title lengths. */
 .okr__headline--stagger .okr__word.is-grad,
 .okr__hero-title--stagger .grad .okr__word {
-  background: linear-gradient(90deg, #ff9add 0%, #ff67c8 52%, #ffd6f2 100%);
+  background: linear-gradient(90deg, #c9cdd1 0%, #777d85 52%, #d9dbde 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 42px rgba(255, 154, 221, 0.16);
+  text-shadow: 0 0 42px rgba(174, 180, 186, 0.16);
 }
 @keyframes okrWordIn {
   0%   { opacity: 0; filter: blur(12px); transform: translate3d(0, 0.32em, 0); }
@@ -3210,8 +3344,8 @@
   border-radius: inherit;
   background: radial-gradient(
     280px circle at var(--okr-mx) var(--okr-my),
-    rgba(255, 154, 221, 0.22),
-    rgba(255, 103, 200, 0.08) 32%,
+    rgba(174, 180, 186, 0.22),
+    rgba(119, 125, 133, 0.08) 32%,
     transparent 62%
   );
   opacity: 0;
@@ -3229,8 +3363,8 @@
   .okr__spotlight::after {
     background: radial-gradient(
       220px circle at var(--okr-mx) var(--okr-my),
-      rgba(255, 154, 221, 0.32),
-      rgba(255, 103, 200, 0.1) 34%,
+      rgba(174, 180, 186, 0.32),
+      rgba(119, 125, 133, 0.1) 34%,
       transparent 66%
     );
     transition: opacity 180ms ease;
@@ -3266,11 +3400,11 @@
       animation-timeline: scroll(root);
       background: linear-gradient(
         180deg,
-        rgba(255, 214, 242, 0.85) 0%,
-        rgba(255, 103, 200, 0.75) 60%,
-        rgba(224, 68, 168, 0.6) 100%
+        rgba(217, 219, 222, 0.85) 0%,
+        rgba(119, 125, 133, 0.75) 60%,
+        rgba(86, 99, 111, 0.6) 100%
       );
-      box-shadow: 0 0 12px rgba(255, 103, 200, 0.45);
+      box-shadow: 0 0 12px rgba(119, 125, 133, 0.45);
       z-index: 78;
       pointer-events: none;
       margin-right: env(safe-area-inset-right);
@@ -3345,8 +3479,8 @@
   }
   .okr__process-dot.is-active {
     width: 20px;
-    background: linear-gradient(90deg, rgba(255, 214, 242, 0.95), rgba(255, 103, 200, 0.8));
-    box-shadow: 0 0 12px rgba(255, 103, 200, 0.5);
+    background: linear-gradient(90deg, rgba(217, 219, 222, 0.95), rgba(119, 125, 133, 0.8));
+    box-shadow: 0 0 12px rgba(119, 125, 133, 0.5);
   }
 }
 
@@ -3367,7 +3501,7 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.26),
     inset 0 -1px 0 rgba(0, 0, 0, 0.3),
-    0 6px 22px rgba(255, 103, 200, 0.24);
+    0 6px 22px rgba(119, 125, 133, 0.24);
 }
 /* Sheen sweep on hover/focus — a slow diagonal highlight that reinforces
    the CTA as the primary target without pulling focus. */
@@ -3478,8 +3612,8 @@
     mix-blend-mode: normal;
     background: radial-gradient(
       200px circle at var(--okr-mx) var(--okr-my),
-      rgba(255, 154, 221, 0.18),
-      rgba(255, 103, 200, 0.06) 40%,
+      rgba(174, 180, 186, 0.18),
+      rgba(119, 125, 133, 0.06) 40%,
       transparent 68%
     );
   }
@@ -3487,7 +3621,7 @@
 
 /* --- Matte editorial surface pass ---------------------------------------
    Keep legacy "glass" class names as implementation details, but render them
-   as opaque charcoal panels. Pink remains reserved for active states, links,
+   as opaque charcoal panels. Steel remains reserved for active states, links,
    icons, and primary actions. */
 .okr :is(
   .okr__link--glass,
@@ -3546,7 +3680,8 @@
    page and footer. Layout uses lines, spacing, images, and type hierarchy
    instead of stacked panels. */
 .okr__home {
-  background: #000;
+  /* Keep the editorial surface open so the global noir Aurora remains visible. */
+  background: transparent;
 }
 
 .okr__home .okr__section {
@@ -3572,8 +3707,8 @@
 .okr__home .okr__kicker,
 .okr__home .okr__process-detail-kicker,
 .okr__home .okr__process-detail-points > span {
-  border-top-color: rgba(255, 103, 200, 0.54);
-  color: #ff67c8;
+  border-top-color: rgba(119, 125, 133, 0.54);
+  color: #777d85;
 }
 
 .okr__home .okr__link--glass {
@@ -3581,7 +3716,7 @@
   border: 0 !important;
   border-radius: 0;
   box-shadow: none !important;
-  color: #ff67c8;
+  color: #777d85;
   min-height: auto;
   padding: 0;
 }
@@ -3619,7 +3754,7 @@
 .okr__home .okr__card:hover,
 .okr__home .okr__card:focus-within {
   background: transparent !important;
-  border-color: rgba(255, 103, 200, 0.42);
+  border-color: rgba(119, 125, 133, 0.42);
 }
 
 .okr__home .okr__card-title {
@@ -3672,12 +3807,12 @@
 .okr__home .okr__process-card:focus-visible,
 .okr__home .okr__process-card.is-active {
   background: transparent !important;
-  border-color: rgba(255, 103, 200, 0.45);
+  border-color: rgba(119, 125, 133, 0.45);
   box-shadow: none !important;
 }
 
 .okr__home .okr__process-card:focus-visible {
-  outline: 1px solid rgba(255, 103, 200, 0.72);
+  outline: 1px solid rgba(119, 125, 133, 0.72);
   outline-offset: -1px;
 }
 
@@ -3694,7 +3829,7 @@
 
 .okr__home .okr__process-card.is-active .okr__step-n,
 .okr__home .okr__process-card.is-active .okr__step-title {
-  color: #ff67c8;
+  color: #777d85;
 }
 
 .okr__home .okr__process-detail {
@@ -3702,7 +3837,7 @@
   border: 0;
   border-bottom: 1px solid rgba(238, 240, 246, 0.12);
   border-radius: 0 !important;
-  border-top: 1px solid rgba(255, 103, 200, 0.34);
+  border-top: 1px solid rgba(119, 125, 133, 0.34);
   box-shadow: none !important;
   gap: clamp(24px, 5vw, 72px);
   grid-template-columns: minmax(0, 1fr) minmax(240px, 0.55fr);
@@ -3754,7 +3889,7 @@
 
 .okr__home .okr__post:hover .okr__post-img,
 .okr__home .okr__post:focus-visible .okr__post-img {
-  border-color: rgba(255, 103, 200, 0.52);
+  border-color: rgba(119, 125, 133, 0.52);
 }
 
 .okr__home .okr__post-body {
@@ -3763,7 +3898,7 @@
 
 .okr__home .okr__post-tags,
 .okr__home .okr__case-tags {
-  color: #ff67c8;
+  color: #777d85;
   font-size: 11px;
 }
 
@@ -3804,7 +3939,7 @@
 }
 
 .okr__home .okr__case:hover .okr__case-img {
-  border-color: rgba(255, 103, 200, 0.52);
+  border-color: rgba(119, 125, 133, 0.52);
 }
 
 .okr__home .okr__case-body {
@@ -3820,7 +3955,7 @@
   border: 0;
   border-bottom: 1px solid rgba(238, 240, 246, 0.12);
   border-radius: 0 !important;
-  border-top: 1px solid rgba(255, 103, 200, 0.34);
+  border-top: 1px solid rgba(119, 125, 133, 0.34);
   box-shadow: none !important;
   margin: 0 0 clamp(58px, 8vw, 110px);
   overflow: visible;
@@ -3901,13 +4036,13 @@
 .okr__foot-social a:hover,
 .okr__foot-social a:focus-visible,
 .okr__foot-social a:active {
-  color: #ff67c8;
+  color: #777d85;
   transform: none;
 }
 
 .okr__foot-title {
   border-top: 0;
-  color: #ff67c8;
+  color: #777d85;
   display: block;
   font-size: 11.5px;
   letter-spacing: 0.18em;
@@ -3949,7 +4084,7 @@
 }
 
 .okr__foot-contact-link svg {
-  color: #ff67c8;
+  color: #777d85;
 }
 
 .okr__foot-bottom {
@@ -4014,7 +4149,7 @@
   .okr__home .okr__process--snap .okr__process-card.is-active,
   .okr__home .okr__process-card.is-active {
     background: transparent !important;
-    border-color: rgba(255, 103, 200, 0.48);
+    border-color: rgba(119, 125, 133, 0.48);
   }
 
   .okr__home .okr__step-title {
@@ -4117,7 +4252,7 @@
 
 /* --- Sitewide menu-inspired typography, motion, and cards -----------------
    Uses the mobile index menu as the visual source: confident rounded type,
-   pink italic active states, and quick softened motion. Cards stay matte and
+   steel italic active states, and quick softened motion. Cards stay matte and
    opaque, with no glass/backdrop treatment. */
 .okr {
   --okr-font-display: "Plus Jakarta Sans", Inter, ui-sans-serif, system-ui, sans-serif;
@@ -4128,7 +4263,7 @@
   --okr-card-ink: #f4f1f6;
   --okr-card-muted: rgba(238, 240, 246, 0.62);
   --okr-card-dim: rgba(238, 240, 246, 0.42);
-  --okr-card-accent: #ff67c8;
+  --okr-card-accent: #777d85;
   --okr-card-radius: clamp(22px, 2.8vw, 34px);
   font-family: var(--okr-font-display);
   font-weight: 520;
@@ -4250,8 +4385,8 @@
 ):is(:hover, :focus-visible, :focus-within, :active) {
   background: var(--okr-card-surface-hover) !important;
   box-shadow:
-    inset 0 0 0 1px rgba(255, 103, 200, 0.42),
-    0 24px 70px rgba(255, 103, 200, 0.12),
+    inset 0 0 0 1px rgba(119, 125, 133, 0.42),
+    0 24px 70px rgba(119, 125, 133, 0.12),
     0 18px 54px rgba(0, 0, 0, 0.4) !important;
   outline: none;
   transform: translate3d(0, -7px, 0) scale(1.012);
@@ -4336,10 +4471,10 @@
 
 .okr__service-count {
   align-self: flex-start;
-  background: rgba(255, 103, 200, 0.14) !important;
+  background: rgba(119, 125, 133, 0.14) !important;
   border: 0 !important;
   border-radius: 999px;
-  color: #ff9add;
+  color: #c9cdd1;
   margin: 2px 0 18px;
 }
 
@@ -4383,7 +4518,7 @@
 .okr__blog-card:is(:hover, :focus-visible, :focus-within) .okr__blog-card-cover,
 .okr__product:is(:hover, :focus-visible, :focus-within) .okr__product-img,
 .okr__case:is(:hover, :focus-within) .okr__case-img {
-  box-shadow: inset 0 0 0 1px rgba(255, 103, 200, 0.52);
+  box-shadow: inset 0 0 0 1px rgba(119, 125, 133, 0.52);
   filter: saturate(1.12) contrast(1.04);
   transform: translate3d(0, -2px, 0) scale(1.018);
 }
@@ -4593,6 +4728,16 @@
   padding-top: 0 !important;
 }
 
+/* The hero identity must stay readable while Aurora ribbons pass underneath. */
+.okr .okr__home .okr__hero-kicker {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent;
+  color: #f4f5f6 !important;
+  box-shadow: none;
+  text-shadow: none;
+}
+
 .okr__home :is(
   .okr__section,
   .okr__section-topbar,
@@ -4703,8 +4848,8 @@
 .okr .okr__home .okr__cards > .okr__card:is(:hover, :focus-visible, :focus-within, :active) {
   background: #151216 !important;
   box-shadow:
-    inset 0 0 0 1px rgba(255, 103, 200, 0.42),
-    0 24px 70px rgba(255, 103, 200, 0.12),
+    inset 0 0 0 1px rgba(119, 125, 133, 0.42),
+    0 24px 70px rgba(119, 125, 133, 0.12),
     0 18px 54px rgba(0, 0, 0, 0.4) !important;
 }
 
@@ -4757,7 +4902,7 @@
 }
 
 /* Match sub-page hero headlines to the homepage hero treatment:
-   large white lead words, then the exact pink text-gradient used on
+   large white lead words, then the steel text-gradient used on
    "Design, code & strategy at the speed of AI". Kept at the end of the file
    so card/menu typography overrides cannot wash the gradient back to white. */
 .okr .okr__page-hero .okr__headline {
@@ -4774,7 +4919,7 @@
 }
 
 .okr .okr__headline--stagger .okr__word.is-grad {
-  background-image: linear-gradient(90deg, #ffe6f6 0%, #ffb1e3 40%, #ff67c8 100%) !important;
+  background-image: linear-gradient(90deg, #e9ebed 0%, #b5b9be 40%, #777d85 100%) !important;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent !important;
@@ -4784,16 +4929,16 @@
 /* =========================================================================
    Competition card system
    Source direction: Okkarhys-Card-System-Competition-Services-Fixed(1).html.
-   Matte black surfaces, hard system lines, pink/cyan signals, no glass.
+   Matte black surfaces, hard system lines, steel/slate signals, no glass.
    ------------------------------------------------------------------------- */
 .okr {
   --okr-system-bg: #09090b;
   --okr-system-bg-raised: #0d0d10;
   --okr-system-line: #29252c;
-  --okr-system-line-hot: #5a344b;
-  --okr-system-pink: #ff4fbd;
-  --okr-system-pink-soft: #ff9add;
-  --okr-system-cyan: #38d7ef;
+  --okr-system-line-hot: #3f474e;
+  --okr-system-accent: #56636f;
+  --okr-system-accent-soft: #c9cdd1;
+  --okr-system-cyan: #777d85;
   --okr-system-muted: #8a858d;
   --okr-system-dim: #625d66;
   --okr-system-ease: cubic-bezier(.19, 1, .22, 1);
@@ -4845,7 +4990,7 @@
   right: clamp(18px, 2.2vw, 28px);
   bottom: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--okr-system-pink), var(--okr-system-cyan), transparent 78%);
+  background: linear-gradient(90deg, var(--okr-system-accent), var(--okr-system-cyan), transparent 78%);
   transform: scaleX(0.18);
   transform-origin: left;
   transition: transform 680ms var(--okr-system-ease);
@@ -4888,7 +5033,7 @@
 .okr .okr__service-card-meta::before,
 .okr .okr__blog-card-signal::before,
 .okr .okr__artifact-card-edition::before {
-  background: var(--okr-system-pink);
+  background: var(--okr-system-accent);
   border-radius: 999px;
   box-shadow: 0 0 14px rgba(255, 79, 189, 0.68);
   content: "";
@@ -4900,7 +5045,7 @@
 .okr .okr__service-card-meta span:first-child,
 .okr .okr__blog-card-signal span:first-child,
 .okr .okr__artifact-card-edition span:first-child {
-  color: var(--okr-system-pink-soft);
+  color: var(--okr-system-accent-soft);
   margin-right: auto;
 }
 
@@ -4917,7 +5062,7 @@
   border: 1px solid #3b323b !important;
   border-radius: 999px !important;
   box-shadow: none !important;
-  color: var(--okr-system-pink);
+  color: var(--okr-system-accent);
   display: grid;
   height: clamp(68px, 7vw, 96px);
   margin: clamp(36px, 5vw, 58px) 0 clamp(24px, 3vw, 34px);
@@ -4996,7 +5141,7 @@
 }
 
 .okr .okr__service-card .okr__card-link svg {
-  color: var(--okr-system-pink);
+  color: var(--okr-system-accent);
   transition: transform 280ms var(--okr-system-ease), color 220ms ease;
 }
 
@@ -5292,11 +5437,11 @@
 }
 
 .okr .okr__artifact-card .okr__product-stars {
-  color: var(--okr-system-pink-soft);
+  color: var(--okr-system-accent-soft);
 }
 
 .okr .okr__artifact-card .okr__product-price {
-  color: var(--okr-system-pink-soft);
+  color: var(--okr-system-accent-soft);
   font-size: clamp(20px, 2.1vw, 28px);
   font-weight: 650;
   letter-spacing: -0.04em;

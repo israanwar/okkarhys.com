@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
+import {
+  BarChart3, BookOpen, Bot, Brain, BriefcaseBusiness, Code2, Compass, Cpu,
+  FileSearch2, Gem, Globe2, Landmark, Lightbulb, Megaphone, Network,
+  Palette, PenTool, Rocket, Scale, Search, ShieldCheck, ShoppingBag,
+  Sparkles, Users,
+} from "lucide-react";
 import { CATEGORY_BY_SLUG, DEFAULT_CATEGORY_SLUG } from "../../data/blogCategories";
-import { resolveCover } from "../../lib/blogPlaceholder";
 import { useI18n } from "../../lib/i18n";
 import { localizeBlogCategory } from "../../lib/blogCategoryI18n";
-import { formatPostReadCount, getPostReadCount } from "../../lib/blogMetrics";
 
 // Bulletproof date formatter: empty input or unparseable strings return blank.
 // null/undefined atau string non-parseable, return empty string (bukan
@@ -22,67 +26,68 @@ function fmtDate(iso, lang) {
 // resolve author display dari brand. Bisa di-extend ke usersRepo nanti.
 const AUTHOR_DISPLAY = "Okka Rhys";
 
+// Twenty-four distinct low-saturation surfaces from the Okkarhys noir system.
+// The sequence keeps every current article visually unique without breaking
+// the dark, controlled character of the site.
+const CARD_THEMES = [
+  "#111316", "#171a1e", "#1d2125", "#252a2f", "#30363d", "#3c434b",
+  "#202830", "#28323b", "#323e48", "#1e252c", "#263039", "#303b45",
+  "#20262c", "#283038", "#323b44", "#1f2022", "#26282a", "#2f3134",
+  "#201d19", "#29251f", "#332e27", "#20292e", "#29333a", "#333f47",
+];
+// One distinct symbol per rendered article. Category-level mappings repeat as
+// soon as a category has more than one post, so the visual identity belongs to
+// the post sequence instead.
+const POST_ICONS = [
+  ShieldCheck, Code2, BarChart3, FileSearch2, Globe2, Megaphone,
+  Palette, Bot, Sparkles, ShoppingBag, Landmark, BookOpen,
+  Brain, Compass, Users, Rocket, BriefcaseBusiness, Lightbulb,
+  Network, PenTool, Scale, Cpu, Gem, Search,
+];
+
+export function getPostCardArtwork(index = 0) {
+  const safeIndex = Number.isFinite(index) && index >= 0 ? index : 0;
+  return {
+    theme: CARD_THEMES[safeIndex % CARD_THEMES.length],
+    Icon: POST_ICONS[safeIndex % POST_ICONS.length],
+  };
+}
+
 export function PostCard({ post, layout = "grid", index = null }) {
-  const { lang, t } = useI18n();
+  const { lang } = useI18n();
   const rawCategory = CATEGORY_BY_SLUG[post.category] ?? CATEGORY_BY_SLUG[DEFAULT_CATEGORY_SLUG];
   const category = localizeBlogCategory(rawCategory, lang);
-  const cover = resolveCover(post, category);
   const author = post.author_name ?? AUTHOR_DISPLAY;
-  const readingTime = post.reading_time ?? 1;
-  const readCount = getPostReadCount(post);
 
   const isHorizontal = layout === "horizontal";
   const cardIndex = index == null ? null : String(index + 1).padStart(2, "0");
+  const { theme, Icon: CardIcon } = getPostCardArtwork(index ?? 0);
 
   return (
     <article
       className={`okr__blog-card okr__editorial-card${isHorizontal ? " okr__blog-card--horizontal" : ""}`}
       data-card-index={cardIndex ?? undefined}
+      style={{ "--okr-blog-art": theme }}
     >
-      <div className="okr__blog-card-signal" aria-hidden="true">
-        {cardIndex && <span>{cardIndex}</span>}
-        {category && <span>{category.name}</span>}
-      </div>
       <Link
         className="okr__blog-card-cover"
         to={`/blog/${post.slug}`}
-        style={{
-          display: "block",
-          aspectRatio: "16 / 9",
-          backgroundImage: `url("${cover}")`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          textDecoration: "none",
-        }}
         aria-label={post.image_alt || post.title}
-      />
+      >
+        <CardIcon aria-hidden="true" strokeWidth={1.35} />
+      </Link>
       <div className="okr__blog-card-body">
-        {category && (
-          <Link
-            className="okr__blog-card-category"
-            to={`/blog/${category.slug}`}
-          >
-            {category.name}
-          </Link>
-        )}
+        <time className="okr__blog-card-date" dateTime={post.published_at ?? post.created_at ?? undefined}>
+          {fmtDate(post.published_at ?? post.created_at, lang)}
+        </time>
         <h3 className="okr__blog-card-title">
           <Link className="okr__blog-card-title-link" to={`/blog/${post.slug}`}>
             {post.title}
           </Link>
         </h3>
-        {post.excerpt && (
-          <p className="okr__blog-card-excerpt">
-            {post.excerpt}
-          </p>
-        )}
         <div className="okr__blog-card-meta">
+          {category && <Link className="okr__blog-card-category" to={`/blog/${category.slug}`}>{category.name}</Link>}
           <span>{author}</span>
-          <span aria-hidden>·</span>
-          <span>{fmtDate(post.published_at ?? post.created_at, lang)}</span>
-          <span aria-hidden>·</span>
-          <span>{t("blog_min_read", { count: readingTime })}</span>
-          <span aria-hidden>·</span>
-          <span>{t("blog_read_count", { count: formatPostReadCount(readCount, lang) })}</span>
         </div>
       </div>
     </article>

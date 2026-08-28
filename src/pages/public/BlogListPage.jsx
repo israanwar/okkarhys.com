@@ -230,7 +230,7 @@ export function BlogListPage({ initialCategorySlug = null }) {
                         : t("blog_empty")}
                     {(q || activeCategory) && (
                       <div style={{ marginTop: 16 }}>
-                        <Link to="/blog" style={{ color: "var(--okr-primary-2, #ff9add)", textDecoration: "underline" }}>
+                        <Link to="/blog" style={{ color: "var(--okr-primary-2, #c9cdd1)", textDecoration: "underline" }}>
                           {t("blog_view_all_articles")}
                         </Link>
                       </div>
