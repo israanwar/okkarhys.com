@@ -4,12 +4,94 @@ import {
   MessageCircle, Github, Instagram, Twitter, Linkedin, Mail, ShoppingBag, Menu, X,
   Home, Fingerprint, Compass, LayoutGrid, ShoppingCart, BookOpen,
 } from "lucide-react";
-import { useLiveSettings, useLiveProducts, useLiveCart } from "../../hooks/usePageData";
+import { useLiveSettings, useLiveProductsExist, useLiveCart } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizeSiteDescription } from "../../lib/pageI18n";
 import { LangThemeSwitcher } from "./LangThemeSwitcher";
 import { OkkarhysLogo, OkkarhysMark } from "../brand/OkkarhysLogo";
 import "../../styles/landing.css";
+
+// Aurora canvas gradient configs — pulled out of the component so they're
+// stable object references. Only their (fixed) color stops are used to build
+// actual gradient objects, which are cached per resize instead of rebuilt
+// every animation frame — see `buildGradients()` in AuroraBackdrop.
+const AURORA_RADIALS = [
+  { x: 0.38, y: 0.1, r: 0.74, alpha: 0.9, stops: [
+    [0, "rgba(119, 125, 133, 0.38)"],
+    [0.48, "rgba(86, 99, 111, 0.16)"],
+    [1, "rgba(86, 99, 111, 0)"],
+  ] },
+  { x: 0.16, y: 0.34, r: 0.58, alpha: 0.7, stops: [
+    [0, "rgba(217, 219, 222, 0.14)"],
+    [0.46, "rgba(86, 99, 111, 0.095)"],
+    [1, "rgba(86, 99, 111, 0)"],
+  ] },
+  { x: 0.82, y: 0.08, r: 0.58, alpha: 0.75, stops: [
+    [0, "rgba(48, 54, 61, 0.16)"],
+    [0.54, "rgba(119, 125, 133, 0.07)"],
+    [1, "rgba(119, 125, 133, 0)"],
+  ] },
+];
+
+const AURORA_CURTAINS = [
+  {
+    base: 0.03, depth: 0.38, amplitude: 0.035, frequency: 1.1, phase: 0.08, drift: 0.62,
+    alpha: 0.68, blur: 22,
+    stops: [
+      [0, "rgba(119, 125, 133, 0)"],
+      [0.24, "rgba(119, 125, 133, 0.28)"],
+      [0.48, "rgba(217, 219, 222, 0.52)"],
+      [0.68, "rgba(86, 99, 111, 0.32)"],
+      [1, "rgba(86, 99, 111, 0)"],
+    ],
+  },
+  {
+    base: 0.1, depth: 0.46, amplitude: 0.065, frequency: 1.56, phase: 0.46, drift: -0.48,
+    alpha: 0.52, blur: 32,
+    stops: [
+      [0, "rgba(48, 54, 61, 0)"],
+      [0.22, "rgba(48, 54, 61, 0.12)"],
+      [0.42, "rgba(119, 125, 133, 0.28)"],
+      [0.62, "rgba(86, 99, 111, 0.25)"],
+      [1, "rgba(86, 99, 111, 0)"],
+    ],
+  },
+  {
+    base: 0.28, depth: 0.4, amplitude: 0.08, frequency: 1.28, phase: 0.72, drift: 0.34,
+    alpha: 0.3, blur: 42,
+    stops: [
+      [0, "rgba(119, 125, 133, 0)"],
+      [0.34, "rgba(86, 99, 111, 0.16)"],
+      [0.58, "rgba(119, 125, 133, 0.15)"],
+      [1, "rgba(48, 54, 61, 0)"],
+    ],
+  },
+];
+
+const AURORA_FILAMENTS = [
+  {
+    base: 0.08, amplitude: 0.045, frequency: 1.2, phase: 0.22, drift: 0.64,
+    width: 0.034, alpha: 0.3, blur: 16,
+    stops: [
+      [0, "rgba(217, 219, 222, 0)"],
+      [0.24, "rgba(217, 219, 222, 0.24)"],
+      [0.5, "rgba(217, 219, 222, 0.42)"],
+      [0.76, "rgba(119, 125, 133, 0.18)"],
+      [1, "rgba(119, 125, 133, 0)"],
+    ],
+  },
+  {
+    base: 0.22, amplitude: 0.07, frequency: 1.62, phase: 0.58, drift: -0.5,
+    width: 0.045, alpha: 0.15, blur: 20,
+    stops: [
+      [0, "rgba(86, 99, 111, 0)"],
+      [0.22, "rgba(86, 99, 111, 0.16)"],
+      [0.48, "rgba(119, 125, 133, 0.22)"],
+      [0.72, "rgba(217, 219, 222, 0.1)"],
+      [1, "rgba(119, 125, 133, 0)"],
+    ],
+  },
+];
 
 export function BrandMark() {
   return <OkkarhysMark className="okr__brand-mark" title="okkarhys" />;
@@ -19,9 +101,8 @@ export function SiteHeader({ settings }) {
   const { t } = useI18n();
   const [menuOpen, setMenuOpen] = useState(false);
   const cart = useLiveCart();
-  const products = useLiveProducts();
+  const hasProducts = useLiveProductsExist();
   const cartCount = cart.rows.reduce((s, r) => s + r.qty, 0);
-  const hasProducts = products.length > 0;
 
   const nav = [
     { label: t("nav_home"), to: "/", route: true, icon: Home },
@@ -280,12 +361,57 @@ function AuroraBackdrop() {
       state.height = Math.max(1, Math.ceil(window.innerHeight * dpr));
       canvas.width = state.width;
       canvas.height = state.height;
+      buildGradients();
       draw(performance.now());
     }
 
-    function radial(x, y, radius, stops, alpha = 1) {
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      stops.forEach(([offset, color]) => gradient.addColorStop(offset, color));
+    // Every gradient this canvas uses only depends on the current width/height
+    // — none of their color stops move with time `t` (only the wave *paths*
+    // painted with them do). Building them here once per resize instead of
+    // once per animation frame avoids ~9 gradient allocations, 31 times a
+    // second, for a pixel-identical result.
+    function buildGradients() {
+      const w = state.width;
+      const h = state.height;
+
+      state.baseGrad = (() => {
+        const g = ctx.createLinearGradient(0, 0, w, h);
+        g.addColorStop(0, "#111316");
+        g.addColorStop(0.42, "#070809");
+        g.addColorStop(1, "#000000");
+        return g;
+      })();
+
+      state.veilGrad = (() => {
+        const g = ctx.createLinearGradient(0, 0, 0, h);
+        g.addColorStop(0, "rgba(0,0,0,0)");
+        g.addColorStop(0.62, "rgba(0,0,0,0.22)");
+        g.addColorStop(1, "rgba(0,0,0,0.92)");
+        return g;
+      })();
+
+      state.radialGrads = AURORA_RADIALS.map((cfg) => {
+        const g = ctx.createRadialGradient(w * cfg.x, h * cfg.y, 0, w * cfg.x, h * cfg.y, h * cfg.r);
+        cfg.stops.forEach(([offset, color]) => g.addColorStop(offset, color));
+        return g;
+      });
+
+      state.curtainFills = AURORA_CURTAINS.map((cfg) => {
+        const topBase = cfg.base * h - cfg.depth * h * 0.18;
+        const bottomBase = cfg.base * h + cfg.depth * h;
+        const g = ctx.createLinearGradient(0, topBase, 0, bottomBase);
+        cfg.stops.forEach(([offset, color]) => g.addColorStop(offset, color));
+        return g;
+      });
+
+      state.filamentStrokes = AURORA_FILAMENTS.map((cfg) => {
+        const g = ctx.createLinearGradient(-w * 0.12, 0, w * 1.12, 0);
+        cfg.stops.forEach(([offset, color]) => g.addColorStop(offset, color));
+        return g;
+      });
+    }
+
+    function radial(gradient, alpha = 1) {
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
       ctx.globalAlpha = alpha;
@@ -301,16 +427,12 @@ function AuroraBackdrop() {
       return config.base * h + primary * config.amplitude * h + secondary * config.amplitude * h * 0.38 + tertiary * config.amplitude * h * 0.16;
     }
 
-    function curtain(config, t) {
+    function curtain(config, fill, t) {
       const w = state.width;
       const h = state.height;
       const xStart = -w * 0.18;
       const span = w * 1.36;
       const steps = 64;
-      const topBase = config.base * h - config.depth * h * 0.18;
-      const bottomBase = config.base * h + config.depth * h;
-      const fill = ctx.createLinearGradient(0, topBase, 0, bottomBase);
-      config.stops.forEach(([offset, color]) => fill.addColorStop(offset, color));
 
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
@@ -342,11 +464,9 @@ function AuroraBackdrop() {
       ctx.restore();
     }
 
-    function filament(config, t) {
+    function filament(config, stroke, t) {
       const w = state.width;
       const h = state.height;
-      const stroke = ctx.createLinearGradient(-w * 0.12, 0, w * 1.12, 0);
-      config.stops.forEach(([offset, color]) => stroke.addColorStop(offset, color));
 
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
@@ -425,127 +545,20 @@ function AuroraBackdrop() {
       const t = now * 0.00011;
       ctx.globalCompositeOperation = "source-over";
       ctx.globalAlpha = 1;
-      const base = ctx.createLinearGradient(0, 0, w, h);
-      base.addColorStop(0, "#111316");
-      base.addColorStop(0.42, "#070809");
-      base.addColorStop(1, "#000000");
-      ctx.fillStyle = base;
+      ctx.fillStyle = state.baseGrad;
       ctx.fillRect(0, 0, w, h);
 
-      radial(w * 0.38, h * 0.1, h * 0.74, [
-        [0, "rgba(119, 125, 133, 0.38)"],
-        [0.48, "rgba(86, 99, 111, 0.16)"],
-        [1, "rgba(86, 99, 111, 0)"],
-      ], 0.9);
-      radial(w * 0.16, h * 0.34, h * 0.58, [
-        [0, "rgba(217, 219, 222, 0.14)"],
-        [0.46, "rgba(86, 99, 111, 0.095)"],
-        [1, "rgba(86, 99, 111, 0)"],
-      ], 0.7);
-      radial(w * 0.82, h * 0.08, h * 0.58, [
-        [0, "rgba(48, 54, 61, 0.16)"],
-        [0.54, "rgba(119, 125, 133, 0.07)"],
-        [1, "rgba(119, 125, 133, 0)"],
-      ], 0.75);
+      AURORA_RADIALS.forEach((cfg, i) => radial(state.radialGrads[i], cfg.alpha));
 
-      curtain({
-        base: 0.03,
-        depth: 0.38,
-        amplitude: 0.035,
-        frequency: 1.1,
-        phase: 0.08,
-        drift: 0.62,
-        alpha: 0.68,
-        blur: 22,
-        stops: [
-          [0, "rgba(119, 125, 133, 0)"],
-          [0.24, "rgba(119, 125, 133, 0.28)"],
-          [0.48, "rgba(217, 219, 222, 0.52)"],
-          [0.68, "rgba(86, 99, 111, 0.32)"],
-          [1, "rgba(86, 99, 111, 0)"],
-        ],
-      }, t);
-
-      curtain({
-        base: 0.1,
-        depth: 0.46,
-        amplitude: 0.065,
-        frequency: 1.56,
-        phase: 0.46,
-        drift: -0.48,
-        alpha: 0.52,
-        blur: 32,
-        stops: [
-          [0, "rgba(48, 54, 61, 0)"],
-          [0.22, "rgba(48, 54, 61, 0.12)"],
-          [0.42, "rgba(119, 125, 133, 0.28)"],
-          [0.62, "rgba(86, 99, 111, 0.25)"],
-          [1, "rgba(86, 99, 111, 0)"],
-        ],
-      }, t);
-
-      curtain({
-        base: 0.28,
-        depth: 0.4,
-        amplitude: 0.08,
-        frequency: 1.28,
-        phase: 0.72,
-        drift: 0.34,
-        alpha: 0.3,
-        blur: 42,
-        stops: [
-          [0, "rgba(119, 125, 133, 0)"],
-          [0.34, "rgba(86, 99, 111, 0.16)"],
-          [0.58, "rgba(119, 125, 133, 0.15)"],
-          [1, "rgba(48, 54, 61, 0)"],
-        ],
-      }, t);
+      AURORA_CURTAINS.forEach((cfg, i) => curtain(cfg, state.curtainFills[i], t));
 
       folds(t);
 
-      filament({
-        base: 0.08,
-        amplitude: 0.045,
-        frequency: 1.2,
-        phase: 0.22,
-        drift: 0.64,
-        width: 0.034,
-        alpha: 0.3,
-        blur: 16,
-        stops: [
-          [0, "rgba(217, 219, 222, 0)"],
-          [0.24, "rgba(217, 219, 222, 0.24)"],
-          [0.5, "rgba(217, 219, 222, 0.42)"],
-          [0.76, "rgba(119, 125, 133, 0.18)"],
-          [1, "rgba(119, 125, 133, 0)"],
-        ],
-      }, t);
-
-      filament({
-        base: 0.22,
-        amplitude: 0.07,
-        frequency: 1.62,
-        phase: 0.58,
-        drift: -0.5,
-        width: 0.045,
-        alpha: 0.15,
-        blur: 20,
-        stops: [
-          [0, "rgba(86, 99, 111, 0)"],
-          [0.22, "rgba(86, 99, 111, 0.16)"],
-          [0.48, "rgba(119, 125, 133, 0.22)"],
-          [0.72, "rgba(217, 219, 222, 0.1)"],
-          [1, "rgba(119, 125, 133, 0)"],
-        ],
-      }, t);
+      AURORA_FILAMENTS.forEach((cfg, i) => filament(cfg, state.filamentStrokes[i], t));
 
       ctx.save();
       ctx.globalCompositeOperation = "source-over";
-      const veil = ctx.createLinearGradient(0, 0, 0, h);
-      veil.addColorStop(0, "rgba(0,0,0,0)");
-      veil.addColorStop(0.62, "rgba(0,0,0,0.22)");
-      veil.addColorStop(1, "rgba(0,0,0,0.92)");
-      ctx.fillStyle = veil;
+      ctx.fillStyle = state.veilGrad;
       ctx.fillRect(0, 0, w, h);
       ctx.restore();
 

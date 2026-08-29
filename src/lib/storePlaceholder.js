@@ -1,90 +1,77 @@
 const STORE_WATERMARK = "OKKARHYS - STORE";
 
+// Noir system — same Carbon/Slate/Silver-Ash family used by the blog cover
+// generator (see blogPlaceholder.js), so store artwork matches the rest of
+// the site instead of the old neon/pastel palette.
+const NOIR = {
+  bg: "#0a0b0d",
+  bg2: "#15171a",
+  ink: "#d9dbde",
+  muted: "#777d85",
+  panel: "#111316",
+  glow: "#2a2d31",
+};
+
 const PALETTES = {
   google: {
     key: "google",
     label: "GOOGLE SYSTEM",
-    bg: "#ffe45e",
-    bg2: "#fff8d7",
-    ink: "#101720",
-    muted: "#44515d",
-    line: "#101720",
-    panel: "#fffef4",
-    accent: "#ff4da6",
-    accent2: "#48b9ff",
-    chip: "#ffffff",
-    chip2: "#77d66d",
-    footer: "#16304a",
-    glow: "#ffffff",
-    isDark: false,
+    ...NOIR,
+    line: "#3d4751",
+    accent: "#56636f",
+    accent2: "#3d4751",
+    chip: "#171a1e",
+    chip2: "#1d2125",
+    footer: "#8a9099",
+    isDark: true,
   },
   music: {
     key: "music",
     label: "MUSIC SYSTEM",
-    bg: "#ffb7e8",
-    bg2: "#e7f1ff",
-    ink: "#14101c",
-    muted: "#61566f",
-    line: "#14101c",
-    panel: "#fff9fd",
-    accent: "#7b4dff",
-    accent2: "#ff4da6",
-    chip: "#ffffff",
-    chip2: "#ffd7f0",
-    footer: "#31214f",
-    glow: "#ffffff",
-    isDark: false,
+    ...NOIR,
+    line: "#4c453a",
+    accent: "#4c453a",
+    accent2: "#56636f",
+    chip: "#1a1815",
+    chip2: "#201d19",
+    footer: "#9a9186",
+    isDark: true,
   },
   workflow: {
     key: "workflow",
     label: "WORKFLOW KIT",
-    bg: "#8ee8ff",
-    bg2: "#ecfff7",
-    ink: "#10202a",
-    muted: "#40515d",
-    line: "#10202a",
-    panel: "#fbfffb",
-    accent: "#ff4da6",
-    accent2: "#b9ff5c",
-    chip: "#ffffff",
-    chip2: "#d9ff74",
-    footer: "#193844",
-    glow: "#ffffff",
-    isDark: false,
+    ...NOIR,
+    line: "#3d4751",
+    accent: "#3d4751",
+    accent2: "#56636f",
+    chip: "#161a1e",
+    chip2: "#1c2126",
+    footer: "#8a9099",
+    isDark: true,
   },
   commerce: {
     key: "commerce",
     label: "GROWTH KIT",
-    bg: "#ff5aad",
-    bg2: "#ffe9f6",
-    ink: "#161018",
-    muted: "#5c4f5a",
-    line: "#161018",
-    panel: "#fff7fb",
-    accent: "#ffdf4f",
-    accent2: "#52d5ff",
-    chip: "#ffffff",
-    chip2: "#fff087",
-    footer: "#32172a",
-    glow: "#ffffff",
-    isDark: false,
+    ...NOIR,
+    line: "#4c453a",
+    accent: "#56636f",
+    accent2: "#4c453a",
+    chip: "#191714",
+    chip2: "#201d19",
+    footer: "#8a9099",
+    isDark: true,
   },
   default: {
     key: "default",
     label: "DIGITAL PRODUCT",
-    bg: "#f5f7ff",
-    bg2: "#ffdff1",
-    ink: "#12131a",
-    muted: "#565b68",
-    line: "#12131a",
-    panel: "#ffffff",
-    accent: "#ff4da6",
-    accent2: "#55d6ff",
-    chip: "#fff2fb",
-    chip2: "#d7f5ff",
-    footer: "#242634",
-    glow: "#ffffff",
-    isDark: false,
+    ...NOIR,
+    line: "#3d4751",
+    accent: "#56636f",
+    accent2: "#3d4751",
+    chip: "#171a1e",
+    chip2: "#1b1f23",
+    footer: "#777d85",
+    isDark: true,
   },
 };
 
@@ -367,7 +354,22 @@ export function isGeneratedStoreCover(url) {
   }
 }
 
+// generateStoreCover() builds an SVG string (paths, gradients, wrapped title
+// text) from scratch every call — deterministic, but not free. Pages re-render
+// this per visible card on any unrelated state change (language toggle, sort,
+// search), so cache by the fields that actually affect the artwork (slug,
+// name, category — name/category can change with language, everything else
+// is fixed per product) rather than rebuilding identical output repeatedly.
+const coverCache = new Map();
+
 export function resolveProductCover(product) {
   if (product?.image_url && !isGeneratedStoreCover(product.image_url)) return product.image_url;
-  return generateStoreCover(product);
+
+  const cacheKey = `${product?.slug ?? ""}::${product?.name ?? ""}::${product?.category ?? ""}`;
+  const cached = coverCache.get(cacheKey);
+  if (cached) return cached;
+
+  const cover = generateStoreCover(product);
+  coverCache.set(cacheKey, cover);
+  return cover;
 }

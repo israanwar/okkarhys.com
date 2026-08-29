@@ -415,6 +415,15 @@ export const productsData = {
       return localFirstList((data ?? []).map(productRowToItem), applyProductPriceDiscounts(productsRepo.list(filter)));
     }, () => applyProductPriceDiscounts(productsRepo.list(filter)));
   },
+  // Cheap existence check (nav "Store" link visibility) — avoids pulling the
+  // full product catalog just to know whether it's non-empty.
+  async exists() {
+    return tryRemote(async () => {
+      const { data, error } = await supabase.from("products").select("id").limit(1);
+      if (error) throw error;
+      return (data?.length ?? 0) > 0 || productsRepo.list().length > 0;
+    }, () => productsRepo.list().length > 0);
+  },
   async get(id) {
     return tryRemote(async () => {
       const query = isUuid(id)

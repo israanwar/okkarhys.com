@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const KEY = "okr:lang";
@@ -430,25 +430,32 @@ function normalizeLang(value) {
 
 function initialLang() {
   try {
-    const stored = localStorage.getItem(KEY);
+    // Both one-time migrations must resolve in the same call. The old code
+    // `return`ed right after the v2 migration, so on a brand-new visitor's
+    // very first page load the v3 migration below never ran — it only fired
+    // on their *second* page load, and by then could stomp a language the
+    // user had already deliberately picked (toggle to "id", hard-reload ->
+    // silently reset to "en"). Running both against one `effective` value
+    // fixes that without changing what either migration is meant to do.
+    let effective = localStorage.getItem(KEY);
 
     if (localStorage.getItem(MIGRATION_KEY) !== "1") {
-      if (!stored || stored === "id") {
-        localStorage.setItem(KEY, DEFAULT_LANG);
+      if (!effective || effective === "id") {
+        effective = DEFAULT_LANG;
+        localStorage.setItem(KEY, effective);
       }
       localStorage.setItem(MIGRATION_KEY, "1");
-      return normalizeLang(localStorage.getItem(KEY));
     }
 
     if (localStorage.getItem(PUBLIC_EN_MIGRATION_KEY) !== "1") {
-      if (stored === "id") {
-        localStorage.setItem(KEY, DEFAULT_LANG);
+      if (effective === "id") {
+        effective = DEFAULT_LANG;
+        localStorage.setItem(KEY, effective);
       }
       localStorage.setItem(PUBLIC_EN_MIGRATION_KEY, "1");
-      return normalizeLang(localStorage.getItem(KEY));
     }
 
-    return normalizeLang(stored);
+    return normalizeLang(effective);
   } catch {
     return DEFAULT_LANG;
   }
@@ -468,14 +475,19 @@ export function I18nProvider({ children }) {
   }, [lang, location.pathname]);
 
   // t(key, params?) — support {var} interpolation
-  const t = (key, params) => {
+  const t = useCallback((key, params) => {
     const raw = T[lang]?.[key] ?? T.en[key] ?? T.id[key] ?? key;
     if (!params) return raw;
     return raw.replace(/\{(\w+)\}/g, (_, k) => params[k] ?? "");
-  };
-  const toggle = () => setLang((l) => (l === "id" ? "en" : "id"));
+  }, [lang]);
+  const toggle = useCallback(() => setLang((l) => (l === "id" ? "en" : "id")), []);
 
-  return <I18nContext.Provider value={{ lang, setLang, toggle, t }}>{children}</I18nContext.Provider>;
+  // I18nProvider re-renders on every route change (it reads useLocation()) —
+  // memoize the context value so components consuming useI18n() only
+  // re-render when the language actually changes, not on every navigation.
+  const value = useMemo(() => ({ lang, setLang, toggle, t }), [lang, toggle, t]);
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
 
 export function useI18n() {
