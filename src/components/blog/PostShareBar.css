@@ -1,0 +1,206 @@
+.okr__post-share {
+  --okr-share-line: rgba(236, 239, 243, 0.17);
+  --okr-share-ink: #edf0f5;
+  --okr-share-muted: #9da5b3;
+  margin-top: 48px;
+  padding: 28px 0 0;
+  border-top: 1px solid var(--okr-share-line);
+}
+
+.okr__post-share-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(11rem, 0.55fr);
+  column-gap: 28px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.okr__post-share-eyebrow {
+  grid-column: 1 / -1;
+  margin: 0 0 8px;
+  color: #ff2d95;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.okr__post-share h2 {
+  margin: 0;
+  color: var(--okr-share-ink);
+  font-size: clamp(22px, 3.3vw, 30px);
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+}
+
+.okr__post-share-intro > p:last-child {
+  margin: 0;
+  color: var(--okr-share-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.okr__post-share-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.okr__post-share-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--okr-share-line);
+  border-radius: 9px;
+  color: var(--okr-share-ink);
+  background: #111419;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  transition: transform 160ms ease, border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+
+.okr__post-share-button svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  fill: currentColor;
+}
+
+.okr__post-share-button:hover,
+.okr__post-share-button:focus-visible {
+  border-color: currentColor;
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.okr__post-share-button--whatsapp:hover,
+.okr__post-share-button--whatsapp:focus-visible { color: #25d366; background: #102c1e; }
+.okr__post-share-button--facebook:hover,
+.okr__post-share-button--facebook:focus-visible { color: #1877f2; background: #101d36; }
+.okr__post-share-button--linkedin:hover,
+.okr__post-share-button--linkedin:focus-visible { color: #0a8dcc; background: #0d2530; }
+.okr__post-share-button--x:hover,
+.okr__post-share-button--x:focus-visible { color: #fff; background: #000; }
+.okr__post-share-button--telegram:hover,
+.okr__post-share-button--telegram:focus-visible { color: #2aabee; background: #0e2632; }
+.okr__post-share-button--threads:hover,
+.okr__post-share-button--threads:focus-visible { color: #fff; background: #000; }
+.okr__post-share-button--instagram:hover,
+.okr__post-share-button--instagram:focus-visible { color: #ff76a7; background: #35162e; }
+.okr__post-share-button--pinterest:hover,
+.okr__post-share-button--pinterest:focus-visible { color: #e60023; background: #351014; }
+.okr__post-share-button--line:hover,
+.okr__post-share-button--line:focus-visible { color: #06c755; background: #0f301e; }
+.okr__post-share-button--messenger:hover,
+.okr__post-share-button--messenger:focus-visible { color: #a884ff; background: #211937; }
+.okr__post-share-button--email:hover,
+.okr__post-share-button--email:focus-visible { color: #f5c152; background: #302711; }
+.okr__post-share-button--copy:hover,
+.okr__post-share-button--copy:focus-visible { color: #ff2d95; background: #351127; }
+
+.okr__post-share-notice {
+  min-height: 1.3rem;
+  margin: 10px 0 0;
+  color: var(--okr-share-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Blog header placement: all brand marks remain available, but the share
+   control stays compact enough to sit directly under article metadata. */
+.okr__post-share--compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin: 0 0 28px;
+  padding: 0;
+  border: 0;
+}
+
+.okr__post-share--compact .okr__post-share-intro {
+  display: block;
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.okr__post-share--compact .okr__post-share-eyebrow,
+.okr__post-share--compact .okr__post-share-intro > p:last-child {
+  display: none;
+}
+
+.okr__post-share--compact h2 {
+  color: var(--okr-share-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.okr__post-share--compact .okr__post-share-actions {
+  display: flex;
+  flex: 1 1 28rem;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.okr__post-share--compact .okr__post-share-button {
+  width: 34px;
+  min-height: 34px;
+  padding: 7px;
+  border-radius: 50%;
+}
+
+.okr__post-share--compact .okr__post-share-button span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.okr__post-share--compact .okr__post-share-notice {
+  flex: 1 0 100%;
+  min-height: 0;
+  margin: 0;
+}
+
+@media (max-width: 620px) {
+  .okr__post-share { margin-top: 40px; padding-top: 24px; }
+
+  .okr__post-share-intro { grid-template-columns: 1fr; gap: 10px; }
+
+  .okr__post-share-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+
+  .okr__post-share-button { min-height: 48px; flex-direction: column; gap: 4px; padding: 7px 4px; font-size: 9px; }
+
+  .okr__post-share-button svg { width: 18px; height: 18px; }
+
+  .okr__post-share--compact { margin-bottom: 22px; gap: 8px; }
+
+  .okr__post-share--compact .okr__post-share-actions { flex-basis: 100%; }
+
+  .okr__post-share--compact .okr__post-share-button {
+    width: 33px;
+    min-height: 33px;
+    flex-direction: row;
+    padding: 6px;
+  }
+
+  .okr__post-share--compact .okr__post-share-button svg { width: 16px; height: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .okr__post-share-button { transition: none; }
+}

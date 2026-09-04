@@ -3,6 +3,7 @@ import { Seo } from "../../components/seo/Seo";
 import { AnimatedHeadline } from "../../components/ui/AnimatedHeadline";
 import { useLivePostState, useLivePosts } from "../../hooks/usePageData";
 import { RenderTiptap } from "../../components/blog/RenderTiptap";
+import { PostShareBar } from "../../components/blog/PostShareBar";
 import { ArrowLeft } from "lucide-react";
 import { useI18n } from "../../lib/i18n";
 import { formatPostReadCount, getPostReadCount } from "../../lib/blogMetrics";
@@ -73,6 +74,7 @@ export function BlogDetailPage() {
               <span aria-hidden>·</span>
               <span>{t("blog_read_count", { count: formatPostReadCount(readCount, lang) })}</span>
             </p>
+            <PostShareBar post={post} canonicalPath={canonicalPath} lang={lang} compact />
             <div
               className="okr__blog-detail-art"
               style={{ "--okr-blog-art": artworkTheme }}
