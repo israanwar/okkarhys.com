@@ -158,12 +158,12 @@ export function buildArticle(post, category, settings) {
   // resolve via usersRepo.
   const authorName = post.author_name || "Okka Rhys";
 
-  // Cover image — pakai cover_url kalau ada, else absolute favicon
-  // (biar Article schema tetap valid dengan image field). Ideally
-  // admin upload real cover; ini fallback.
+  // Cover image — pakai cover_url kalau ada; kalau belum, pakai social
+  // card 1200×630 yang juga dipakai LinkedIn/X supaya crawler menerima
+  // gambar artikel yang benar, bukan favicon kecil.
   const imageUrl = post.cover_url
     ? absoluteUrl(post.cover_url, settings)
-    : `${url}/assets/brand/favicon.svg`;
+    : `${url}/assets/social/okkarhys-blog-share.png`;
 
   // Approximate word count dari reading_time (200 wpm).
   const wordCount = post.reading_time ? post.reading_time * 200 : undefined;

@@ -98,8 +98,10 @@
 .okr__post-share-button--pinterest:focus-visible { color: #e60023; background: #351014; }
 .okr__post-share-button--line:hover,
 .okr__post-share-button--line:focus-visible { color: #06c755; background: #0f301e; }
-.okr__post-share-button--messenger:hover,
-.okr__post-share-button--messenger:focus-visible { color: #a884ff; background: #211937; }
+.okr__post-share-button--quora:hover,
+.okr__post-share-button--quora:focus-visible { color: #d0342c; background: #341111; }
+.okr__post-share-button--medium:hover,
+.okr__post-share-button--medium:focus-visible { color: #fff; background: #000; }
 .okr__post-share-button--email:hover,
 .okr__post-share-button--email:focus-visible { color: #f5c152; background: #302711; }
 .okr__post-share-button--copy:hover,

@@ -9,6 +9,7 @@ import { useI18n } from "../../lib/i18n";
 import { formatPostReadCount, getPostReadCount } from "../../lib/blogMetrics";
 import { CATEGORY_BY_SLUG, DEFAULT_CATEGORY_SLUG } from "../../data/blogCategories";
 import { getPostCardArtwork } from "../../components/blog/PostCard";
+import { SOCIAL_CARD_PATH } from "../../lib/socialMeta";
 
 export function BlogDetailPage() {
   const { lang, t } = useI18n();
@@ -48,6 +49,8 @@ export function BlogDetailPage() {
         description={description}
         path={canonicalPath}
         article={{ post, category: rawCategory }}
+        socialTitle={post.meta_title || post.title}
+        socialImage={post.cover_url || SOCIAL_CARD_PATH}
       />
               <article className="okr__section" style={{ paddingTop: 100 }}>
           <div className="okr__wrap" style={{ maxWidth: 780 }}>

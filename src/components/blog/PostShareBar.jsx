@@ -9,7 +9,8 @@ const COPY = {
     description: "Pilih tempat percakapannya ingin diteruskan.",
     copied: "Tautan artikel disalin.",
     instagram: "Tautan disalin. Buka Instagram lalu tempelkan di cerita, DM, atau bio.",
-    messenger: "Tautan disalin. Buka Messenger lalu tempelkan di percakapan.",
+    quora: "Tautan disalin. Buka Quora lalu tempelkan di jawaban atau postingan.",
+    medium: "Tautan disalin. Buka Medium lalu tempelkan saat menulis story.",
   },
   en: {
     eyebrow: "Pass the idea on",
@@ -17,7 +18,8 @@ const COPY = {
     description: "Choose where the conversation continues.",
     copied: "Article link copied.",
     instagram: "Link copied. Open Instagram and paste it into a story, DM, or bio.",
-    messenger: "Link copied. Open Messenger and paste it into a conversation.",
+    quora: "Link copied. Open Quora and paste it into an answer or post.",
+    medium: "Link copied. Open Medium and paste it while writing a story.",
   },
 };
 
@@ -43,8 +45,10 @@ function SocialLogo({ network }) {
       return <svg {...common}><path d="M12 2a10 10 0 0 0-3.64 19.31c-.05-1.64 0-3.62.38-5.15l.9-3.82s-.23-.47-.23-1.17c0-1.1.64-1.92 1.43-1.92.67 0 1 .5 1 1.1 0 .67-.43 1.68-.65 2.61-.19.78.39 1.42 1.16 1.42 1.4 0 2.47-1.47 2.47-3.6 0-1.88-1.35-3.2-3.28-3.2-2.24 0-3.55 1.68-3.55 3.42 0 .68.26 1.4.59 1.8.06.07.07.14.05.22l-.22.89c-.04.14-.13.17-.29.1-1.08-.5-1.76-2.04-1.76-3.28 0-2.67 1.94-5.12 5.6-5.12 2.94 0 5.23 2.1 5.23 4.9 0 2.92-1.84 5.27-4.4 5.27-.86 0-1.67-.45-1.95-.98l-.53 2.02c-.19.74-.72 1.67-1.07 2.23A10 10 0 1 0 12 2Z" /></svg>;
     case "line":
       return <svg {...common}><path d="M20.3 11.1c0-4.05-3.7-7.35-8.25-7.35S3.8 7.05 3.8 11.1c0 3.63 2.94 6.68 6.92 7.25.27.06.64.18.73.4.08.2.05.51.03.71l-.12.68c-.04.2-.18.78.72.43.9-.38 4.86-2.86 6.63-4.9 1.22-1.34 1.6-2.7 1.6-4.57Z" /><text x="6.2" y="13.4" fill="currentColor" stroke="var(--okr-share-line, #12151a)" strokeWidth=".3" fontFamily="Arial, sans-serif" fontSize="5.1" fontWeight="800">LINE</text></svg>;
-    case "messenger":
-      return <svg {...common}><path d="M12 3.3c-4.8 0-8.7 3.62-8.7 8.08 0 2.54 1.27 4.8 3.26 6.28v3.04l2.93-1.62c.78.22 1.62.34 2.51.34 4.8 0 8.7-3.62 8.7-8.08S16.8 3.3 12 3.3Zm.86 10.88-2.22-2.37-4.35 2.4 4.78-5.07 2.27 2.37 4.3-2.4-4.78 5.07Z" /></svg>;
+    case "quora":
+      return <svg {...common}><path d="M12 2.75a8.9 8.9 0 0 0-6.27 15.22 8.74 8.74 0 0 0 5.91 2.28c1.36 0 2.66-.3 3.82-.86l2.45 2.45 1.82-1.82-2.2-2.2A8.9 8.9 0 0 0 12 2.75Zm0 2.7a6.2 6.2 0 0 1 3.59 11.26l-1.68-1.68-1.82 1.82 1.32 1.32A6.2 6.2 0 1 1 12 5.45Zm0 2.25a3.95 3.95 0 1 0 0 7.9 3.94 3.94 0 0 0 1.06-.14l-1.58-1.58 1.82-1.82 1.48 1.48A3.95 3.95 0 0 0 12 7.7Z" /></svg>;
+    case "medium":
+      return <svg {...common}><path d="M2.1 5.2c.06-.06.08-.16.06-.25L.7 3.18v-.39h4.58l3.54 7.76 3.11-7.76h4.37v.39l-1.23 1.18a.36.36 0 0 0-.14.35v8.67a.36.36 0 0 0 .14.35l1.2 1.18v.39h-6.02v-.39l1.24-1.21c.12-.12.12-.16.12-.35V6.34l-3.45 8.92h-.46L3.7 6.34v5.9c-.03.25.05.5.21.68l1.61 1.95v.39H.95v-.39l1.61-1.95a.97.97 0 0 0 .2-.68V5.2H2.1Z" /></svg>;
     case "email":
       return <svg {...common}><path d="M3.4 5.35h17.2v13.3H3.4V5.35Zm1.52 1.5 7.08 5.36 7.08-5.36H4.92Zm14.18 10.3V8.74L12 14.13 4.9 8.74v8.41h14.2Z" /></svg>;
     default:
@@ -98,14 +102,18 @@ export function PostShareBar({ post, canonicalPath, lang = "en", compact = false
   async function handleCopy(network) {
     try {
       await copyToClipboard(url);
-      setNotice(network === "instagram" ? copy.instagram : network === "messenger" ? copy.messenger : copy.copied);
+      setNotice(copy[network] || copy.copied);
     } catch {
       setNotice(lang === "id" ? "Tautan tidak dapat disalin. Salin URL dari browser." : "The link could not be copied. Copy the URL from your browser.");
     }
   }
 
   function handleHandoff(network) {
-    const destination = network === "instagram" ? "https://www.instagram.com/" : "https://www.messenger.com/";
+    const destination = {
+      instagram: "https://www.instagram.com/",
+      quora: "https://www.quora.com/",
+      medium: "https://medium.com/",
+    }[network];
     window.open(destination, "_blank", "noopener,noreferrer");
     void handleCopy(network);
   }
@@ -142,12 +150,21 @@ export function PostShareBar({ post, canonicalPath, lang = "en", compact = false
         </button>
         <button
           type="button"
-          className="okr__post-share-button okr__post-share-button--messenger"
-          onClick={() => handleHandoff("messenger")}
-          aria-label={`${lang === "id" ? "Salin tautan dan buka" : "Copy link and open"} Messenger`}
+          className="okr__post-share-button okr__post-share-button--quora"
+          onClick={() => handleHandoff("quora")}
+          aria-label={`${lang === "id" ? "Salin tautan dan buka" : "Copy link and open"} Quora`}
         >
-          <SocialLogo network="messenger" />
-          <span>Messenger</span>
+          <SocialLogo network="quora" />
+          <span>Quora</span>
+        </button>
+        <button
+          type="button"
+          className="okr__post-share-button okr__post-share-button--medium"
+          onClick={() => handleHandoff("medium")}
+          aria-label={`${lang === "id" ? "Salin tautan dan buka" : "Copy link and open"} Medium`}
+        >
+          <SocialLogo network="medium" />
+          <span>Medium</span>
         </button>
         <button
           type="button"

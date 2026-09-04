@@ -5,6 +5,12 @@ import { useLiveSettings } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizeSiteDescription } from "../../lib/pageI18n";
 import {
+  getSocialImageUrl,
+  getSocialSiteName,
+  SOCIAL_CARD_HEIGHT,
+  SOCIAL_CARD_WIDTH,
+} from "../../lib/socialMeta";
+import {
   buildOrganization,
   buildWebsite,
   buildBreadcrumb,
@@ -39,6 +45,10 @@ function upsertLink(selector, attributes) {
   Object.entries(attributes).forEach(([name, value]) => {
     element.setAttribute(name, value);
   });
+}
+
+function removeMeta(selector) {
+  document.head.querySelector(selector)?.remove();
 }
 
 // Upsert JSON-LD script tag di <head>. Idempotent via data-schema
@@ -80,7 +90,15 @@ function normalizePageTitle(title) {
 
 // `article` prop opsional — kalau di-provide (dari BlogDetailPage),
 // akan inject Article schema. Shape: { post, category }.
-export function Seo({ title, description, path, noindex = false, article = null }) {
+export function Seo({
+  title,
+  description,
+  path,
+  noindex = false,
+  article = null,
+  socialTitle = null,
+  socialImage = null,
+}) {
   const location = useLocation();
   const settings = useLiveSettings();
   const { lang } = useI18n();
@@ -99,21 +117,43 @@ export function Seo({ title, description, path, noindex = false, article = null 
     const pageTitle = cleanTitle && cleanTitle.toLowerCase() !== siteName.toLowerCase()
       ? `${cleanTitle} | ${siteName}`
       : siteName;
+    const shareTitle = socialTitle?.trim() || pageTitle;
+    const shareImage = socialImage ? getSocialImageUrl(socialImage) : null;
     const robots = noindex ? "noindex, nofollow" : "index, follow";
 
-    document.title = siteName;
+    document.title = pageTitle;
 
     upsertMeta('meta[name="description"]', { name: "description", content: metaDescription });
     upsertMeta('meta[name="robots"]', { name: "robots", content: robots });
-    upsertMeta('meta[property="og:type"]', { property: "og:type", content: "website" });
-    upsertMeta('meta[property="og:site_name"]', { property: "og:site_name", content: siteName });
-    upsertMeta('meta[property="og:title"]', { property: "og:title", content: pageTitle });
+    upsertMeta('meta[property="og:type"]', { property: "og:type", content: article?.post ? "article" : "website" });
+    upsertMeta('meta[property="og:site_name"]', { property: "og:site_name", content: getSocialSiteName() });
+    upsertMeta('meta[property="og:title"]', { property: "og:title", content: shareTitle });
     upsertMeta('meta[property="og:description"]', { property: "og:description", content: metaDescription });
     upsertMeta('meta[property="og:url"]', { property: "og:url", content: canonicalUrl });
-    upsertMeta('meta[name="twitter:card"]', { name: "twitter:card", content: "summary" });
-    upsertMeta('meta[name="twitter:title"]', { name: "twitter:title", content: pageTitle });
+    upsertMeta('meta[name="twitter:card"]', { name: "twitter:card", content: shareImage ? "summary_large_image" : "summary" });
+    upsertMeta('meta[name="twitter:title"]', { name: "twitter:title", content: shareTitle });
     upsertMeta('meta[name="twitter:description"]', { name: "twitter:description", content: metaDescription });
     upsertLink('link[rel="canonical"]', { rel: "canonical", href: canonicalUrl });
+
+    if (shareImage) {
+      upsertMeta('meta[property="og:image"]', { property: "og:image", content: shareImage });
+      upsertMeta('meta[property="og:image:secure_url"]', { property: "og:image:secure_url", content: shareImage });
+      upsertMeta('meta[property="og:image:type"]', { property: "og:image:type", content: "image/png" });
+      upsertMeta('meta[property="og:image:width"]', { property: "og:image:width", content: String(SOCIAL_CARD_WIDTH) });
+      upsertMeta('meta[property="og:image:height"]', { property: "og:image:height", content: String(SOCIAL_CARD_HEIGHT) });
+      upsertMeta('meta[property="og:image:alt"]', { property: "og:image:alt", content: shareTitle });
+      upsertMeta('meta[name="twitter:image"]', { name: "twitter:image", content: shareImage });
+      upsertMeta('meta[name="twitter:image:alt"]', { name: "twitter:image:alt", content: shareTitle });
+    } else {
+      removeMeta('meta[property="og:image"]');
+      removeMeta('meta[property="og:image:secure_url"]');
+      removeMeta('meta[property="og:image:type"]');
+      removeMeta('meta[property="og:image:width"]');
+      removeMeta('meta[property="og:image:height"]');
+      removeMeta('meta[property="og:image:alt"]');
+      removeMeta('meta[name="twitter:image"]');
+      removeMeta('meta[name="twitter:image:alt"]');
+    }
 
     // ==============================================================
     // JSON-LD structured data (SEO / GEO / AEO). Semua idempotent via
@@ -166,7 +206,7 @@ export function Seo({ title, description, path, noindex = false, article = null 
       upsertJsonLd("article", null);
       upsertJsonLd("faq", null);
     }
-  }, [location.pathname, metaDescription, noindex, path, siteName, title, article, settings]);
+  }, [location.pathname, metaDescription, noindex, path, siteName, title, article, settings, socialTitle, socialImage]);
 
   return null;
 }

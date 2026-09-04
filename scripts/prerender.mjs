@@ -32,6 +32,8 @@ const structuredData = await import(
 
 const SITE_URL = "https://www.okkarhys.com";
 const SITE_NAME = "OKKARHYS";
+const SOCIAL_SITE_NAME = "okkarhys.com";
+const BLOG_SOCIAL_IMAGE = `${SITE_URL}/assets/social/okkarhys-blog-share.png`;
 const DEFAULT_DESCRIPTION =
   "Web, SEO, AI workflow & content strategy for personal brands and businesses.";
 
@@ -117,6 +119,10 @@ function buildRouteHtml(route) {
   // Title format: "Page | OKKARHYS", kecuali homepage cuma "OKKARHYS".
   const pageTitle =
     route.title === SITE_NAME ? SITE_NAME : `${route.title} | ${SITE_NAME}`;
+  // Keep the browser title branded, but keep share headlines clean. LinkedIn
+  // already displays the domain below the headline, so repeating an uppercase
+  // brand suffix makes the preview noisier than necessary.
+  const socialTitle = route.socialTitle || pageTitle;
   html = setTitle(html, pageTitle);
 
   // Canonical URL — hilangkan trailing slash kecuali root.
@@ -126,14 +132,25 @@ function buildRouteHtml(route) {
 
   // Meta tags (update existing atau insert).
   html = upsertMeta(html, "name", "description", route.description);
-  html = upsertMeta(html, "property", "og:title", pageTitle);
+  html = upsertMeta(html, "property", "og:title", socialTitle);
   html = upsertMeta(html, "property", "og:description", route.description);
   html = upsertMeta(html, "property", "og:url", canonical);
   html = upsertMeta(html, "property", "og:type", route.ogType || "website");
-  html = upsertMeta(html, "property", "og:site_name", SITE_NAME);
-  html = upsertMeta(html, "name", "twitter:title", pageTitle);
+  html = upsertMeta(html, "property", "og:site_name", SOCIAL_SITE_NAME);
+  html = upsertMeta(html, "name", "twitter:title", socialTitle);
   html = upsertMeta(html, "name", "twitter:description", route.description);
-  html = upsertMeta(html, "name", "twitter:card", "summary");
+  html = upsertMeta(html, "name", "twitter:card", route.socialImage ? "summary_large_image" : "summary");
+
+  if (route.socialImage) {
+    html = upsertMeta(html, "property", "og:image", route.socialImage);
+    html = upsertMeta(html, "property", "og:image:secure_url", route.socialImage);
+    html = upsertMeta(html, "property", "og:image:type", "image/png");
+    html = upsertMeta(html, "property", "og:image:width", "1200");
+    html = upsertMeta(html, "property", "og:image:height", "630");
+    html = upsertMeta(html, "property", "og:image:alt", route.socialImageAlt || socialTitle);
+    html = upsertMeta(html, "name", "twitter:image", route.socialImage);
+    html = upsertMeta(html, "name", "twitter:image:alt", route.socialImageAlt || socialTitle);
+  }
 
   // Article-specific OG (untuk blog post).
   if (route.article) {
@@ -272,7 +289,10 @@ publishedPosts.forEach((post) => {
   routes.push({
     path: `/blog/${post.slug}`,
     title: post.meta_title || post.title,
+    socialTitle: post.meta_title || post.title,
     description: post.meta_description || post.excerpt,
+    socialImage: post.cover_url ? new URL(post.cover_url, SITE_URL).toString() : BLOG_SOCIAL_IMAGE,
+    socialImageAlt: post.meta_title || post.title,
     currentTitle: post.title,
     ogType: "article",
     article: { post, category },
