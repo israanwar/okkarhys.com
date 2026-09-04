@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "prebuild": "node scripts/generate-sitemap.mjs",
+    "prebuild": "node scripts/generate-blog-social-images.mjs && node scripts/generate-sitemap.mjs",
     "build": "vite build",
     "postbuild": "node scripts/prerender.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "sitemap": "node scripts/generate-sitemap.mjs",
+    "social:images": "node scripts/generate-blog-social-images.mjs",
     "prerender": "node scripts/prerender.mjs"
   },
   "dependencies": {
@@ -26,5 +27,8 @@
     "react-router-dom": "^7.18.2",
     "typescript": "^5.7.2",
     "vite": "^8.0.16"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.4"
   }
 }

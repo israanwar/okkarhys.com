@@ -149,7 +149,7 @@ export function buildBreadcrumb(pathname, currentTitle, settings) {
 // Menyertakan author, publisher, datePublished, dateModified,
 // image, articleSection (kategori), wordCount (approx dari reading time).
 // ==================================================================
-export function buildArticle(post, category, settings) {
+export function buildArticle(post, category, settings, socialImage = null) {
   const url = siteUrl(settings);
   const canonicalPath = post.canonical_path || `/blog/${post.slug}`;
   const canonical = absoluteUrl(canonicalPath, settings);
@@ -163,7 +163,9 @@ export function buildArticle(post, category, settings) {
   // gambar artikel yang benar, bukan favicon kecil.
   const imageUrl = post.cover_url
     ? absoluteUrl(post.cover_url, settings)
-    : `${url}/assets/social/okkarhys-blog-share.png`;
+    : socialImage
+      ? absoluteUrl(socialImage, settings)
+      : `${url}/assets/social/okkarhys-blog-share.png`;
 
   // Approximate word count dari reading_time (200 wpm).
   const wordCount = post.reading_time ? post.reading_time * 200 : undefined;

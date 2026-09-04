@@ -9,6 +9,7 @@ import { useI18n } from "../../lib/i18n";
 import { formatPostReadCount, getPostReadCount } from "../../lib/blogMetrics";
 import { CATEGORY_BY_SLUG, DEFAULT_CATEGORY_SLUG } from "../../data/blogCategories";
 import { getPostCardArtwork } from "../../components/blog/PostCard";
+import { getBlogSocialArtworkPath } from "../../data/blogArtwork";
 import { SOCIAL_CARD_PATH } from "../../lib/socialMeta";
 
 export function BlogDetailPage() {
@@ -41,6 +42,7 @@ export function BlogDetailPage() {
   const rawCategory = CATEGORY_BY_SLUG[post.category] ?? CATEGORY_BY_SLUG[DEFAULT_CATEGORY_SLUG];
   const postIndex = Math.max(0, allPosts.findIndex((candidate) => candidate.id === post.id));
   const { theme: artworkTheme, Icon: ArtworkIcon } = getPostCardArtwork(postIndex);
+  const socialImage = post.cover_url || getBlogSocialArtworkPath(postIndex) || SOCIAL_CARD_PATH;
 
   return (
     <>
@@ -49,8 +51,8 @@ export function BlogDetailPage() {
         description={description}
         path={canonicalPath}
         article={{ post, category: rawCategory }}
-        socialTitle={post.meta_title || post.title}
-        socialImage={post.cover_url || SOCIAL_CARD_PATH}
+        socialTitle={post.title}
+        socialImage={socialImage}
       />
               <article className="okr__section" style={{ paddingTop: 100 }}>
           <div className="okr__wrap" style={{ maxWidth: 780 }}>

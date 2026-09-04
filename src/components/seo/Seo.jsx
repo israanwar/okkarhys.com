@@ -197,7 +197,7 @@ export function Seo({
     if (article?.post) {
       upsertJsonLd(
         "article",
-        buildArticle(article.post, article.category, settings)
+        buildArticle(article.post, article.category, settings, shareImage)
       );
       // FAQPage schema — kalau post punya faqs array. buildFaqPage return
       // null kalau array kosong, upsertJsonLd handle null dengan remove tag.

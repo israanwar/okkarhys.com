@@ -6,6 +6,7 @@ import {
   Sparkles, Users,
 } from "lucide-react";
 import { CATEGORY_BY_SLUG, DEFAULT_CATEGORY_SLUG } from "../../data/blogCategories";
+import { getBlogArtworkDescriptor } from "../../data/blogArtwork";
 import { useI18n } from "../../lib/i18n";
 import { localizeBlogCategory } from "../../lib/blogCategoryI18n";
 
@@ -26,30 +27,18 @@ function fmtDate(iso, lang) {
 // resolve author display dari brand. Bisa di-extend ke usersRepo nanti.
 const AUTHOR_DISPLAY = "Okka Rhys";
 
-// Twenty-four distinct low-saturation surfaces from the Okkarhys noir system.
-// The sequence keeps every current article visually unique without breaking
-// the dark, controlled character of the site.
-const CARD_THEMES = [
-  "#111316", "#171a1e", "#1d2125", "#252a2f", "#30363d", "#3c434b",
-  "#202830", "#28323b", "#323e48", "#1e252c", "#263039", "#303b45",
-  "#20262c", "#283038", "#323b44", "#1f2022", "#26282a", "#2f3134",
-  "#201d19", "#29251f", "#332e27", "#20292e", "#29333a", "#333f47",
-];
-// One distinct symbol per rendered article. Category-level mappings repeat as
-// soon as a category has more than one post, so the visual identity belongs to
-// the post sequence instead.
-const POST_ICONS = [
+const POST_ICONS = {
   ShieldCheck, Code2, BarChart3, FileSearch2, Globe2, Megaphone,
   Palette, Bot, Sparkles, ShoppingBag, Landmark, BookOpen,
   Brain, Compass, Users, Rocket, BriefcaseBusiness, Lightbulb,
   Network, PenTool, Scale, Cpu, Gem, Search,
-];
+};
 
 export function getPostCardArtwork(index = 0) {
-  const safeIndex = Number.isFinite(index) && index >= 0 ? index : 0;
+  const { theme, iconName } = getBlogArtworkDescriptor(index);
   return {
-    theme: CARD_THEMES[safeIndex % CARD_THEMES.length],
-    Icon: POST_ICONS[safeIndex % POST_ICONS.length],
+    theme,
+    Icon: POST_ICONS[iconName] ?? ShieldCheck,
   };
 }
 

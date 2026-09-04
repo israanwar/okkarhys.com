@@ -26,6 +26,9 @@ const { OKKARHYS_BLOG_POSTS_SEED } = await import(
 const { BLOG_CATEGORIES, CATEGORY_BY_SLUG, DEFAULT_CATEGORY_SLUG } = await import(
   `file://${projectRoot}/src/data/blogCategories.js`
 );
+const { getBlogSocialArtworkPath } = await import(
+  `file://${projectRoot}/src/data/blogArtwork.js`
+);
 const structuredData = await import(
   `file://${projectRoot}/src/lib/structuredData.js`
 );
@@ -33,7 +36,6 @@ const structuredData = await import(
 const SITE_URL = "https://www.okkarhys.com";
 const SITE_NAME = "OKKARHYS";
 const SOCIAL_SITE_NAME = "okkarhys.com";
-const BLOG_SOCIAL_IMAGE = `${SITE_URL}/assets/social/okkarhys-blog-share.png`;
 const DEFAULT_DESCRIPTION =
   "Web, SEO, AI workflow & content strategy for personal brands and businesses.";
 
@@ -181,7 +183,12 @@ function buildRouteHtml(route) {
   if (route.article) {
     schemas.push({
       name: "article",
-      data: structuredData.buildArticle(route.article.post, route.article.category, settings),
+      data: structuredData.buildArticle(
+        route.article.post,
+        route.article.category,
+        settings,
+        route.socialImage,
+      ),
     });
     if (route.article.post.faqs && route.article.post.faqs.length > 0) {
       schemas.push({
@@ -282,17 +289,24 @@ BLOG_CATEGORIES.forEach((c) => {
 });
 
 // Blog post pages — dengan Article + FAQPage schema.
-const publishedPosts = OKKARHYS_BLOG_POSTS_SEED.filter((p) => p.status === "published");
-publishedPosts.forEach((post) => {
+const publishedPosts = OKKARHYS_BLOG_POSTS_SEED
+  .filter((p) => p.status === "published")
+  .sort((a, b) => (
+    String(b.published_at ?? b.created_at ?? "").localeCompare(String(a.published_at ?? a.created_at ?? ""))
+    || String(b.created_at ?? "").localeCompare(String(a.created_at ?? ""))
+  ));
+publishedPosts.forEach((post, postIndex) => {
   const category =
     CATEGORY_BY_SLUG[post.category] || CATEGORY_BY_SLUG[DEFAULT_CATEGORY_SLUG];
   routes.push({
     path: `/blog/${post.slug}`,
     title: post.meta_title || post.title,
-    socialTitle: post.meta_title || post.title,
+    socialTitle: post.title,
     description: post.meta_description || post.excerpt,
-    socialImage: post.cover_url ? new URL(post.cover_url, SITE_URL).toString() : BLOG_SOCIAL_IMAGE,
-    socialImageAlt: post.meta_title || post.title,
+    socialImage: post.cover_url
+      ? new URL(post.cover_url, SITE_URL).toString()
+      : new URL(getBlogSocialArtworkPath(postIndex), SITE_URL).toString(),
+    socialImageAlt: post.image_alt || post.title,
     currentTitle: post.title,
     ogType: "article",
     article: { post, category },
