@@ -512,6 +512,27 @@ function ensureSeed() {
     }
     localStorage.setItem("okr:migrated:about:experience:v1", "1");
   }
+  if (localStorage.getItem("okr:migrated:about:projects-delivered:v1") !== "1") {
+    const existing = read(KEYS.pages, {}) ?? {};
+    const about = existing.about ?? {};
+    if (Array.isArray(about.stats)) {
+      let changed = false;
+      about.stats = about.stats.map((stat) => {
+        const isProjectsDelivered = /^projects delivered$/i.test(String(stat.label ?? "").trim());
+        const isOldValue = /^50\+$/i.test(String(stat.value ?? "").trim());
+        if (isProjectsDelivered && isOldValue) {
+          changed = true;
+          return { ...stat, value: "150+" };
+        }
+        return stat;
+      });
+      if (changed) {
+        existing.about = { ...about, updated_at: now() };
+        write(KEYS.pages, existing);
+      }
+    }
+    localStorage.setItem("okr:migrated:about:projects-delivered:v1", "1");
+  }
   if (localStorage.getItem("okr:migrated:contact:english:v1") !== "1") {
     const existing = read(KEYS.pages, {}) ?? {};
     const contact = existing.contact ?? {};
@@ -2111,7 +2132,7 @@ const PAGES_SEED = {
       { title: "Iterate", body: "Digital isn't one-and-done. We keep optimizing after launch, not hands-off." },
     ],
     stats: [
-      { value: "50+", label: "Projects delivered" },
+      { value: "150+", label: "Projects delivered" },
       { value: "+13 years", label: "Experience" },
       { value: "100%", label: "Quality commitment" },
     ],
