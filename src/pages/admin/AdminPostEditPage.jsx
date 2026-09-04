@@ -223,6 +223,7 @@ export function AdminPostEditPage() {
                   <option key={category.slug} value={category.slug}>{category.name}</option>
                 ))}
               </select>
+              <p className="wpx__help">Menentukan kategori blog tempat artikel ini tampil.</p>
             </div>
           </div>
           <div className="wpx__card">

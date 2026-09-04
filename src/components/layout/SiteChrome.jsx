@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import {
-  MessageCircle, Github, Instagram, Twitter, Linkedin, Mail, ShoppingBag, Menu, X,
+  MessageCircle, Github, Instagram, Linkedin, Mail, ShoppingBag, Menu, X,
   Home, Fingerprint, Compass, LayoutGrid, ShoppingCart, BookOpen,
 } from "lucide-react";
 import { useLiveSettings, useLiveProductsExist, useLiveCart } from "../../hooks/usePageData";
@@ -261,12 +261,6 @@ export function SiteFooter({ settings }) {
               <OkkarhysLogo name={settings.site_name || "okkarhys"} />
             </div>
             <p className="okr__foot-desc">{description}</p>
-            <div className="okr__foot-social">
-              {settings.social_linkedin && <a href={settings.social_linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={18} /></a>}
-              {settings.social_github && <a href={settings.social_github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={18} /></a>}
-              {settings.social_instagram && <a href={settings.social_instagram} target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={18} /></a>}
-              {settings.social_twitter && <a href={settings.social_twitter} target="_blank" rel="noreferrer" aria-label="Twitter"><Twitter size={18} /></a>}
-            </div>
           </div>
 
           <div className="okr__footer-col okr__footer-col--menu">
@@ -301,7 +295,22 @@ export function SiteFooter({ settings }) {
               )}
               {settings.whatsapp_number && (
                 <a className="okr__foot-contact-link" href={settings.whatsapp_url || `https://wa.me/${settings.whatsapp_number}`} target="_blank" rel="noreferrer">
-                  <MessageCircle size={16} /> {settings.whatsapp_number}
+                  <MessageCircle size={16} /> WhatsApp
+                </a>
+              )}
+              {settings.social_instagram && (
+                <a className="okr__foot-contact-link" href={settings.social_instagram} target="_blank" rel="noreferrer">
+                  <Instagram size={16} /> Instagram
+                </a>
+              )}
+              {settings.social_linkedin && (
+                <a className="okr__foot-contact-link" href={settings.social_linkedin} target="_blank" rel="noreferrer">
+                  <Linkedin size={16} /> LinkedIn
+                </a>
+              )}
+              {settings.social_github && (
+                <a className="okr__foot-contact-link" href={settings.social_github} target="_blank" rel="noreferrer">
+                  <Github size={16} /> GitHub
                 </a>
               )}
             </div>

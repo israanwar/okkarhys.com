@@ -59,9 +59,9 @@ function ensureSeed() {
     whatsapp_number: "082189594190",
     whatsapp_url: "https://wa.me/6282189594190",
     email: "admin@okkarhys.com",
-    social_linkedin: "",
-    social_github: "",
-    social_instagram: "",
+    social_linkedin: "https://www.linkedin.com/in/israanwarr/",
+    social_github: "https://github.com/israanwar/",
+    social_instagram: "https://www.instagram.com/okkarhys/",
     social_twitter: "",
     seo_default_title: "OKKARHYS",
     seo_default_description: "Building smarter digital systems for stronger visibility, efficient operations, and sustainable business growth.",
@@ -118,6 +118,18 @@ function ensureSeed() {
       write(KEYS.settings, { ...migrated, updated_at: now() });
     }
     localStorage.setItem("okr:migrated:settings:qris-default:v1", "1");
+  }
+  if (localStorage.getItem("okr:migrated:settings:v6") !== "1") {
+    // Backfill footer social links for anyone who already had settings
+    // written to localStorage before these were set.
+    const s = read(KEYS.settings);
+    const migrated = { ...s };
+    if (!s.social_linkedin) migrated.social_linkedin = DEFAULT_SETTINGS.social_linkedin;
+    if (!s.social_github) migrated.social_github = DEFAULT_SETTINGS.social_github;
+    if (!s.social_instagram) migrated.social_instagram = DEFAULT_SETTINGS.social_instagram;
+    migrated.updated_at = now();
+    write(KEYS.settings, migrated);
+    localStorage.setItem("okr:migrated:settings:v6", "1");
   }
   const HOMEPAGE_DEFAULT = {
     hero: {

@@ -152,6 +152,7 @@
   border-radius: 12px;
   margin-bottom: 20px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 .wpx__card-header {
   padding: 14px 18px; border-bottom: 1px solid var(--border);

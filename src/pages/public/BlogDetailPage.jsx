@@ -79,7 +79,6 @@ export function BlogDetailPage() {
               <span aria-hidden>·</span>
               <span>{t("blog_read_count", { count: formatPostReadCount(readCount, lang) })}</span>
             </p>
-            <PostShareBar post={post} canonicalPath={canonicalPath} lang={lang} compact />
             <div
               className="okr__blog-detail-art"
               style={{ "--okr-blog-art": artworkTheme }}
@@ -92,6 +91,12 @@ export function BlogDetailPage() {
               <p style={{ color: "var(--okr-text)", fontSize: 20, lineHeight: 1.5, marginBottom: 32 }}>{post.excerpt}</p>
             )}
             <RenderTiptap doc={post.content} />
+            <PostShareBar
+              post={post}
+              canonicalPath={canonicalPath}
+              socialImage={socialImage}
+              lang={lang}
+            />
 
             {faqs.length > 0 && (
               <section style={{ marginTop: 56, paddingTop: 32, borderTop: "1px solid var(--okr-border, rgba(255,255,255,0.08))" }}>

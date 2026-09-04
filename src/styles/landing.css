@@ -1193,8 +1193,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -1px 0 rgba(0, 0, 0, 0.3),
     0 26px 62px rgba(0, 0, 0, 0.24);
-  backdrop-filter: blur(22px) saturate(145%);
-  -webkit-backdrop-filter: blur(22px) saturate(145%);
   animation: okrProcessDetailIn 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .okr__process-detail-kicker,
@@ -1354,8 +1352,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.14),
     inset 0 -1px 0 rgba(0, 0, 0, 0.38),
     0 26px 70px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(22px) saturate(140%);
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
   text-align: center; position: relative; overflow: hidden;
 }
 .okr__cta::before {
@@ -1640,8 +1636,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.11),
     inset 0 -1px 0 rgba(0, 0, 0, 0.22),
     0 8px 22px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(14px) saturate(128%);
-  -webkit-backdrop-filter: blur(14px) saturate(128%);
 }
 .okr__results-count { color: var(--okr-muted); font-size: 14px; }
 .okr__results-count b { color: var(--okr-text); font-weight: 700; }
@@ -3232,35 +3226,17 @@
    into fully-covered position. Feels premium because the reveal tracks
    the user's actual scroll speed instead of a canned 600ms fade. */
 .okr__reveal {
-  /* Fallback for browsers without scroll-timeline support. */
+  /* Scroll-linked `animation-timeline: view()` reveal used to live here,
+     gated behind `@supports`. Disabled on purpose: its progress is computed
+     against the viewport height at render time, and any full-page capture
+     (screenshot tools, some in-app browsers) renders the whole document as
+     one tall viewport — which desyncs the animation-range math and leaves
+     most sections stuck mid-reveal (faded + shifted, reads as "blurry").
+     Every `.okr__reveal` element must always render fully visible, on every
+     browser and every capture method — so the fallback below is now the
+     only rule, unconditionally. */
   opacity: 1;
   transform: none;
-}
-@supports (animation-timeline: view()) {
-  .okr__reveal {
-    opacity: 0;
-    transform: translate3d(0, 22px, 0);
-    animation: okrRevealPremium linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 25%;
-  }
-  /* Cascade a subtle stagger by shifting the range-start for direct
-     siblings inside a grid. Cards later in a row reveal a hair after
-     their neighbors — natural without needing per-node delays. */
-  .okr__cards > .okr__reveal:nth-child(2n)    { animation-range: entry 5%  cover 28%; }
-  .okr__cards > .okr__reveal:nth-child(3n)    { animation-range: entry 8%  cover 30%; }
-  .okr__journal > .okr__reveal:nth-child(2n)  { animation-range: entry 5%  cover 28%; }
-  .okr__journal > .okr__reveal:nth-child(3n)  { animation-range: entry 8%  cover 30%; }
-  .okr__cases > .okr__reveal:nth-child(2n)    { animation-range: entry 6%  cover 30%; }
-  .okr__process > .okr__reveal:nth-child(2n)  { animation-range: entry 4%  cover 26%; }
-  .okr__process > .okr__reveal:nth-child(3n)  { animation-range: entry 8%  cover 28%; }
-  .okr__process > .okr__reveal:nth-child(4n)  { animation-range: entry 10% cover 30%; }
-  .okr__process > .okr__reveal:nth-child(5n)  { animation-range: entry 12% cover 32%; }
-}
-@keyframes okrRevealPremium {
-  0%   { opacity: 0; transform: translate3d(0, 22px, 0); }
-  70%  { opacity: 0.96; }
-  100% { opacity: 1; transform: none; }
 }
 
 /* --- Hero stagger ------------------------------------------------------
@@ -4304,30 +4280,10 @@
   letter-spacing: 0.16em;
 }
 
-@supports (animation-timeline: view()) {
-  .okr__reveal {
-    animation-name: okrRevealIndexLike;
-    filter: blur(10px);
-    transform: translate3d(0, 30px, 0) scale(0.985);
-  }
-}
-
-@keyframes okrRevealIndexLike {
-  0% {
-    opacity: 0;
-    filter: blur(12px);
-    transform: translate3d(0, 34px, 0) scale(0.982);
-  }
-  68% {
-    opacity: 0.96;
-    filter: blur(1px);
-  }
-  100% {
-    opacity: 1;
-    filter: blur(0);
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
+/* An `@supports (animation-timeline: view())` override and its
+   `okrRevealIndexLike` keyframe used to sit here, re-introducing a
+   scroll-linked reveal on `.okr__reveal` — see the comment on that class
+   near the top of the mobile-signature section for why it was removed. */
 
 .okr :is(
   .okr__card,

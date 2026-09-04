@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./PostShareBar.css";
 import { site } from "../../data/site";
+import { getBlogShareUrl } from "../../lib/socialMeta";
 
 const COPY = {
   id: {
@@ -56,10 +57,6 @@ function SocialLogo({ network }) {
   }
 }
 
-function makeShareUrl(path) {
-  return new URL(path || "/blog", site.url).toString();
-}
-
 async function copyToClipboard(value) {
   if (navigator.clipboard?.writeText && window.isSecureContext) {
     await navigator.clipboard.writeText(value);
@@ -77,15 +74,18 @@ async function copyToClipboard(value) {
   if (!copied) throw new Error("Clipboard fallback failed");
 }
 
-export function PostShareBar({ post, canonicalPath, lang = "en", compact = false }) {
+export function PostShareBar({ post, canonicalPath, socialImage, lang = "en", compact = false }) {
   const [notice, setNotice] = useState("");
   const copy = COPY[lang] ?? COPY.en;
-  const url = makeShareUrl(canonicalPath || `/blog/${post.slug}`);
+  const url = getBlogShareUrl(canonicalPath || `/blog/${post.slug}`);
   const title = post.title || site.name;
   const message = `${title} — ${site.name}`;
   const messageWithUrl = `${message}\n${url}`;
   const encodedUrl = encodeURIComponent(url);
   const encodedMessage = encodeURIComponent(message);
+  const encodedImageUrl = socialImage
+    ? encodeURIComponent(new URL(socialImage, site.url).toString())
+    : "";
 
   const links = [
     { id: "whatsapp", label: "WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(messageWithUrl)}` },
@@ -94,7 +94,11 @@ export function PostShareBar({ post, canonicalPath, lang = "en", compact = false
     { id: "x", label: "X", href: `https://x.com/intent/post?text=${encodedMessage}&url=${encodedUrl}` },
     { id: "telegram", label: "Telegram", href: `https://t.me/share/url?url=${encodedUrl}&text=${encodedMessage}` },
     { id: "threads", label: "Threads", href: `https://www.threads.net/intent/post?text=${encodeURIComponent(messageWithUrl)}` },
-    { id: "pinterest", label: "Pinterest", href: `https://www.pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedMessage}` },
+    {
+      id: "pinterest",
+      label: "Pinterest",
+      href: `https://www.pinterest.com/pin/create/button/?url=${encodedUrl}${encodedImageUrl ? `&media=${encodedImageUrl}` : ""}&description=${encodedMessage}`,
+    },
     { id: "line", label: "LINE", href: `https://social-plugins.line.me/lineit/share?url=${encodedUrl}` },
     { id: "email", label: "Email", href: `mailto:?subject=${encodedMessage}&body=${encodeURIComponent(messageWithUrl)}`, mail: true },
   ];
