@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import { SiteChrome } from "../components/layout/SiteChrome";
+import "../styles/scroll-performance.css";
 
 /**
  * Layout for every public route.
