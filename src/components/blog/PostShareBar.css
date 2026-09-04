@@ -73,6 +73,11 @@
   fill: currentColor;
 }
 
+.okr__post-share-button--pinterest svg { width: 18px; height: 18px; }
+.okr__post-share-button--threads svg { width: 18px; height: 18px; }
+.okr__post-share-button--quora svg { width: 17.5px; height: 17.5px; }
+.okr__post-share-button--medium svg { width: 20px; height: 18px; }
+
 .okr__post-share-button:hover,
 .okr__post-share-button:focus-visible {
   border-color: currentColor;
