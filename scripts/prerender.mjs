@@ -321,7 +321,7 @@ function renderBodyHtml(route) {
   </main>`;
   }
 
-  return `<div data-ssg="1">
+  return `<div id="ssg-shell" data-ssg="1">
   <header>${nav}</header>
   ${main}
   ${footer}
@@ -421,6 +421,25 @@ function buildRouteHtml(route) {
 
   // Real body content for crawlers that don't execute JS — see the
   // REAL_SOCIAL/renderBodyHtml block above for why this is zero-risk.
+  //
+  // The shell is plain semantic HTML with no class names, so it renders
+  // completely unstyled — a real visitor on a cold cache would stare at a
+  // wall of raw text for as long as the JS bundle takes to arrive. So it
+  // is hidden from anything that can run JavaScript, using the classic
+  // no-JS fallback pattern: the inline <head> script stamps `js-on` on
+  // <html> before the body is even parsed (so there is no paint of the
+  // shell, ever), and the inline rule hides it from that point on.
+  //
+  // Crawlers that don't execute JS never get the `js-on` class, so for
+  // them the rule doesn't match and the content stays fully visible and
+  // countable. Crawlers that DO execute JS (Googlebot) render the real
+  // React app, which contains the same content — so nothing is hidden
+  // from anyone that isn't shown the equivalent in another form.
+  html = html.replace(
+    "</head>",
+    `    <style>html.js-on #ssg-shell{display:none!important}</style>\n` +
+    `    <script>document.documentElement.classList.add("js-on")</script>\n  </head>`,
+  );
   html = html.replace('<div id="root"></div>', `<div id="root">${renderBodyHtml(route)}</div>`);
 
   return html;
