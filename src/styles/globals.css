@@ -9,6 +9,15 @@ html, body {
      which would otherwise break `position: sticky` for descendants (sidebar,
      topbar, edit-page aside). Clip has the same horizontal-clipping effect. */
   overflow-x: clip;
+  /* The prerendered HTML puts real content inside #root for crawlers (see
+     scripts/prerender.mjs), then main.jsx clears it and mounts the real
+     app. Scroll anchoring tries to keep whatever's near the viewport top
+     visually stable across layout changes — with a full-page swap that
+     size, and every route's real content still arriving as data loads in,
+     it has picked the wrong anchor and jumped the page to the bottom on
+     first load. There is nothing here worth anchoring around; every
+     height change is us replacing content on purpose. */
+  overflow-anchor: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
