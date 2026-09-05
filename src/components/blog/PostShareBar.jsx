@@ -112,14 +112,43 @@ export function PostShareBar({ post, canonicalPath, socialImage, lang = "en", co
     }
   }
 
+  // Every network button (except Email and Copy link — see their own click
+  // handlers) tries the native OS share sheet first, wherever the browser
+  // exposes the Web Share API. This works on any device/browser that
+  // implements it (desktop included — it's a feature check, not a mobile
+  // check), and lets the OS offer whatever apps are actually installed,
+  // Instagram's own Story/Feed/DM choice among them once picked there.
+  // `fallback` runs only when the API is missing or the share itself fails
+  // for a real reason (not the visitor cancelling) — for the platform
+  // buttons that fallback is just "let the already-working direct link
+  // navigate", for Instagram/Quora/Medium it's the copy+open-homepage
+  // handoff, since those three have never published a web share intent.
+  async function tryNativeShare(fallback) {
+    if (!navigator.share) return fallback();
+    try {
+      await navigator.share({ title, url });
+    } catch (err) {
+      if (err && err.name === "AbortError") return; // visitor dismissed the OS sheet — respect that, don't also run the fallback
+      fallback();
+    }
+  }
+
+  function handleNetworkClick(event, item) {
+    if (item.mail) return; // mailto: already opens the visitor's mail app directly; no share-sheet detour needed
+    event.preventDefault();
+    void tryNativeShare(() => window.open(item.href, "_blank", "noopener,noreferrer"));
+  }
+
   function handleHandoff(network) {
     const destination = {
       instagram: "https://www.instagram.com/",
       quora: "https://www.quora.com/",
       medium: "https://medium.com/",
     }[network];
-    window.open(destination, "_blank", "noopener,noreferrer");
-    void handleCopy(network);
+    void tryNativeShare(() => {
+      window.open(destination, "_blank", "noopener,noreferrer");
+      void handleCopy(network);
+    });
   }
 
   return (
@@ -137,6 +166,7 @@ export function PostShareBar({ post, canonicalPath, socialImage, lang = "en", co
             key={item.id}
             target={item.mail ? undefined : "_blank"}
             rel={item.mail ? undefined : "noopener noreferrer"}
+            onClick={(event) => handleNetworkClick(event, item)}
             aria-label={`${lang === "id" ? "Bagikan ke" : "Share on"} ${item.label}`}
           >
             <SocialLogo network={item.id} />
