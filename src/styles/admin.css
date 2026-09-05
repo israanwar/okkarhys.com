@@ -473,6 +473,22 @@
   .wpx-login__card {
     padding: 28px 22px;
   }
+
+  /* Same guard as the public site's mobile perf pass (landing.css): the
+     global viewport lock that used to prevent double-tap-zoom on tappable
+     controls was removed (it also disabled pinch-zoom for everyone, a real
+     accessibility regression). Without it, admin buttons/links need their
+     own touch-action to avoid a double-tap zooming the page instead of
+     activating. */
+  .wpx a,
+  .wpx button,
+  .wpx__btn,
+  .wpx__nav-link,
+  .wpx__card,
+  .wpx__select,
+  .wpx-login__submit {
+    touch-action: manipulation;
+  }
 }
 
 @media (max-width: 420px) {

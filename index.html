@@ -22,13 +22,17 @@
         window.addEventListener("pageshow", resetInitialScroll, { once: true });
       })();
     </script>
-    <!-- Locked viewport — pinch-zoom & double-tap zoom disabled on mobile to
-         keep the composed layout intact. `viewport-fit=cover` keeps safe-area
-         insets working for notched devices. Note: iOS 10+ Safari may honor
-         user-scalable=no only partially for accessibility reasons. -->
+    <!-- Pinch-zoom and double-tap-zoom are intentionally left enabled —
+         locking them site-wide is a real accessibility regression (WCAG
+         1.4.4 Resize Text) for anyone who needs to zoom to read. Accidental
+         double-tap-zoom on buttons/links is handled per-element instead via
+         `touch-action: manipulation` (see the mobile perf pass in
+         landing.css), which is the targeted fix without taking zoom away
+         from the rest of the page. `viewport-fit=cover` keeps safe-area
+         insets working for notched devices. -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <meta
       name="description"
