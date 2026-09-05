@@ -32,6 +32,9 @@ const { getBlogSocialArtworkPath } = await import(
 const structuredData = await import(
   `file://${projectRoot}/src/lib/structuredData.js`
 );
+const { OKKARHYS_SERVICES_SEED } = await import(
+  `file://${projectRoot}/src/data/serviceCatalog.js`
+);
 
 const SITE_URL = "https://www.okkarhys.com";
 const SITE_NAME = "OKKARHYS";
@@ -106,6 +109,223 @@ function injectJsonLd(html, schemas) {
     )
     .join("\n");
   return html.replace("</head>", `${scripts}\n  </head>`);
+}
+
+// -----------------------------------------------------------------------
+// Real <body> content — see SEO audit notes (Semrush/Ubersuggest flagged
+// missing H1, ~0 words of text content, and 0% social-media visibility).
+// Root cause: <div id="root"> was left empty on purpose (see file header),
+// so any crawler that doesn't execute JS sees a blank page.
+//
+// Fixed WITHOUT switching to real SSR/hydration (which would require every
+// data hook to be Node-safe and main.jsx to use hydrateRoot — a much
+// bigger, riskier change). main.jsx mounts via
+// `ReactDOM.createRoot(...).render(...)`, which never reconciles against
+// existing DOM inside #root — it just overwrites it wholesale. So writing
+// real markup inside #root here carries zero hydration-mismatch risk: the
+// instant client JS mounts, this is replaced exactly as before. Non-JS
+// crawlers get real H1s, real article text, and real footer/social links;
+// real visitors get, at most, a brief flash of this same content before
+// the interactive app takes over.
+// -----------------------------------------------------------------------
+
+const REAL_SOCIAL = {
+  whatsapp_url: "https://wa.me/6282189594190",
+  email: "admin@okkarhys.com",
+  linkedin: "https://www.linkedin.com/in/israanwarr/",
+  github: "https://github.com/israanwar/",
+  instagram: "https://www.instagram.com/okkarhys/",
+};
+
+const NAV_LINKS = [
+  ["/", "Home"],
+  ["/about", "Tentang"],
+  ["/services", "Layanan"],
+  ["/portfolio", "Portfolio"],
+  ["/store", "Store"],
+  ["/blog", "Blog"],
+  ["/contact", "Kontak"],
+];
+
+function renderNavHtml() {
+  const items = NAV_LINKS.map(([href, label]) => `<a href="${xmlEsc(href)}">${xmlEsc(label)}</a>`).join("\n      ");
+  return `<nav aria-label="Primary">\n      ${items}\n    </nav>`;
+}
+
+function renderFooterHtml() {
+  const navItems = NAV_LINKS.map(([href, label]) => `<a href="${xmlEsc(href)}">${xmlEsc(label)}</a>`).join("\n      ");
+  return `<footer>
+    <nav aria-label="Footer">
+      ${navItems}
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/sitemap">Sitemap</a>
+    </nav>
+    <p>
+      <a href="mailto:${xmlEsc(REAL_SOCIAL.email)}">${xmlEsc(REAL_SOCIAL.email)}</a>
+      <a href="${xmlEsc(REAL_SOCIAL.whatsapp_url)}" rel="noreferrer">WhatsApp</a>
+      <a href="${xmlEsc(REAL_SOCIAL.instagram)}" rel="noreferrer">Instagram</a>
+      <a href="${xmlEsc(REAL_SOCIAL.linkedin)}" rel="noreferrer">LinkedIn</a>
+      <a href="${xmlEsc(REAL_SOCIAL.github)}" rel="noreferrer">GitHub</a>
+    </p>
+    <p>&copy; ${new Date().getFullYear()} ${xmlEsc(SITE_NAME)}. All rights reserved.</p>
+  </footer>`;
+}
+
+// --- Tiptap JSON -> HTML string, Node-safe mirror of RenderTiptap.jsx --
+function renderInlineNode(node) {
+  if (node.type !== "text") return "";
+  let html = xmlEsc(node.text);
+  for (const m of node.marks ?? []) {
+    if (m.type === "bold") html = `<strong>${html}</strong>`;
+    else if (m.type === "italic") html = `<em>${html}</em>`;
+    else if (m.type === "strike") html = `<s>${html}</s>`;
+    else if (m.type === "code") html = `<code>${html}</code>`;
+    else if (m.type === "link") {
+      const href = m.attrs?.href ?? "#";
+      const external = !(href.startsWith("/") || href.startsWith("#"));
+      html = `<a href="${xmlEsc(href)}"${external ? ' target="_blank" rel="noreferrer"' : ""}>${html}</a>`;
+    }
+  }
+  return html;
+}
+
+function renderTiptapNode(node) {
+  switch (node.type) {
+    case "paragraph":
+      return `<p>${(node.content ?? []).map(renderInlineNode).join("")}</p>`;
+    case "heading": {
+      const level = Math.min(6, Math.max(2, node.attrs?.level ?? 2));
+      return `<h${level}>${(node.content ?? []).map(renderInlineNode).join("")}</h${level}>`;
+    }
+    case "bulletList":
+      return `<ul>${(node.content ?? []).map(renderTiptapNode).join("")}</ul>`;
+    case "orderedList":
+      return `<ol>${(node.content ?? []).map(renderTiptapNode).join("")}</ol>`;
+    case "listItem":
+      return `<li>${(node.content ?? []).map(renderTiptapNode).join("")}</li>`;
+    case "blockquote":
+      return `<blockquote>${(node.content ?? []).map(renderTiptapNode).join("")}</blockquote>`;
+    case "hardBreak":
+      return "<br />";
+    default:
+      return "";
+  }
+}
+
+function renderTiptapDoc(doc) {
+  if (!doc?.content) return "";
+  return doc.content.map(renderTiptapNode).join("\n");
+}
+
+function fmtDateID(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+}
+
+// publishedPosts is assigned later in this file (module top-level, before
+// routes.forEach runs) — safe to reference here since this function body
+// only evaluates at call time, not at definition time.
+function renderBodyHtml(route) {
+  const nav = renderNavHtml();
+  const footer = renderFooterHtml();
+  let main;
+
+  if (route.article) {
+    const { post, category } = route.article;
+    const tagsLine = post.tags?.length ? `<p>${xmlEsc(post.tags.join(" · ").toUpperCase())}</p>` : "";
+    const metaBits = [fmtDateID(post.published_at || post.created_at), post.reading_time ? `${post.reading_time} min read` : ""].filter(Boolean);
+    const excerptHtml = post.excerpt ? `<p>${xmlEsc(post.excerpt)}</p>` : "";
+    main = `<main>
+    <p><a href="/">Home</a> / <a href="/blog">Blog</a>${category ? ` / <a href="/blog/${xmlEsc(category.slug)}">${xmlEsc(category.name)}</a>` : ""}</p>
+    ${tagsLine}
+    <h1>${xmlEsc(post.title)}</h1>
+    <p>${xmlEsc(metaBits.join(" · "))}</p>
+    ${excerptHtml}
+    <article>${renderTiptapDoc(post.content)}</article>
+  </main>`;
+  } else if (route.path.startsWith("/blog/")) {
+    const catSlug = route.path.replace("/blog/", "");
+    const items = publishedPosts
+      .filter((p) => p.category === catSlug)
+      .map((p) => `<li><a href="/blog/${xmlEsc(p.slug)}">${xmlEsc(p.title)}</a></li>`)
+      .join("\n      ");
+    main = `<main>
+    <p><a href="/">Home</a> / <a href="/blog">Blog</a></p>
+    <h1>${xmlEsc(route.title)}</h1>
+    <p>${xmlEsc(route.description)}</p>
+    <ul>
+      ${items}
+    </ul>
+  </main>`;
+  } else if (route.path === "/blog") {
+    const items = publishedPosts
+      .map((p) => `<li><a href="/blog/${xmlEsc(p.slug)}">${xmlEsc(p.title)}</a></li>`)
+      .join("\n      ");
+    main = `<main>
+    <h1>${xmlEsc(route.title)}</h1>
+    <p>${xmlEsc(route.description)}</p>
+    <ul>
+      ${items}
+    </ul>
+  </main>`;
+  } else if (route.path === "/services") {
+    // Real service catalog data (src/data/serviceCatalog.js) — one H2 +
+    // tagline + service list per category, not the full ~820-word body
+    // each individual service carries (that belongs on its own detail
+    // page, which isn't prerendered yet — see file-level TODO note).
+    const categories = OKKARHYS_SERVICES_SEED.filter((s) => s.kind === "category");
+    const sections = categories
+      .map((cat) => {
+        const services = OKKARHYS_SERVICES_SEED
+          .filter((s) => s.kind === "service" && s.parent_slug === cat.slug)
+          .map((s) => `<li>${xmlEsc(s.name)}</li>`)
+          .join("\n        ");
+        return `<section>
+        <h2>${xmlEsc(cat.name)}</h2>
+        <p>${xmlEsc(cat.tagline)}</p>
+        <ul>
+          ${services}
+        </ul>
+      </section>`;
+      })
+      .join("\n    ");
+    main = `<main>
+    <h1>${xmlEsc(route.h1 || route.title)}</h1>
+    <p>${xmlEsc(route.description)}</p>
+    ${sections}
+  </main>`;
+  } else if (route.path === "/") {
+    // Real recent-posts list (same data as the /blog page) — gives the
+    // homepage real internal links + text instead of just one paragraph.
+    const recent = publishedPosts
+      .slice(0, 6)
+      .map((p) => `<li><a href="/blog/${xmlEsc(p.slug)}">${xmlEsc(p.title)}</a></li>`)
+      .join("\n      ");
+    main = `<main>
+    <h1>${xmlEsc(route.h1 || route.title)}</h1>
+    <p>${xmlEsc(route.description)}</p>
+    <section>
+      <h2>Latest notes</h2>
+      <ul>
+        ${recent}
+      </ul>
+    </section>
+  </main>`;
+  } else {
+    main = `<main>
+    <h1>${xmlEsc(route.h1 || route.title)}</h1>
+    <p>${xmlEsc(route.description)}</p>
+  </main>`;
+  }
+
+  return `<div data-ssg="1">
+  <header>${nav}</header>
+  ${main}
+  ${footer}
+</div>`;
 }
 
 // -----------------------------------------------------------------------
@@ -199,6 +419,10 @@ function buildRouteHtml(route) {
   }
   html = injectJsonLd(html, schemas);
 
+  // Real body content for crawlers that don't execute JS — see the
+  // REAL_SOCIAL/renderBodyHtml block above for why this is zero-risk.
+  html = html.replace('<div id="root"></div>', `<div id="root">${renderBodyHtml(route)}</div>`);
+
   return html;
 }
 
@@ -210,69 +434,73 @@ function buildRouteHtml(route) {
 const routes = [
   {
     path: "/",
-    title: SITE_NAME,
-    description: DEFAULT_DESCRIPTION,
+    title: "Web Development, SEO & AI Workflow Studio",
+    h1: "Design, code & strategy at the speed of AI",
+    description:
+      "Okkarhys is a digital consulting studio in Indonesia helping personal brands and businesses grow through web development, SEO, AI-driven workflows, and content strategy built for measurable results.",
     ogType: "website",
   },
   {
     path: "/about",
-    title: "Tentang",
+    title: "Tentang Okkarhys, Studio Konsultasi Digital",
     description:
-      "Tentang Okkarhys — studio konsultasi digital untuk web development, SEO, AI workflow, dan strategi konten.",
+      "Tentang Okkarhys — studio konsultasi digital untuk web development, SEO, AI workflow, dan strategi konten bagi personal brand dan bisnis di Indonesia.",
     ogType: "website",
   },
   {
     path: "/services",
-    title: "Layanan",
+    title: "Layanan Web Development, SEO & AI Workflow",
     description:
-      "Layanan Okkarhys — audit website, SEO, AI workflow, dan strategi konten untuk personal brand dan bisnis.",
+      "Layanan Okkarhys — audit website, SEO, AI workflow, dan strategi konten untuk membantu personal brand dan bisnis tumbuh dengan hasil yang terukur di Indonesia.",
     ogType: "website",
   },
   {
     path: "/portfolio",
-    title: "Portfolio",
+    title: "Portfolio Proyek Web, SEO & Brand Campaign",
     description:
-      "Portfolio proyek Okkarhys — web development, SEO growth, event, dan brand campaign.",
+      "Portfolio proyek Okkarhys — web development, SEO growth, event, dan brand campaign untuk personal brand dan bisnis di berbagai industri di Indonesia.",
     ogType: "website",
   },
   {
     path: "/store",
-    title: "Store",
+    title: "Store Template, Playbook & Resource Digital",
     description:
-      "Store Okkarhys — template, playbook, dan resource digital untuk personal brand serta bisnis.",
+      "Store Okkarhys — template, playbook, dan resource digital siap pakai untuk personal brand serta bisnis yang ingin tumbuh lebih cepat dan efisien.",
     ogType: "website",
   },
   {
     path: "/blog",
-    title: "Blog",
+    title: "Blog — Insight SEO, AI & Strategi Bisnis",
     description:
-      "Blog Okkarhys — analisis, opini, case study, dan esai seputar SEO, AI, branding, dan strategi bisnis digital.",
+      "Blog Okkarhys — analisis, opini, case study, dan esai seputar SEO, AI, branding, dan strategi bisnis digital untuk personal brand dan bisnis di Indonesia.",
     ogType: "website",
   },
   {
     path: "/sitemap",
-    title: "Sitemap",
+    title: "Sitemap Lengkap Halaman & Artikel Okkarhys",
     description:
-      "Peta situs Okkarhys — daftar lengkap halaman dan artikel blog per kategori.",
+      "Peta situs Okkarhys — daftar lengkap halaman utama dan seluruh artikel blog per kategori untuk memudahkan navigasi dan pencarian konten.",
     ogType: "website",
   },
   {
     path: "/contact",
-    title: "Kontak",
+    title: "Kontak Konsultasi Web, SEO & AI Workflow",
     description:
-      "Hubungi Okkarhys untuk konsultasi web, SEO, AI workflow, dan strategi digital.",
+      "Hubungi Okkarhys untuk konsultasi web development, SEO, AI workflow, dan strategi konten bagi personal brand serta bisnis kamu di Indonesia.",
     ogType: "website",
   },
   {
     path: "/privacy",
-    title: "Privacy Policy",
-    description: "Privacy Policy resmi Okkarhys.",
+    title: "Privacy Policy — Kebijakan Privasi Okkarhys",
+    description:
+      "Kebijakan privasi resmi Okkarhys — cara kami mengumpulkan, menggunakan, dan melindungi data pengunjung serta klien di seluruh layanan digital kami.",
     ogType: "website",
   },
   {
     path: "/terms",
-    title: "Terms of Service",
-    description: "Terms of Service resmi Okkarhys.",
+    title: "Terms of Service — Syarat Layanan Okkarhys",
+    description:
+      "Syarat dan ketentuan resmi penggunaan layanan Okkarhys — mengatur hak, kewajiban, dan batasan tanggung jawab antara Okkarhys dan klien.",
     ogType: "website",
   },
 ];
