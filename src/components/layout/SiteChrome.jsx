@@ -3,9 +3,17 @@ import { NavLink, Link } from "react-router-dom";
 import {
   MessageCircle, Github, Instagram, Linkedin, Mail, ShoppingBag, Menu, X,
   Home, Fingerprint, Compass, LayoutGrid, ShoppingCart, BookOpen, Wrench,
+  FileStack, Globe2, Palette, TrendingUp,
 } from "lucide-react";
 import { useLiveSettings, useLiveProductsExist, useLiveCart } from "../../hooks/usePageData";
 import { TOOLS_CATALOG } from "../../data/toolsCatalog";
+
+const TOOLS_DROPDOWN_ICON = {
+  "file-converter": FileStack,
+  "website-tools": Globe2,
+  "creative-brand-tools": Palette,
+  "marketing-seo-tools": TrendingUp,
+};
 import { useI18n } from "../../lib/i18n";
 import { localizeSiteDescription } from "../../lib/pageI18n";
 import { LangThemeSwitcher } from "./LangThemeSwitcher";
@@ -115,7 +123,11 @@ export function SiteHeader({ settings }) {
       to: "/tools",
       route: true,
       icon: Wrench,
-      dropdown: TOOLS_CATALOG.map((cat) => ({ label: cat.name, to: `/tools#${cat.slug}` })),
+      dropdown: TOOLS_CATALOG.map((cat) => ({
+        label: cat.name,
+        to: `/tools#${cat.slug}`,
+        icon: TOOLS_DROPDOWN_ICON[cat.slug] ?? Wrench,
+      })),
     },
     ...(hasProducts ? [{ label: t("nav_store"), to: "/store", route: true, icon: ShoppingCart }] : []),
     { label: t("nav_blog"), to: "/blog", route: true, icon: BookOpen },
@@ -184,9 +196,17 @@ export function SiteHeader({ settings }) {
                     {item.label}
                   </NavLink>
                   <div className="okr__navlink-dropdown" role="menu">
-                    {item.dropdown.map((sub) => (
-                      <a key={sub.to} href={sub.to} role="menuitem">{sub.label}</a>
-                    ))}
+                    {item.dropdown.map((sub) => {
+                      const SubIcon = sub.icon;
+                      return (
+                        <a key={sub.to} href={sub.to} role="menuitem" className="okr__navlink-dropdown-item">
+                          <span className="okr__navlink-dropdown-icon" aria-hidden="true">
+                            <SubIcon size={18} strokeWidth={1.75} />
+                          </span>
+                          {sub.label}
+                        </a>
+                      );
+                    })}
                   </div>
                 </div>
               ) : item.route ? (
