@@ -35,6 +35,9 @@ const structuredData = await import(
 const { OKKARHYS_SERVICES_SEED } = await import(
   `file://${projectRoot}/src/data/serviceCatalog.js`
 );
+const { TOOLS_CATALOG } = await import(
+  `file://${projectRoot}/src/data/toolsCatalog.js`
+);
 
 const SITE_URL = "https://www.okkarhys.com";
 const SITE_NAME = "OKKARHYS";
@@ -142,6 +145,7 @@ const NAV_LINKS = [
   ["/about", "Tentang"],
   ["/services", "Layanan"],
   ["/portfolio", "Portfolio"],
+  ["/tools", "Tools"],
   ["/store", "Store"],
   ["/blog", "Blog"],
   ["/contact", "Kontak"],
@@ -289,6 +293,27 @@ function renderBodyHtml(route) {
         <ul>
           ${services}
         </ul>
+      </section>`;
+      })
+      .join("\n    ");
+    main = `<main>
+    <h1>${xmlEsc(route.h1 || route.title)}</h1>
+    <p>${xmlEsc(route.description)}</p>
+    ${sections}
+  </main>`;
+  } else if (route.path === "/tools") {
+    // Mirrors TOOLS_CATALOG in toolsCatalog.js — same data, imported directly
+    // (not duplicated) so this can never drift from the real page.
+    const sections = TOOLS_CATALOG
+      .map((cat) => {
+        const body = cat.subcategories
+          ? cat.subcategories
+            .map((sub) => `<h3>${xmlEsc(sub.name)}</h3>\n        <ul>\n          ${sub.tools.map((tool) => `<li>${xmlEsc(tool)}</li>`).join("\n          ")}\n        </ul>`)
+            .join("\n        ")
+          : `<ul>\n          ${cat.tools.map((tool) => `<li>${xmlEsc(tool)}</li>`).join("\n          ")}\n        </ul>`;
+        return `<section>
+        <h2>${xmlEsc(cat.name)}</h2>
+        ${body}
       </section>`;
       })
       .join("\n    ");
@@ -478,6 +503,14 @@ const routes = [
     title: "Portfolio Proyek Web, SEO & Brand Campaign",
     description:
       "Portfolio proyek Okkarhys — web development, SEO growth, event, dan brand campaign untuk personal brand dan bisnis di berbagai industri di Indonesia.",
+    ogType: "website",
+  },
+  {
+    path: "/tools",
+    title: "Tools — Direktori Utilitas Gratis",
+    h1: "Free Tools",
+    description:
+      "Direktori tools gratis Okkarhys — file converter, website checker, creative tools, dan marketing/SEO tools. Segera hadir.",
     ogType: "website",
   },
   {

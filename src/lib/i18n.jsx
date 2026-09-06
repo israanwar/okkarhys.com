@@ -9,7 +9,7 @@ const T = {
   id: {
     // Nav
     nav_home: "Home", nav_about: "Tentang", nav_services: "Layanan",
-    nav_store: "Store", nav_blog: "Blog", nav_contact: "Kontak", nav_portfolio: "Portfolio",
+    nav_store: "Store", nav_blog: "Blog", nav_contact: "Kontak", nav_portfolio: "Portfolio", nav_tools: "Tools",
     // Common
     cta_whatsapp: "WhatsApp",
     action_back: "Kembali",
@@ -220,7 +220,7 @@ const T = {
   },
   en: {
     nav_home: "Home", nav_about: "About", nav_services: "Services",
-    nav_store: "Store", nav_blog: "Blog", nav_contact: "Contact", nav_portfolio: "Portfolio",
+    nav_store: "Store", nav_blog: "Blog", nav_contact: "Contact", nav_portfolio: "Portfolio", nav_tools: "Tools",
     cta_whatsapp: "WhatsApp",
     action_back: "Back",
     site_description: "Building smarter digital systems for stronger visibility, efficient operations, and sustainable business growth.",

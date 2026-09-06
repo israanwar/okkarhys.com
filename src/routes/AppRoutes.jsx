@@ -12,6 +12,7 @@ const ServicesPage = lazyNamed(() => import("../pages/public/ServicesPage"), "Se
 const ServiceDetailPage = lazyNamed(() => import("../pages/public/ServiceDetailPage"), "ServiceDetailPage");
 const ContactPage = lazyNamed(() => import("../pages/public/ContactPage"), "ContactPage");
 const PortfolioPage = lazyNamed(() => import("../pages/public/PortfolioPage"), "PortfolioPage");
+const ToolsPage = lazyNamed(() => import("../pages/public/ToolsPage"), "ToolsPage");
 const PrivacyPage = lazyNamed(() => import("../pages/public/PrivacyPage"), "PrivacyPage");
 const TermsPage = lazyNamed(() => import("../pages/public/TermsPage"), "TermsPage");
 const NotFoundPage = lazyNamed(() => import("../pages/public/NotFoundPage"), "NotFoundPage");
@@ -62,6 +63,7 @@ export function AppRoutes() {
           <Route path="/services/:slug" element={<ServiceDetailPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/tools" element={<ToolsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/sitemap" element={<SitemapPage />} />

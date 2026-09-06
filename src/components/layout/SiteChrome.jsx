@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import {
   MessageCircle, Github, Instagram, Linkedin, Mail, ShoppingBag, Menu, X,
-  Home, Fingerprint, Compass, LayoutGrid, ShoppingCart, BookOpen,
+  Home, Fingerprint, Compass, LayoutGrid, ShoppingCart, BookOpen, Wrench,
 } from "lucide-react";
 import { useLiveSettings, useLiveProductsExist, useLiveCart } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
@@ -109,6 +109,7 @@ export function SiteHeader({ settings }) {
     { label: t("nav_about"), to: "/about", route: true, icon: Fingerprint },
     { label: t("nav_services"), to: "/services", route: true, icon: Compass },
     { label: t("nav_portfolio"), to: "/portfolio", route: true, icon: LayoutGrid },
+    { label: t("nav_tools"), to: "/tools", route: true, icon: Wrench },
     ...(hasProducts ? [{ label: t("nav_store"), to: "/store", route: true, icon: ShoppingCart }] : []),
     { label: t("nav_blog"), to: "/blog", route: true, icon: BookOpen },
     { label: t("nav_contact"), to: "/contact", route: true, icon: Mail },
@@ -270,6 +271,7 @@ export function SiteFooter({ settings }) {
               <li><Link to="/about">{t("nav_about")}</Link></li>
               <li><Link to="/services">{t("nav_services")}</Link></li>
               <li><Link to="/portfolio">{t("nav_portfolio")}</Link></li>
+              <li><Link to="/tools">{t("nav_tools")}</Link></li>
               <li><Link to="/store">{t("nav_store")}</Link></li>
               <li><Link to="/blog">{t("nav_blog")}</Link></li>
               <li><Link to="/contact">{t("nav_contact")}</Link></li>

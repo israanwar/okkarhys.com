@@ -39,6 +39,7 @@ export function SitemapPage() {
     { path: "/about",     label: "Tentang" },
     { path: "/services",  label: "Layanan" },
     { path: "/portfolio", label: "Portfolio" },
+    { path: "/tools",     label: "Tools" },
     { path: "/store",     label: "Store" },
     { path: "/blog",      label: "Blog" },
     { path: "/contact",   label: "Kontak" },
