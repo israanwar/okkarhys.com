@@ -41,7 +41,7 @@ export function ToolsPage() {
 
 function ToolCategory({ category }) {
   return (
-    <section className="okr__portfolio-section">
+    <section id={category.slug} className="okr__portfolio-section" style={{ scrollMarginTop: 100 }}>
       <div className="okr__portfolio-section-head">
         <div>
           <h2 className="okr__portfolio-heading">{category.name}</h2>

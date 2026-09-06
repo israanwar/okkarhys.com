@@ -311,7 +311,7 @@ function renderBodyHtml(route) {
             .map((sub) => `<h3>${xmlEsc(sub.name)}</h3>\n        <ul>\n          ${sub.tools.map((tool) => `<li>${xmlEsc(tool)}</li>`).join("\n          ")}\n        </ul>`)
             .join("\n        ")
           : `<ul>\n          ${cat.tools.map((tool) => `<li>${xmlEsc(tool)}</li>`).join("\n          ")}\n        </ul>`;
-        return `<section>
+        return `<section id="${xmlEsc(cat.slug)}">
         <h2>${xmlEsc(cat.name)}</h2>
         ${body}
       </section>`;

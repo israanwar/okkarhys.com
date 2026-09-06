@@ -5,6 +5,7 @@ import {
   Home, Fingerprint, Compass, LayoutGrid, ShoppingCart, BookOpen, Wrench,
 } from "lucide-react";
 import { useLiveSettings, useLiveProductsExist, useLiveCart } from "../../hooks/usePageData";
+import { TOOLS_CATALOG } from "../../data/toolsCatalog";
 import { useI18n } from "../../lib/i18n";
 import { localizeSiteDescription } from "../../lib/pageI18n";
 import { LangThemeSwitcher } from "./LangThemeSwitcher";
@@ -109,7 +110,13 @@ export function SiteHeader({ settings }) {
     { label: t("nav_about"), to: "/about", route: true, icon: Fingerprint },
     { label: t("nav_services"), to: "/services", route: true, icon: Compass },
     { label: t("nav_portfolio"), to: "/portfolio", route: true, icon: LayoutGrid },
-    { label: t("nav_tools"), to: "/tools", route: true, icon: Wrench },
+    {
+      label: t("nav_tools"),
+      to: "/tools",
+      route: true,
+      icon: Wrench,
+      dropdown: TOOLS_CATALOG.map((cat) => ({ label: cat.name, to: `/tools#${cat.slug}` })),
+    },
     ...(hasProducts ? [{ label: t("nav_store"), to: "/store", route: true, icon: ShoppingCart }] : []),
     { label: t("nav_blog"), to: "/blog", route: true, icon: BookOpen },
     { label: t("nav_contact"), to: "/contact", route: true, icon: Mail },
@@ -167,7 +174,22 @@ export function SiteHeader({ settings }) {
           </Link>
           <nav className="okr__navlinks" aria-label="Primary">
             {nav.map((item) => (
-              item.route ? (
+              item.dropdown ? (
+                <div key={item.label} className="okr__navlink-group">
+                  <NavLink
+                    to={item.to}
+                    end={item.to === "/"}
+                    className={({ isActive }) => `okr__navlink${isActive ? " is-active" : ""}`}
+                  >
+                    {item.label}
+                  </NavLink>
+                  <div className="okr__navlink-dropdown" role="menu">
+                    {item.dropdown.map((sub) => (
+                      <a key={sub.to} href={sub.to} role="menuitem">{sub.label}</a>
+                    ))}
+                  </div>
+                </div>
+              ) : item.route ? (
                 <NavLink
                   key={item.label}
                   to={item.to}
