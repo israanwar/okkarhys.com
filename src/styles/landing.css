@@ -364,8 +364,9 @@
   padding: 16px;
   margin-top: 6px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(200px, 1fr));
-  gap: 4px;
+  grid-template-columns: repeat(2, max-content);
+  column-gap: 36px;
+  row-gap: 2px;
   border: 1px solid var(--okr-glass-border);
   border-radius: 16px;
   background: var(--okr-glass-bg-hover, var(--okr-glass-bg));
