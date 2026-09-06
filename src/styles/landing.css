@@ -1498,41 +1498,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     inset 0 -1px 0 rgba(0, 0, 0, 0.26);
 }
-.okr__portfolio-featured {
-  display: grid;
-  gap: 40px;
-}
-.okr__portfolio-featured-label {
-  margin: 0 0 16px;
-  color: var(--okr-text);
-  font-size: 18px;
-}
-.okr__portfolio-featured-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
-  gap: 16px;
-}
-.okr__portfolio-featured-item {
-  margin: 0;
-  border: 1px solid var(--okr-glass-border);
-  border-radius: var(--okr-radius);
-  overflow: hidden;
-  background: var(--okr-glass-bg);
-}
-.okr__portfolio-featured-item img {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-}
-.okr__portfolio-featured-item figcaption {
-  padding: 12px 16px;
-  color: var(--okr-muted);
-  font-size: 13.5px;
-  line-height: 1.4;
-}
-
 .okr__portfolio-pills,
 .okr__portfolio-tag-cloud {
   display: flex;

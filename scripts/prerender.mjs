@@ -137,41 +137,6 @@ const REAL_SOCIAL = {
   instagram: "https://www.instagram.com/okkarhys/",
 };
 
-// Kept in sync by hand with FEATURED_WORK in PortfolioPage.jsx.
-const PORTFOLIO_FEATURED_WORK = [
-  {
-    category: "Brand Campaigns",
-    items: [
-      { label: "Aseera — Skincare", image: "/assets/portfolio/brand-aseera.jpg" },
-      { label: "The Clinic Beautylosophy — Plastic Surgery & Aesthetic Clinic", image: "/assets/portfolio/brand-theclinic-beautylosophy.jpg" },
-      { label: "Sushi Tei — Restaurant", image: "/assets/portfolio/brand-sushi-tei.jpg" },
-      { label: "Kopi Break — Coffee Shop", image: "/assets/portfolio/brand-kopi-break.jpg" },
-    ],
-  },
-  {
-    category: "Event Organizer",
-    items: [{ label: "Concerts, festivals & community events", image: "/assets/portfolio/event-organizer.jpg" }],
-  },
-  {
-    category: "Web Development",
-    items: [
-      { label: "Websites built and launched", image: "/assets/portfolio/web-development-1.jpg" },
-      { label: "Websites built and launched", image: "/assets/portfolio/web-development-2.jpg" },
-    ],
-  },
-  {
-    category: "Search Engine Optimization",
-    items: [
-      { label: "Traffic growth & hosting milestones", image: "/assets/portfolio/seo-1.jpg" },
-      { label: "Analytics & Search Console results", image: "/assets/portfolio/seo-2.jpg" },
-    ],
-  },
-  {
-    category: "Facebook Ads",
-    items: [{ label: "Ad campaign performance", image: "/assets/portfolio/facebook-ads.jpg" }],
-  },
-];
-
 const NAV_LINKS = [
   ["/", "Home"],
   ["/about", "Tentang"],
@@ -324,25 +289,6 @@ function renderBodyHtml(route) {
         <ul>
           ${services}
         </ul>
-      </section>`;
-      })
-      .join("\n    ");
-    main = `<main>
-    <h1>${xmlEsc(route.h1 || route.title)}</h1>
-    <p>${xmlEsc(route.description)}</p>
-    ${sections}
-  </main>`;
-  } else if (route.path === "/portfolio") {
-    // Mirrors FEATURED_WORK in PortfolioPage.jsx — real campaign images with
-    // real alt text, so crawlers see the same work samples a real visitor does.
-    const sections = PORTFOLIO_FEATURED_WORK
-      .map((group) => {
-        const items = group.items
-          .map((item) => `<figure><img src="${xmlEsc(item.image)}" alt="${xmlEsc(item.label)}" width="1600" height="900" loading="lazy"><figcaption>${xmlEsc(item.label)}</figcaption></figure>`)
-          .join("\n        ");
-        return `<section>
-        <h2>${xmlEsc(group.category)}</h2>
-        ${items}
       </section>`;
       })
       .join("\n    ");
