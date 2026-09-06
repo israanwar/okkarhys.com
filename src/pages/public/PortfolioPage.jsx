@@ -6,6 +6,70 @@ import { useLivePage } from "../../hooks/usePageData";
 import { useI18n } from "../../lib/i18n";
 import { localizePage } from "../../lib/pageI18n";
 
+// Real work samples — brand campaigns, events, websites shipped, SEO
+// results, and ad performance. Hardcoded (not CMS-driven like the sections
+// below) since this is a fixed set of finished case studies, not something
+// edited day to day.
+const FEATURED_WORK = [
+  {
+    category: "Brand Campaigns",
+    items: [
+      { label: "Aseera — Skincare", image: "/assets/portfolio/brand-aseera.jpg" },
+      { label: "The Clinic Beautylosophy — Plastic Surgery & Aesthetic Clinic", image: "/assets/portfolio/brand-theclinic-beautylosophy.jpg" },
+      { label: "Sushi Tei — Restaurant", image: "/assets/portfolio/brand-sushi-tei.jpg" },
+      { label: "Kopi Break — Coffee Shop", image: "/assets/portfolio/brand-kopi-break.jpg" },
+    ],
+  },
+  {
+    category: "Event Organizer",
+    items: [
+      { label: "Concerts, festivals & community events", image: "/assets/portfolio/event-organizer.jpg" },
+    ],
+  },
+  {
+    category: "Web Development",
+    items: [
+      { label: "Websites built and launched", image: "/assets/portfolio/web-development-1.jpg" },
+      { label: "Websites built and launched", image: "/assets/portfolio/web-development-2.jpg" },
+    ],
+  },
+  {
+    category: "Search Engine Optimization",
+    items: [
+      { label: "Traffic growth & hosting milestones", image: "/assets/portfolio/seo-1.jpg" },
+      { label: "Analytics & Search Console results", image: "/assets/portfolio/seo-2.jpg" },
+    ],
+  },
+  {
+    category: "Facebook Ads",
+    items: [
+      { label: "Ad campaign performance", image: "/assets/portfolio/facebook-ads.jpg" },
+    ],
+  },
+];
+
+function FeaturedWork() {
+  return (
+    <PortfolioSection eyebrow="// SELECTED WORK" title="Featured Campaigns">
+      <div className="okr__portfolio-featured">
+        {FEATURED_WORK.map((group) => (
+          <div key={group.category} className="okr__portfolio-featured-group">
+            <h3 className="okr__portfolio-featured-label">{group.category}</h3>
+            <div className="okr__portfolio-featured-grid">
+              {group.items.map((item) => (
+                <figure key={item.image} className="okr__portfolio-featured-item">
+                  <img src={item.image} alt={item.label} loading="lazy" width="1600" height="900" />
+                  <figcaption>{item.label}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </PortfolioSection>
+  );
+}
+
 export function PortfolioPage() {
   const { lang, t } = useI18n();
   const rawPage = useLivePage("portfolio");
@@ -57,6 +121,8 @@ export function PortfolioPage() {
                 </p>
               )}
             </header>
+
+            <FeaturedWork />
 
             {p.core_expertise?.length > 0 && (
               <PortfolioSection eyebrow={t("portfolio_positioning")} title={t("portfolio_consultant_focus")}>
